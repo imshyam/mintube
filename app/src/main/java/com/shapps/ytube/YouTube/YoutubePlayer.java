@@ -18,8 +18,13 @@ import com.shapps.ytube.R;
 
 public class YoutubePlayer extends YouTubeFailureRecoveryActivity {
 
+    static YouTubePlayerView youTubeView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+        Log.e("Sdadfas", "Asdasd");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube_player);
 
@@ -29,7 +34,7 @@ public class YoutubePlayer extends YouTubeFailureRecoveryActivity {
             Log.e("Link : ", link.toString());
         }
 
-        YouTubePlayerView youTubeView = (YouTubePlayerView) findViewById(R.id.youtube_view);
+        youTubeView = (YouTubePlayerView) findViewById(R.id.youtube_view);
         youTubeView.initialize(ApiKey.API_KEY, this);
     }
 
@@ -44,6 +49,10 @@ public class YoutubePlayer extends YouTubeFailureRecoveryActivity {
     @Override
     protected YouTubePlayer.Provider getYouTubePlayerProvider() {
         return (YouTubePlayerView) findViewById(R.id.youtube_view);
+    }
+
+    public static YouTubePlayerView getPlayer() {
+        return youTubeView;
     }
 
 }

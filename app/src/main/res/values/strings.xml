@@ -3,4 +3,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_youtube_player">YoutubePlayer</string>
     <string name="error_player">Unable to load.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_ytube_view">YTubeView</string>
 </resources>

@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 stopService(new Intent(getApplicationContext(), HeadService.class));
                 break;
             case R.id.ytube:
-                startActivity(new Intent(getApplicationContext(), YoutubePlayer.class));
+                //startActivity(new Intent(getApplicationContext(), YoutubePlayer.class));
                 break;
 
             default:
