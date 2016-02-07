@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -12,7 +13,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -30,6 +33,10 @@ public class HeadService extends Service implements YouTubePlayer.OnInitializedL
 
     WindowManager windowManager;
     static YouTubePlayerView playerView;
+    View view;
+    RelativeLayout rl, rl1;
+    boolean visible = true;
+    String VID_ID = "RgKAFK5djSk";
 
     @Nullable
     @Override
@@ -43,8 +50,21 @@ public class HeadService extends Service implements YouTubePlayer.OnInitializedL
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
+        LayoutInflater inflater = (LayoutInflater)this.getSystemService
+                (Context.LAYOUT_INFLATER_SERVICE);
+
+        view = inflater.inflate(R.layout.player_view, null, false);
+
+        rl = (RelativeLayout) view.findViewById(R.id.playerView);
+        final ImageView icon = (ImageView) view.findViewById(R.id.song_icon);
+        rl1 = (RelativeLayout) view.findViewById(R.id.view_to_hide);
+
+
         playerView = Session.getYouTubePlayerView();
         playerView.initialize(ApiKey.API_KEY, this);
+
+        rl.addView(playerView);
+
 
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -58,11 +78,23 @@ public class HeadService extends Service implements YouTubePlayer.OnInitializedL
         params.x = 0;
         params.y = 500;
 
-       windowManager.addView(playerView, params);
+       windowManager.addView(view, params);
 
-        playerView.setOnTouchListener(new View.OnTouchListener() {
+//        icon.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.e("Clicked", "Click!");
+//                if(visible) {
+//                    rl1.setVisibility(View.GONE);
+//                }
+//                else {
+//                    rl1.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
+        icon.setOnTouchListener(new View.OnTouchListener() {
             private int initialX, initialY;
-            private float initialTouchX, initialTouchY;
+            private float initialTouchX, initialTouchY, finalTouchX, finalTouchY;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -74,29 +106,51 @@ public class HeadService extends Service implements YouTubePlayer.OnInitializedL
                         initialTouchY = event.getRawY();
                         return true;
                     case MotionEvent.ACTION_UP:
+//                        finalTouchX = event.getRawX();
+//                        finalTouchY = event.getRawY();
+//                        if(isClicked(initialTouchX, finalTouchX, initialTouchY, finalTouchY)){
+//                            icon.performClick();
+//                        }
                         return true;
                     case MotionEvent.ACTION_MOVE:
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                        windowManager.updateViewLayout(playerView, params);
+                        windowManager.updateViewLayout(view, params);
                         return true;
                 }
                 return false;
             }
+//            private boolean isClicked(float startX, float endX, float startY, float endY) {
+//                float differenceX = Math.abs(startX - endX);
+//                float differenceY = Math.abs(startY - endY);
+//                if (differenceX >= 5 || differenceY >= 5) {
+//                    return false;
+//                }
+//                return true;
+//            }
         });
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
 
+        Log.e("Service ", "Started!");
+
+        Bundle b = intent.getExtras();
+
+        if(b !=null) {
+            VID_ID = b.getString("VID_ID");
+        }
         return START_STICKY;
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e("Try To Destroy.", "Fuck!");
+        Log.i("Trying to Destroy", "Destroyed!");
         if (playerView != null) {
-            windowManager.removeView(playerView);
+            windowManager.removeView(view);
+            rl.removeView(playerView);
         }
     }
 
@@ -105,8 +159,8 @@ public class HeadService extends Service implements YouTubePlayer.OnInitializedL
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
                                         boolean wasRestored) {
         if (!wasRestored) {
-            player.cueVideo("RgKAFK5djSk");
             player.setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
+            player.cueVideo(VID_ID);
         }
     }
 

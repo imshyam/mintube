@@ -25,7 +25,7 @@ public class Session{
     }
 
     public static void setYouTubePlayerView(YouTubePlayerView View) {
+        Log.e("Yo ", " All Set!");
         youTubePlayerView = View;
     }
-
 }

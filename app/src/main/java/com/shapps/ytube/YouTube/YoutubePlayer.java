@@ -3,36 +3,25 @@ package com.shapps.ytube.YouTube;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 
-import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.shapps.ytube.HeadService;
 import com.shapps.ytube.R;
 
 public class YoutubePlayer extends YouTubeFailureRecoveryActivity {
 
-    static YouTubePlayerView youTubeView;
+    YouTubePlayerView youTubeView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        Log.e("Sdadfas", "Asdasd");
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube_player);
 
-        final Intent intent = getIntent();
-        if(intent.getExtras() != null) {
-            Uri link = intent.getData();
-            Log.e("Link : ", link.toString());
-        }
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Add to YTube");
 
         youTubeView = (YouTubePlayerView) findViewById(R.id.youtube_view);
         youTubeView.initialize(ApiKey.API_KEY, this);
@@ -49,10 +38,6 @@ public class YoutubePlayer extends YouTubeFailureRecoveryActivity {
     @Override
     protected YouTubePlayer.Provider getYouTubePlayerProvider() {
         return (YouTubePlayerView) findViewById(R.id.youtube_view);
-    }
-
-    public static YouTubePlayerView getPlayer() {
-        return youTubeView;
     }
 
 }

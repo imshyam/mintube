@@ -19,29 +19,12 @@
 
         <service
             android:name=".HeadService"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity
             android:name=".YouTube.YoutubePlayer"
-            android:label="@string/title_activity_youtube_player"
-            android:theme="@android:style/Theme.NoDisplay">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="https" />
-                <data android:scheme="http" />
-                <data android:host="*.youtube.com" />
-                <data android:host="m.youtube.com" />
-                <data android:host="youtu.be" />
-                <data android:host="*.googlevideo.com" />
-                <data android:pathPattern=".*" />
-            </intent-filter>
-        </activity>
+            android:label="@string/add_ytube"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".YTubeView"
             android:label="@string/title_activity_ytube_view"
@@ -49,9 +32,31 @@
             android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!--       Open Video from youtube link      -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+                <data android:host="*.youtube.com" />
+                <data android:host="m.youtube.com" />
+                <data android:host="youtu.be" />
+                <data android:pathPattern=".*" />
+            </intent-filter>
+
+            <!--       Open Video from youtube share button      -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
         </activity>
     </application>
 

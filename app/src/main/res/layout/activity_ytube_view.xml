@@ -21,7 +21,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_ytube_view" />
+    <include layout="@layout/player_view" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

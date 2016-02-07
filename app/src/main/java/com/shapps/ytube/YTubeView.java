@@ -15,6 +15,9 @@ import com.google.android.youtube.player.YouTubePlayerView;
 import com.shapps.ytube.YouTube.ApiKey;
 import com.shapps.ytube.YouTube.YouTubeFailureRecoveryActivity;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class YTubeView extends YouTubeFailureRecoveryActivity {
 
     YouTubePlayerView youTubeView;
@@ -27,9 +30,35 @@ public class YTubeView extends YouTubeFailureRecoveryActivity {
 
         Session.setYouTubePlayerView(youTubeView);
 
-        startActivity(new Intent(this, MainActivity.class));
 
-        finish();
+        final Intent intent = getIntent();
+        if(intent.getData() != null || intent.getStringExtra("android.intent.extra.TEXT") != null) {
+            String link;
+            if(intent.getData() != null) {
+                link = intent.getData().toString();
+            }
+            else {
+                link = intent.getStringExtra("android.intent.extra.TEXT");
+            }
+            Log.e("Link : ", link);
+            Intent i = new Intent(this, HeadService.class);
+            String vId = "RgKAFK5djSk";
+            Pattern pattern = Pattern.compile(
+                    "^https?://.*(?:youtu.be/|v/|u/\\\\w/|embed/|watch[?]v=)([^#&?]*).*$",
+                    Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(link.toString());
+            if (matcher.matches()){
+                vId = matcher.group(1);
+            }
+            Log.e("Video Id : ", vId);
+            i.putExtra("VID_ID", vId);
+            startService(i);
+            finish();
+        }
+        else {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
 
     }
 

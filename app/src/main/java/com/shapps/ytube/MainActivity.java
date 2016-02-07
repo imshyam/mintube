@@ -16,7 +16,7 @@ import com.shapps.ytube.YouTube.YoutubePlayer;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    Button start, stop, yTube;
+    Button stop, yTube;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        start = (Button) findViewById(R.id.start);
-        start.setOnClickListener(this);
         stop = (Button) findViewById(R.id.stop);
         stop.setOnClickListener(this);
         yTube = (Button) findViewById(R.id.ytube);
@@ -70,18 +68,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()){
 
-            case R.id.start:
-                Snackbar.make(v, "Started", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                startService(new Intent(getApplicationContext(), HeadService.class));
-                break;
             case R.id.stop:
                 Snackbar.make(v, "Stopped", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 stopService(new Intent(getApplicationContext(), HeadService.class));
                 break;
             case R.id.ytube:
-                //startActivity(new Intent(getApplicationContext(), YoutubePlayer.class));
+                startActivity(new Intent(getApplicationContext(), YoutubePlayer.class));
                 break;
 
             default:
