@@ -32,11 +32,13 @@ import com.shapps.ytube.YouTube.YoutubePlayer;
 public class HeadService extends Service implements YouTubePlayer.OnInitializedListener{
 
     WindowManager windowManager;
+    private static YouTubePlayer player;
     static YouTubePlayerView playerView;
     View view;
     RelativeLayout rl, rl1;
-    boolean visible = true;
+    boolean initialized = false;
     String VID_ID = "RgKAFK5djSk";
+    private MyPlayerStateChangeListener playerStateChangeListener;
 
     @Nullable
     @Override
@@ -61,8 +63,8 @@ public class HeadService extends Service implements YouTubePlayer.OnInitializedL
 
 
         playerView = Session.getYouTubePlayerView();
+        playerStateChangeListener = new MyPlayerStateChangeListener();
         playerView.initialize(ApiKey.API_KEY, this);
-
         rl.addView(playerView);
 
 
@@ -78,20 +80,20 @@ public class HeadService extends Service implements YouTubePlayer.OnInitializedL
         params.x = 0;
         params.y = 500;
 
-       windowManager.addView(view, params);
+        windowManager.addView(view, params);
 
-//        icon.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.e("Clicked", "Click!");
-//                if(visible) {
-//                    rl1.setVisibility(View.GONE);
-//                }
-//                else {
-//                    rl1.setVisibility(View.VISIBLE);
-//                }
-//            }
-//        });
+//         icon.setOnClickListener(new View.OnClickListener() {
+//             @Override
+//             public void onClick(View v) {
+//                 Log.e("Clicked", "Click!");
+//                 if(visible) {
+//                     rl1.setVisibility(View.GONE);
+//                 }
+//                 else {
+//                     rl1.setVisibility(View.VISIBLE);
+//                 }
+//             }
+//         });
         icon.setOnTouchListener(new View.OnTouchListener() {
             private int initialX, initialY;
             private float initialTouchX, initialTouchY, finalTouchX, finalTouchY;
@@ -141,7 +143,7 @@ public class HeadService extends Service implements YouTubePlayer.OnInitializedL
         if(b !=null) {
             VID_ID = b.getString("VID_ID");
         }
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -151,6 +153,7 @@ public class HeadService extends Service implements YouTubePlayer.OnInitializedL
         if (playerView != null) {
             windowManager.removeView(view);
             rl.removeView(playerView);
+            player.release();
         }
     }
 
@@ -159,13 +162,79 @@ public class HeadService extends Service implements YouTubePlayer.OnInitializedL
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
                                         boolean wasRestored) {
         if (!wasRestored) {
+            initialized = true;
+            log("Player Initialized.");
+            this.player = player;
             player.setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
-            player.cueVideo(VID_ID);
+            player.setPlayerStateChangeListener(playerStateChangeListener);
+            player.loadVideo(VID_ID);
         }
     }
 
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
 
+    }
+
+
+    public static void startVid(String vId) {
+        if (player != null) {
+            try {
+                player.loadVideo(vId);
+            } catch (IllegalStateException e) {
+                Log.e("exception is : ", e.toString());
+            }
+        }
+        else
+            Log.e("exception is : ", "Null player");
+    }
+
+    private final class MyPlayerStateChangeListener implements YouTubePlayer.PlayerStateChangeListener {
+        String playerState = "UNINITIALIZED";
+
+        @Override
+        public void onLoading() {
+            playerState = "LOADING";
+            log(playerState);
+        }
+
+        @Override
+        public void onLoaded(String videoId) {
+            playerState = String.format("LOADED %s", videoId);
+            log(playerState);
+        }
+
+        @Override
+        public void onAdStarted() {
+            playerState = "AD_STARTED";
+            log(playerState);
+        }
+
+        @Override
+        public void onVideoStarted() {
+            playerState = "VIDEO_STARTED";
+            log(playerState);
+        }
+
+        @Override
+        public void onVideoEnded() {
+            playerState = "VIDEO_ENDED";
+            log(playerState);
+        }
+
+        @Override
+        public void onError(YouTubePlayer.ErrorReason reason) {
+            playerState = "ERROR (" + reason + ")";
+            if (reason == YouTubePlayer.ErrorReason.UNEXPECTED_SERVICE_DISCONNECTION) {
+                // When this error occurs the player is released and can no longer be used.
+                player = null;
+            }
+            log(playerState);
+        }
+
+    }
+
+    private void log(String playerState) {
+        Log.e("Player State : ", playerState);
     }
 }

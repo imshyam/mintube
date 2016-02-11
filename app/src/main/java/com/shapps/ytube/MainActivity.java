@@ -1,6 +1,5 @@
 package com.shapps.ytube;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.stop:
                 Snackbar.make(v, "Stopped", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                stopService(new Intent(getApplicationContext(), HeadService.class));
+                stopService(new Intent(getApplicationContext(), PlayerService.class));
                 break;
             case R.id.ytube:
                 startActivity(new Intent(getApplicationContext(), YoutubePlayer.class));
