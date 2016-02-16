@@ -1,22 +1,13 @@
 package com.shapps.ytube;
 
 import android.app.ActivityManager;
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.shapps.ytube.YouTube.ApiKey;
-import com.shapps.ytube.YouTube.PlayingNotification;
 import com.shapps.ytube.YouTube.YouTubeFailureRecoveryActivity;
 
 import java.util.regex.Matcher;
@@ -60,8 +51,8 @@ public class YTubeView extends YouTubeFailureRecoveryActivity {
             } else {
                 Intent i = new Intent(this, PlayerService.class);
                 i.putExtra("VID_ID", vId);
+                i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
                 startService(i);
-                PlayingNotification.notify(this, "string", 2);
                 finish();
             }
         }
