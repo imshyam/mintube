@@ -11,8 +11,8 @@
     <RelativeLayout
         android:id="@+id/view_to_hide"
         android:layout_marginTop="80dp"
-        android:layout_width="300dp"
-        android:layout_height="200dp">
+        android:layout_width="240dp"
+        android:layout_height="210dp">
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -22,14 +22,8 @@
         <WebView
             android:id="@+id/playerView"
             android:layout_marginTop="10dp"
-            android:layout_width="300dp"
+            android:layout_width="240dp"
             android:layout_height="200dp"/>
-        <RelativeLayout
-            android:layout_below="@id/playerView"
-            android:layout_width="200dp"
-            android:layout_height="20dp">
-
-        </RelativeLayout>
     </RelativeLayout>
 
 

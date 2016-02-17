@@ -8,27 +8,21 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
-
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerView;
-import com.shapps.ytube.YouTube.ApiKey;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,10 +32,13 @@ import java.util.Map;
  */
 public class PlayerService extends Service{
 
+    static PlayerService playerService;
     WindowManager windowManager;
     View view;
     static WebView player;
     String VID_ID = "RgKAFK5djSk";
+    static String PlayerId = "not yet";
+    static boolean foundPlayerId = false;
 
     @Nullable
     @Override
@@ -59,6 +56,7 @@ public class PlayerService extends Service{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
 
+        this.playerService = this;
         if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_WEB_ACTION)) {
             Log.e("Service ", "Started!");
 
@@ -114,6 +112,9 @@ public class PlayerService extends Service{
 
             player = (WebView) view.findViewById(R.id.playerView);
             player.getSettings().setJavaScriptEnabled(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                player.setWebContentsDebuggingEnabled(true);
+            }
             player.setWebChromeClient(new WebChromeClient());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 player.getSettings().setMediaPlaybackRequiresUserGesture(false);
@@ -122,7 +123,40 @@ public class PlayerService extends Service{
 
             Map hashMap = new HashMap();
             hashMap.put("Referer", "http://www.youtube.com");
-            player.loadUrl("https://www.youtube.com/embed/" + VID_ID + "?fs=0&autoplay=1&playlist=" + VID_ID
+
+            player.addJavascriptInterface(new GetHtmlInterface(this), "HtmlViewer");
+            player.setWebViewClient(new WebViewClient() {
+                                        @Override
+                                        public void onPageFinished(WebView view, String url) {
+                                            player.loadUrl("javascript:window.HtmlViewer.showHTML" +
+                                                    "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');");
+                                        }
+                                    }
+            );
+
+            while(true) {
+                foundPlayerId = GetHtmlInterface.foundPlayerId();
+                if(foundPlayerId = true) {
+                    PlayerId = GetHtmlInterface.getPlayerId();
+                    Log.i("Yaiks!!!" , "Found Player Id.");
+                    break;
+                }
+                Log.i("Oops!!", "trying Again");
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("5 sec later : ", "HTML is ...");
+
+                        player.loadUrl("javascript:window.HtmlViewer.showHTML" +
+                                "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');");
+
+                    }
+                }, 5000);
+            }
+
+            player.loadUrl("https://www.youtube.com/embed/" + VID_ID
+                    + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&playlist=" + VID_ID
                     , hashMap);
 
             final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
@@ -183,7 +217,38 @@ public class PlayerService extends Service{
     public static void startVid(String vId) {
         Map hashMap = new HashMap();
         hashMap.put("Referer", "http://www.youtube.com");
-        player.loadUrl("https://www.youtube.com/embed/" + vId+ "?fs=0&autoplay=1&playlist=" + vId
+        player.addJavascriptInterface(new GetHtmlInterface(playerService), "HtmlViewer");
+        player.setWebViewClient(new WebViewClient() {
+                                    @Override
+                                    public void onPageFinished(WebView view, String url) {
+                                        player.loadUrl("javascript:window.HtmlViewer.showHTML" +
+                                                "('&lt;html&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/html&gt;');");
+                                    }
+                                }
+        );
+        while (true) {
+            foundPlayerId = GetHtmlInterface.foundPlayerId();
+            if(foundPlayerId = true) {
+                PlayerId = GetHtmlInterface.getPlayerId();
+                Log.i("Yaiks!!!" , "Found Player Id.");
+                break;
+            }
+            Log.i("Oops!!", "trying Again");
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e("5 sec later : ", "HTML is ...");
+
+                    player.addJavascriptInterface(new GetHtmlInterface(playerService), "HtmlViewer");
+                    player.loadUrl("javascript:window.HtmlViewer.showHTML" +
+                            "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');");
+
+                }
+            }, 5000);
+        }
+        player.loadUrl("https://www.youtube.com/embed/" + vId
+                + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&playlist=" + vId
                 , hashMap);
     }
 }
