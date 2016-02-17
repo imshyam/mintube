@@ -105,16 +105,14 @@ public class PlayerService extends Service{
             view = inflater.inflate(R.layout.player_webview, null, false);
 
             final ImageView icon = (ImageView) view.findViewById(R.id.song_icon);
-            //        icon.setImageResource(R.drawable.circle);
-            //        int len = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics());
-            //        icon.setLayoutParams(new ViewGroup.LayoutParams(
-            //                len,len));
 
             player = (WebView) view.findViewById(R.id.playerView);
             player.getSettings().setJavaScriptEnabled(true);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                player.setWebContentsDebuggingEnabled(true);
-            }
+
+            // For debugging using chrome on PC
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                player.setWebContentsDebuggingEnabled(true);
+//            }
             player.setWebChromeClient(new WebChromeClient());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 player.getSettings().setMediaPlaybackRequiresUserGesture(false);

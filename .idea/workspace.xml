@@ -49,20 +49,20 @@
       <file leaf-file-name="PlayerService.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33333334">
-              <caret line="231" column="27" selection-start-line="231" selection-start-column="27" selection-end-line="231" selection-end-column="27" />
+            <state vertical-scroll-proportion="0.4500846">
+              <caret line="106" column="81" selection-start-line="106" selection-start-column="81" selection-end-line="106" selection-end-column="81" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1220#1221#0" expanded="true" />
                 <element signature="e#1247#1248#0" expanded="true" />
-                <element signature="e#4347#4835#0" expanded="true" />
-                <element signature="e#4834#4835#0" expanded="true" />
-                <element signature="e#5295#5689#0" expanded="true" />
-                <element signature="e#5688#5689#0" expanded="true" />
-                <element signature="e#8217#8681#0" expanded="true" />
-                <element signature="e#8680#8681#0" expanded="true" />
-                <element signature="e#9097#9565#0" expanded="true" />
-                <element signature="e#9564#9565#0" expanded="true" />
+                <element signature="e#4092#4580#0" expanded="true" />
+                <element signature="e#4579#4580#0" expanded="true" />
+                <element signature="e#5040#5434#0" expanded="true" />
+                <element signature="e#5433#5434#0" expanded="true" />
+                <element signature="e#7962#8426#0" expanded="true" />
+                <element signature="e#8425#8426#0" expanded="true" />
+                <element signature="e#8842#9310#0" expanded="true" />
+                <element signature="e#9309#9310#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -1727,8 +1727,8 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/Constants.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayingNotification.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/player_webview.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/GetHtmlInterface.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java" />
       </list>
     </option>
   </component>
@@ -2123,14 +2123,14 @@
             <element signature="imports" expanded="true" />
             <element signature="e#1220#1221#0" expanded="true" />
             <element signature="e#1247#1248#0" expanded="true" />
-            <element signature="e#4347#4835#0" expanded="true" />
-            <element signature="e#4834#4835#0" expanded="true" />
-            <element signature="e#5295#5689#0" expanded="true" />
-            <element signature="e#5688#5689#0" expanded="true" />
-            <element signature="e#8217#8681#0" expanded="true" />
-            <element signature="e#8680#8681#0" expanded="true" />
-            <element signature="e#9097#9565#0" expanded="true" />
-            <element signature="e#9564#9565#0" expanded="true" />
+            <element signature="e#4092#4580#0" expanded="true" />
+            <element signature="e#4579#4580#0" expanded="true" />
+            <element signature="e#5040#5434#0" expanded="true" />
+            <element signature="e#5433#5434#0" expanded="true" />
+            <element signature="e#7962#8426#0" expanded="true" />
+            <element signature="e#8425#8426#0" expanded="true" />
+            <element signature="e#8842#9310#0" expanded="true" />
+            <element signature="e#9309#9310#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2162,14 +2162,14 @@
             <element signature="imports" expanded="true" />
             <element signature="e#1220#1221#0" expanded="true" />
             <element signature="e#1247#1248#0" expanded="true" />
-            <element signature="e#4347#4835#0" expanded="true" />
-            <element signature="e#4834#4835#0" expanded="true" />
-            <element signature="e#5295#5689#0" expanded="true" />
-            <element signature="e#5688#5689#0" expanded="true" />
-            <element signature="e#8217#8681#0" expanded="true" />
-            <element signature="e#8680#8681#0" expanded="true" />
-            <element signature="e#9097#9565#0" expanded="true" />
-            <element signature="e#9564#9565#0" expanded="true" />
+            <element signature="e#4092#4580#0" expanded="true" />
+            <element signature="e#4579#4580#0" expanded="true" />
+            <element signature="e#5040#5434#0" expanded="true" />
+            <element signature="e#5433#5434#0" expanded="true" />
+            <element signature="e#7962#8426#0" expanded="true" />
+            <element signature="e#8425#8426#0" expanded="true" />
+            <element signature="e#8842#9310#0" expanded="true" />
+            <element signature="e#9309#9310#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2201,14 +2201,14 @@
             <element signature="imports" expanded="true" />
             <element signature="e#1220#1221#0" expanded="true" />
             <element signature="e#1247#1248#0" expanded="true" />
-            <element signature="e#4347#4835#0" expanded="true" />
-            <element signature="e#4834#4835#0" expanded="true" />
-            <element signature="e#5295#5689#0" expanded="true" />
-            <element signature="e#5688#5689#0" expanded="true" />
-            <element signature="e#8217#8681#0" expanded="true" />
-            <element signature="e#8680#8681#0" expanded="true" />
-            <element signature="e#9097#9565#0" expanded="true" />
-            <element signature="e#9564#9565#0" expanded="true" />
+            <element signature="e#4092#4580#0" expanded="true" />
+            <element signature="e#4579#4580#0" expanded="true" />
+            <element signature="e#5040#5434#0" expanded="true" />
+            <element signature="e#5433#5434#0" expanded="true" />
+            <element signature="e#7962#8426#0" expanded="true" />
+            <element signature="e#8425#8426#0" expanded="true" />
+            <element signature="e#8842#9310#0" expanded="true" />
+            <element signature="e#9309#9310#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2262,14 +2262,14 @@
             <element signature="imports" expanded="true" />
             <element signature="e#1220#1221#0" expanded="true" />
             <element signature="e#1247#1248#0" expanded="true" />
-            <element signature="e#4347#4835#0" expanded="true" />
-            <element signature="e#4834#4835#0" expanded="true" />
-            <element signature="e#5295#5689#0" expanded="true" />
-            <element signature="e#5688#5689#0" expanded="true" />
-            <element signature="e#8217#8681#0" expanded="true" />
-            <element signature="e#8680#8681#0" expanded="true" />
-            <element signature="e#9097#9565#0" expanded="true" />
-            <element signature="e#9564#9565#0" expanded="true" />
+            <element signature="e#4092#4580#0" expanded="true" />
+            <element signature="e#4579#4580#0" expanded="true" />
+            <element signature="e#5040#5434#0" expanded="true" />
+            <element signature="e#5433#5434#0" expanded="true" />
+            <element signature="e#7962#8426#0" expanded="true" />
+            <element signature="e#8425#8426#0" expanded="true" />
+            <element signature="e#8842#9310#0" expanded="true" />
+            <element signature="e#9309#9310#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2587,20 +2587,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334">
-          <caret line="231" column="27" selection-start-line="231" selection-start-column="27" selection-end-line="231" selection-end-column="27" />
+        <state vertical-scroll-proportion="0.4500846">
+          <caret line="106" column="81" selection-start-line="106" selection-start-column="81" selection-end-line="106" selection-end-column="81" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1220#1221#0" expanded="true" />
             <element signature="e#1247#1248#0" expanded="true" />
-            <element signature="e#4347#4835#0" expanded="true" />
-            <element signature="e#4834#4835#0" expanded="true" />
-            <element signature="e#5295#5689#0" expanded="true" />
-            <element signature="e#5688#5689#0" expanded="true" />
-            <element signature="e#8217#8681#0" expanded="true" />
-            <element signature="e#8680#8681#0" expanded="true" />
-            <element signature="e#9097#9565#0" expanded="true" />
-            <element signature="e#9564#9565#0" expanded="true" />
+            <element signature="e#4092#4580#0" expanded="true" />
+            <element signature="e#4579#4580#0" expanded="true" />
+            <element signature="e#5040#5434#0" expanded="true" />
+            <element signature="e#5433#5434#0" expanded="true" />
+            <element signature="e#7962#8426#0" expanded="true" />
+            <element signature="e#8425#8426#0" expanded="true" />
+            <element signature="e#8842#9310#0" expanded="true" />
+            <element signature="e#9309#9310#0" expanded="true" />
           </folding>
         </state>
       </provider>
