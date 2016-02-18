@@ -21,7 +21,7 @@ public class Constants {
     //Actions
     public interface ACTION {
         public static String PREV_ACTION = "com.shapps.ytube.action.prev";
-        public static String PLAY_ACTION = "com.shapps.ytube.action.play";
+        public static String PAUSE_PLAY_ACTION = "com.shapps.ytube.action.play";
         public static String NEXT_ACTION = "com.shapps.ytube.action.next";
         public static String STARTFOREGROUND_WEB_ACTION = "com.shapps.ytube.action.playingweb";
         public static String STOPFOREGROUND_WEB_ACTION = "com.shapps.ytube.action.stopplayingweb";

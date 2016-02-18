@@ -45,6 +45,7 @@
                 android:src="@drawable/ic_skip_previous"
                 android:layout_weight="1"/>
             <ImageView
+                android:id="@+id/pause_play_video"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_play"

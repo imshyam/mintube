@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  */
 class GetHtmlInterface {
     Context context;
-    static String PlayerId;
+    static String PlayerId = "Null Yet.";
     static boolean foundPlayerId;
     static Handler handlerForJavascriptInterface = new Handler();
     public GetHtmlInterface(PlayerService playerService) {
@@ -29,6 +29,7 @@ class GetHtmlInterface {
     {
         handlerForJavascriptInterface.post(new Runnable()
                                            {
+
                                                @Override
                                                public void run()
                                                {

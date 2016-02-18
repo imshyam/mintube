@@ -2,6 +2,7 @@ package com.shapps.ytube;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +40,8 @@ public class PlayerService extends Service{
     String VID_ID = "RgKAFK5djSk";
     static String PlayerId = "not yet";
     static boolean foundPlayerId = false;
+    static boolean isVideoPlaying = true;
+
 
     @Nullable
     @Override
@@ -77,6 +80,10 @@ public class PlayerService extends Service{
                     R.layout.notification_small
             );
 
+            //Intent to do things
+            Intent doThings = new Intent(this, PlayerService.class);
+
+            //Notification
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
 
                     .setSmallIcon(R.drawable.thumbnail)
@@ -95,8 +102,24 @@ public class PlayerService extends Service{
                 notification.bigContentView = viewBig;
             }
 
+            //stop Service using doThings Intent
+            viewSmall.setOnClickPendingIntent(R.id.stop_service,
+                    PendingIntent.getService(getApplicationContext(), 0,
+                    doThings.setAction(Constants.ACTION.STOPFOREGROUND_WEB_ACTION) , 0));
+
+            //Pause Video using doThings Intent
+            viewSmall.setOnClickPendingIntent(R.id.pause_play_video,
+                    PendingIntent.getService(getApplicationContext(), 0,
+                            doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION) , 0));
+
+            viewBig.setOnClickPendingIntent(R.id.pause_play_video,
+                    PendingIntent.getService(getApplicationContext(), 0,
+                            doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION) , 0));
+
+            //Start Foreground Service
             startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
 
+            //View
             windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
             LayoutInflater inflater = (LayoutInflater) this.getSystemService
@@ -119,11 +142,14 @@ public class PlayerService extends Service{
             }
             player.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:21.0.0) Gecko/20121011 Firefox/21.0.0");
 
-            Map hashMap = new HashMap();
-            hashMap.put("Referer", "http://www.youtube.com");
+            //----------------------------To get Player Id-------------------------------------------
 
             player.addJavascriptInterface(new GetHtmlInterface(this), "HtmlViewer");
             player.setWebViewClient(new WebViewClient() {
+                                        @Override
+                                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                                            return true;
+                                        }
                                         @Override
                                         public void onPageFinished(WebView view, String url) {
                                             player.loadUrl("javascript:window.HtmlViewer.showHTML" +
@@ -132,13 +158,12 @@ public class PlayerService extends Service{
                                     }
             );
 
-            while(true) {
-                foundPlayerId = GetHtmlInterface.foundPlayerId();
-                if(foundPlayerId = true) {
-                    PlayerId = GetHtmlInterface.getPlayerId();
-                    Log.i("Yaiks!!!" , "Found Player Id.");
-                    break;
-                }
+            foundPlayerId = GetHtmlInterface.foundPlayerId();
+            if(foundPlayerId == true) {
+                PlayerId = GetHtmlInterface.getPlayerId();
+                Log.i("Yaiks!!!" , "Found Player Id.");
+            }
+            else{
                 Log.i("Oops!!", "trying Again");
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -152,7 +177,9 @@ public class PlayerService extends Service{
                     }
                 }, 5000);
             }
-
+            //------------------------------Got Player Id--------------------------------------------------------
+            Map hashMap = new HashMap();
+            hashMap.put("Referer", "http://www.youtube.com");
             player.loadUrl("https://www.youtube.com/embed/" + VID_ID
                     + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&playlist=" + VID_ID
                     , hashMap);
@@ -197,6 +224,31 @@ public class PlayerService extends Service{
             });
 
         }
+        else if(intent.getAction().equals(Constants.ACTION.STOPFOREGROUND_WEB_ACTION)){
+            Log.i("Trying To Destroy ", "...");
+            stopForeground(true);
+            stopSelf();
+            stopService(new Intent(this, PlayerService.class));
+        }
+
+        else if(intent.getAction().equals(Constants.ACTION.PAUSE_PLAY_ACTION)){
+            if(isVideoPlaying) {
+                Log.i("Trying To Pause Video ", "...");
+                String jsPause = "var player = document.getElementById(\"" + GetHtmlInterface.getPlayerId() + "\");\n" +
+                        "player.pauseVideo();";
+                Log.i("JS ", jsPause);
+                player.loadUrl("javascript:" + jsPause);
+                isVideoPlaying = false;
+            }
+            else{
+                Log.i("Trying To Play Video ", "...");
+                String jsPause = "var player = document.getElementById(\"" + GetHtmlInterface.getPlayerId() + "\");\n" +
+                        "player.playVideo();";
+                Log.i("JS ", jsPause);
+                player.loadUrl("javascript:" + jsPause);
+                isVideoPlaying = true;
+            }
+        }
 
         return START_NOT_STICKY;
     }
@@ -204,7 +256,7 @@ public class PlayerService extends Service{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i("Trying to Destroy", "Destroyed!");
+        Log.i("Status", "Destroyed!");
         if (view != null) {
             player.destroy();
             player = null;
@@ -213,10 +265,15 @@ public class PlayerService extends Service{
     }
 
     public static void startVid(String vId) {
-        Map hashMap = new HashMap();
-        hashMap.put("Referer", "http://www.youtube.com");
+
+        isVideoPlaying = true;
+        //----------------------------To get Player Id-------------------------------------------
         player.addJavascriptInterface(new GetHtmlInterface(playerService), "HtmlViewer");
         player.setWebViewClient(new WebViewClient() {
+                                    @Override
+                                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                                        return true;
+                                    }
                                     @Override
                                     public void onPageFinished(WebView view, String url) {
                                         player.loadUrl("javascript:window.HtmlViewer.showHTML" +
@@ -224,13 +281,12 @@ public class PlayerService extends Service{
                                     }
                                 }
         );
-        while (true) {
-            foundPlayerId = GetHtmlInterface.foundPlayerId();
-            if(foundPlayerId = true) {
-                PlayerId = GetHtmlInterface.getPlayerId();
-                Log.i("Yaiks!!!" , "Found Player Id.");
-                break;
-            }
+        foundPlayerId = GetHtmlInterface.foundPlayerId();
+        if(foundPlayerId == true) {
+            PlayerId = GetHtmlInterface.getPlayerId();
+            Log.i("Yaiks!!!" , "Found Player Id.");
+        }
+        else{
             Log.i("Oops!!", "trying Again");
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -245,6 +301,9 @@ public class PlayerService extends Service{
                 }
             }, 5000);
         }
+        //-----------------------------------Got Player Id--------------------------------------------------------------
+        Map hashMap = new HashMap();
+        hashMap.put("Referer", "http://www.youtube.com");
         player.loadUrl("https://www.youtube.com/embed/" + vId
                 + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&playlist=" + vId
                 , hashMap);
