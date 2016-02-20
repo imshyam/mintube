@@ -23,6 +23,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
 
 import java.util.HashMap;
@@ -41,6 +42,21 @@ public class PlayerService extends Service{
     static String PlayerId = "not yet";
     static boolean foundPlayerId = false;
     static boolean isVideoPlaying = true;
+    static boolean notInitialized = true;
+    boolean visible = true;
+
+    //if play initializeWith = 1
+    //if pause initializeWith = 2
+    //if loadVideo initializeWith = 3
+
+    public static void setPlayingStatus(int playingStatus) {
+        if(playingStatus == 1){
+            isVideoPlaying = true;
+        }
+        else if(playingStatus == 2) {
+            isVideoPlaying = false;
+        }
+    }
 
 
     @Nullable
@@ -63,165 +79,7 @@ public class PlayerService extends Service{
         if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_WEB_ACTION)) {
             Log.e("Service ", "Started!");
 
-            Bundle b = intent.getExtras();
-
-            if (b != null) {
-                VID_ID = b.getString("VID_ID");
-            }
-
-            //Notification
-            RemoteViews viewBig = new RemoteViews(
-                    this.getPackageName(),
-                    R.layout.notification_large
-            );
-
-            RemoteViews viewSmall = new RemoteViews(
-                    this.getPackageName(),
-                    R.layout.notification_small
-            );
-
-            //Intent to do things
-            Intent doThings = new Intent(this, PlayerService.class);
-
-            //Notification
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-
-                    .setSmallIcon(R.drawable.thumbnail)
-
-                    .setVisibility(Notification.VISIBILITY_PUBLIC)
-
-                    .setContent(viewSmall)
-
-
-                            // Automatically dismiss the notification when it is touched.
-                    .setAutoCancel(false);
-
-            Notification notification = builder.build();
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                notification.bigContentView = viewBig;
-            }
-
-            //stop Service using doThings Intent
-            viewSmall.setOnClickPendingIntent(R.id.stop_service,
-                    PendingIntent.getService(getApplicationContext(), 0,
-                    doThings.setAction(Constants.ACTION.STOPFOREGROUND_WEB_ACTION) , 0));
-
-            //Pause Video using doThings Intent
-            viewSmall.setOnClickPendingIntent(R.id.pause_play_video,
-                    PendingIntent.getService(getApplicationContext(), 0,
-                            doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION) , 0));
-
-            viewBig.setOnClickPendingIntent(R.id.pause_play_video,
-                    PendingIntent.getService(getApplicationContext(), 0,
-                            doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION) , 0));
-
-            //Start Foreground Service
-            startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
-
-            //View
-            windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-
-            LayoutInflater inflater = (LayoutInflater) this.getSystemService
-                    (Context.LAYOUT_INFLATER_SERVICE);
-
-            view = inflater.inflate(R.layout.player_webview, null, false);
-
-            final ImageView icon = (ImageView) view.findViewById(R.id.song_icon);
-
-            player = (WebView) view.findViewById(R.id.playerView);
-            player.getSettings().setJavaScriptEnabled(true);
-
-            // For debugging using chrome on PC
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//                player.setWebContentsDebuggingEnabled(true);
-//            }
-            player.setWebChromeClient(new WebChromeClient());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                player.getSettings().setMediaPlaybackRequiresUserGesture(false);
-            }
-            player.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:21.0.0) Gecko/20121011 Firefox/21.0.0");
-
-            //----------------------------To get Player Id-------------------------------------------
-
-            player.addJavascriptInterface(new GetHtmlInterface(this), "HtmlViewer");
-            player.setWebViewClient(new WebViewClient() {
-                                        @Override
-                                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                                            return true;
-                                        }
-                                        @Override
-                                        public void onPageFinished(WebView view, String url) {
-                                            player.loadUrl("javascript:window.HtmlViewer.showHTML" +
-                                                    "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');");
-                                        }
-                                    }
-            );
-
-            foundPlayerId = GetHtmlInterface.foundPlayerId();
-            if(foundPlayerId == true) {
-                PlayerId = GetHtmlInterface.getPlayerId();
-                Log.i("Yaiks!!!" , "Found Player Id.");
-            }
-            else{
-                Log.i("Oops!!", "trying Again");
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.e("5 sec later : ", "HTML is ...");
-
-                        player.loadUrl("javascript:window.HtmlViewer.showHTML" +
-                                "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');");
-
-                    }
-                }, 5000);
-            }
-            //------------------------------Got Player Id--------------------------------------------------------
-            Map hashMap = new HashMap();
-            hashMap.put("Referer", "http://www.youtube.com");
-            player.loadUrl("https://www.youtube.com/embed/" + VID_ID
-                    + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&playlist=" + VID_ID
-                    , hashMap);
-
-            final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_PHONE,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSLUCENT
-            );
-
-            params.gravity = Gravity.TOP | Gravity.LEFT;
-            params.x = 0;
-            params.y = 0;
-
-            windowManager.addView(view, params);
-
-            icon.setOnTouchListener(new View.OnTouchListener() {
-                private int initialX, initialY;
-                private float initialTouchX, initialTouchY;
-
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            initialX = params.x;
-                            initialY = params.y;
-                            initialTouchX = event.getRawX();
-                            initialTouchY = event.getRawY();
-                            return true;
-                        case MotionEvent.ACTION_UP:
-                            return true;
-                        case MotionEvent.ACTION_MOVE:
-                            params.x = initialX + (int) (event.getRawX() - initialTouchX);
-                            params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                            windowManager.updateViewLayout(view, params);
-                            return true;
-                    }
-                    return false;
-                }
-            });
+            doThis(intent);
 
         }
         else if(intent.getAction().equals(Constants.ACTION.STOPFOREGROUND_WEB_ACTION)){
@@ -234,28 +92,32 @@ public class PlayerService extends Service{
         else if(intent.getAction().equals(Constants.ACTION.PAUSE_PLAY_ACTION)){
             if(isVideoPlaying) {
                 Log.i("Trying To Pause Video ", "...");
-                String jsPause = "var player = document.getElementById(\"" + GetHtmlInterface.getPlayerId() + "\");\n" +
-                        "player.pauseVideo();";
-                Log.i("JS ", jsPause);
-                player.loadUrl("javascript:" + jsPause);
-                isVideoPlaying = false;
+                if(notInitialized) {
+                    initializePlayer(2, null);
+                }
+                else {
+                    player.loadUrl("javascript:" + JavaScript.pauseVideoScript());
+                }
             }
             else{
                 Log.i("Trying To Play Video ", "...");
-                String jsPause = "var player = document.getElementById(\"" + GetHtmlInterface.getPlayerId() + "\");\n" +
-                        "player.playVideo();";
-                Log.i("JS ", jsPause);
-                player.loadUrl("javascript:" + jsPause);
-                isVideoPlaying = true;
+                if(notInitialized) {
+                    initializePlayer(1, null);
+                }
+                else {
+                    player.loadUrl("javascript:" + JavaScript.playVideoScript());
+                }
             }
         }
 
         return START_NOT_STICKY;
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
+        foundPlayerId = false;
+        notInitialized = true;
+        Session.finishWeb();
         Log.i("Status", "Destroyed!");
         if (view != null) {
             player.destroy();
@@ -265,10 +127,126 @@ public class PlayerService extends Service{
     }
 
     public static void startVid(String vId) {
+        if(notInitialized) {
+            initializePlayer(3, vId);
+        }
+        else {
+            player.loadUrl("javascript:" + JavaScript.loadPlayerScript(vId));
+        }
+    }
 
-        isVideoPlaying = true;
+    private static void initializePlayer(int type, String vId) {
+        if(type == 1) {
+            if (foundPlayerId) {
+                Log.e("Player ", "Initialized");
+                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(PlayerId) +
+                        JavaScript.playVideoScript());
+                notInitialized = false;
+            }
+        }
+        if(type == 2) {
+            if (foundPlayerId) {
+                Log.e("Player ", "Initialized");
+                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(PlayerId) +
+                        JavaScript.pauseVideoScript());
+                notInitialized = false;
+            }
+        }
+        if(type == 3) {
+            if (foundPlayerId) {
+                Log.e("Player ", "Initialized");
+                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(PlayerId) +
+                        JavaScript.loadPlayerScript(vId));
+                notInitialized = false;
+            }
+        }
+    }
+
+    /////-----------------*****************----------------onStartCommand---------------*****************-----------
+    private void doThis(Intent intent) {
+        Bundle b = intent.getExtras();
+
+        if (b != null) {
+            VID_ID = b.getString("VID_ID");
+        }
+
+        //Notification
+        RemoteViews viewBig = new RemoteViews(
+                this.getPackageName(),
+                R.layout.notification_large
+        );
+
+        RemoteViews viewSmall = new RemoteViews(
+                this.getPackageName(),
+                R.layout.notification_small
+        );
+
+        //Intent to do things
+        Intent doThings = new Intent(this, PlayerService.class);
+
+        //Notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+
+                .setSmallIcon(R.drawable.thumbnail)
+
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
+
+                .setContent(viewSmall)
+
+
+                        // Automatically dismiss the notification when it is touched.
+                .setAutoCancel(false);
+
+        Notification notification = builder.build();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            notification.bigContentView = viewBig;
+        }
+
+        //stop Service using doThings Intent
+        viewSmall.setOnClickPendingIntent(R.id.stop_service,
+                PendingIntent.getService(getApplicationContext(), 0,
+                        doThings.setAction(Constants.ACTION.STOPFOREGROUND_WEB_ACTION) , 0));
+
+        //Pause Video using doThings Intent
+        viewSmall.setOnClickPendingIntent(R.id.pause_play_video,
+                PendingIntent.getService(getApplicationContext(), 0,
+                        doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION) , 0));
+
+        viewBig.setOnClickPendingIntent(R.id.pause_play_video,
+                PendingIntent.getService(getApplicationContext(), 0,
+                        doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION) , 0));
+
+        //Start Foreground Service
+        startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
+
+        //View
+        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService
+                (Context.LAYOUT_INFLATER_SERVICE);
+
+        view = inflater.inflate(R.layout.player_webview, null, false);
+
+        final ImageView icon = (ImageView) view.findViewById(R.id.song_icon);
+
+        player = (WebView) view.findViewById(R.id.playerView);
+        player.getSettings().setJavaScriptEnabled(true);
+
+//         For debugging using chrome on PC
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                player.setWebContentsDebuggingEnabled(true);
+//            }
+
+        player.setWebChromeClient(new WebChromeClient());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            player.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        }
+        player.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:21.0.0) Gecko/20121011 Firefox/21.0.0");
+
         //----------------------------To get Player Id-------------------------------------------
-        player.addJavascriptInterface(new GetHtmlInterface(playerService), "HtmlViewer");
+
+        player.addJavascriptInterface(new GetHtmlInterface(this), "HtmlViewer");
         player.setWebViewClient(new WebViewClient() {
                                     @Override
                                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -277,13 +255,14 @@ public class PlayerService extends Service{
                                     @Override
                                     public void onPageFinished(WebView view, String url) {
                                         player.loadUrl("javascript:window.HtmlViewer.showHTML" +
-                                                "('&lt;html&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/html&gt;');");
+                                                "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');");
                                     }
                                 }
         );
-        foundPlayerId = GetHtmlInterface.foundPlayerId();
+
+        foundPlayerId = Session.foundPlayerId();
         if(foundPlayerId == true) {
-            PlayerId = GetHtmlInterface.getPlayerId();
+            PlayerId = Session.getPlayerId();
             Log.i("Yaiks!!!" , "Found Player Id.");
         }
         else{
@@ -294,18 +273,96 @@ public class PlayerService extends Service{
                 public void run() {
                     Log.e("5 sec later : ", "HTML is ...");
 
-                    player.addJavascriptInterface(new GetHtmlInterface(playerService), "HtmlViewer");
                     player.loadUrl("javascript:window.HtmlViewer.showHTML" +
                             "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');");
 
                 }
             }, 5000);
         }
-        //-----------------------------------Got Player Id--------------------------------------------------------------
+        //------------------------------Got Player Id--------------------------------------------------------
         Map hashMap = new HashMap();
         hashMap.put("Referer", "http://www.youtube.com");
-        player.loadUrl("https://www.youtube.com/embed/" + vId
-                + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&playlist=" + vId
+        player.loadUrl("https://www.youtube.com/embed/" + VID_ID
+                + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&playlist=" + VID_ID
                 , hashMap);
+
+        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT
+        );
+
+        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.x = 0;
+        params.y = 0;
+
+        windowManager.addView(view, params);
+
+        final RelativeLayout rl1 = (RelativeLayout) view.findViewById(R.id.view_to_hide);
+        final RelativeLayout rl2 = (RelativeLayout) view.findViewById(R.id.null_to_hide);
+
+        icon.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 Log.e("Clicked", "Click!");
+                 if(visible) {
+                     rl1.setVisibility(View.GONE);
+                     rl2.setVisibility(View.GONE);
+                     visible = false;
+                 }
+                 else {
+                     rl1.setVisibility(View.VISIBLE);
+                     rl2.setVisibility(View.VISIBLE);
+                     visible = true;
+                 }
+             }
+         });
+
+        icon.setOnTouchListener(new View.OnTouchListener() {
+            private int initialX, initialY;
+            private float initialTouchX, initialTouchY, finalTouchX, finalTouchY;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        initialX = params.x;
+                        initialY = params.y;
+                        initialTouchX = event.getRawX();
+                        initialTouchY = event.getRawY();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        finalTouchX = event.getRawX();
+                        finalTouchY = event.getRawY();
+                        if(isClicked(initialTouchX, finalTouchX, initialTouchY, finalTouchY)){
+                            icon.performClick();
+                        }
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        params.x = initialX + (int) (event.getRawX() - initialTouchX);
+                        params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                        windowManager.updateViewLayout(view, params);
+                        return true;
+                }
+                return false;
+            }
+
+            private boolean isClicked(float startX, float endX, float startY, float endY) {
+                float differenceX = Math.abs(startX - endX);
+                float differenceY = Math.abs(startY - endY);
+                if (differenceX >= 5 || differenceY >= 5) {
+                    return false;
+                }
+                return true;
+            }
+        });
+    }
+
+    public static void foundPlayerId() {
+        foundPlayerId = true;
+        PlayerId = Session.getPlayerId();
+        Log.e("Player Id ", "Found!!!" + PlayerId);
     }
 }

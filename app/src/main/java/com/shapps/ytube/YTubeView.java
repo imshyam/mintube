@@ -1,5 +1,6 @@
 package com.shapps.ytube;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -13,17 +14,17 @@ import com.shapps.ytube.YouTube.YouTubeFailureRecoveryActivity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class YTubeView extends YouTubeFailureRecoveryActivity {
+public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity {
 
-    YouTubePlayerView youTubeView;
+//    YouTubePlayerView youTubeView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        youTubeView = new YouTubePlayerView(this);
-
-        Session.setYouTubePlayerView(youTubeView);
+//
+//        youTubeView = new YouTubePlayerView(this);
+//
+//        Session.setYouTubePlayerView(youTubeView);
 
 
         final Intent intent = getIntent();
@@ -73,16 +74,16 @@ public class YTubeView extends YouTubeFailureRecoveryActivity {
         return false;
     }
 
-
-    @Override
-    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
-                                        boolean wasRestored) {
-
-    }
-
-
-    @Override
-    protected YouTubePlayer.Provider getYouTubePlayerProvider() {
-        return youTubeView;
-    }
+//
+//    @Override
+//    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
+//                                        boolean wasRestored) {
+//
+//    }
+//
+//
+//    @Override
+//    protected YouTubePlayer.Provider getYouTubePlayerProvider() {
+//        return youTubeView;
+//    }
 }

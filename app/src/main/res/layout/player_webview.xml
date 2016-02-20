@@ -9,6 +9,12 @@
         android:layout_height="80dp"
         android:src="@drawable/circle"/>
     <RelativeLayout
+        android:id="@+id/null_to_hide"
+        android:layout_marginLeft="80dp"
+        android:layout_width="160dp"
+        android:layout_height="80dp"
+        android:background="#00000000"></RelativeLayout>
+    <RelativeLayout
         android:id="@+id/view_to_hide"
         android:layout_marginTop="80dp"
         android:layout_width="240dp"

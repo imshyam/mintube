@@ -10,6 +10,9 @@ import com.google.android.youtube.player.YouTubePlayerView;
 public class Session{
 
     private static YouTubePlayerView youTubePlayerView;
+    private static String playerId;
+    private static boolean foundPlayerId = false;
+
 
     public Session() {
     }
@@ -27,5 +30,24 @@ public class Session{
     public static void setYouTubePlayerView(YouTubePlayerView View) {
         Log.e("Yo ", " All Set!");
         youTubePlayerView = View;
+    }
+
+    public static void setPlayerId(String playerId) {
+        Session.playerId = playerId;
+        Session.foundPlayerId = true;
+        PlayerService.foundPlayerId();
+    }
+
+    public static String getPlayerId() {
+        return playerId;
+    }
+
+    public static boolean foundPlayerId() {
+        return foundPlayerId;
+    }
+
+    public static void finishWeb() {
+        Session.foundPlayerId = false;
+        Session.playerId = null;
     }
 }
