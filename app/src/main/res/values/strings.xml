@@ -23,4 +23,6 @@
 
     <string name="action_share">Share</string>
     <string name="action_reply">Reply</string>
+    <string name="svg_play">M8,5v14l11,-7z</string>
+    <string name="svg_pause">M6,19h4V5H6v14zm8,-14v14h4V5h-4z</string>
 </resources>

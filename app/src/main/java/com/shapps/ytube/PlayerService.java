@@ -2,6 +2,7 @@ package com.shapps.ytube;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -55,6 +56,8 @@ public class PlayerService extends Service{
     boolean visible = true;
     static RemoteViews viewBig;
     static RemoteViews viewSmall;
+    static NotificationManager notificationManager;
+    static Notification notification;
 
     //if play initializeWith = 1
     //if pause initializeWith = 2
@@ -139,12 +142,11 @@ public class PlayerService extends Service{
 
     public static void startVid(String vId) {
         if(notInitialized) {
+            setImageTitleAuthor(vId);
             initializePlayer(3, vId);
+        } else {
             setImageTitleAuthor(vId);
-        }
-        else {
             player.loadUrl("javascript:" + JavaScript.loadPlayerScript(vId));
-            setImageTitleAuthor(vId);
         }
     }
 
@@ -198,6 +200,7 @@ public class PlayerService extends Service{
         Intent doThings = new Intent(this, PlayerService.class);
 
         //Notification
+        notificationManager = (NotificationManager) getSystemService(this.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
 
                 .setSmallIcon(R.drawable.thumbnail)
@@ -210,7 +213,7 @@ public class PlayerService extends Service{
                         // Automatically dismiss the notification when it is touched.
                 .setAutoCancel(false);
 
-        Notification notification = builder.build();
+        notification = builder.build();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             notification.bigContentView = viewBig;
@@ -231,7 +234,7 @@ public class PlayerService extends Service{
 
         viewBig.setOnClickPendingIntent(R.id.pause_play_video,
                 PendingIntent.getService(getApplicationContext(), 0,
-                        doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION) , 0));
+                        doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION), 0));
 
         //Start Foreground Service
         startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
@@ -383,6 +386,8 @@ public class PlayerService extends Service{
     //Set Image and Headings
     public static void setImageTitleAuthor(String imageTitleAuthor) {
 
+        Log.e("Setting ", "Image, Titlt, Author");
+
         try {
             Bitmap bitmap = new ImageLoadTask("https://i.ytimg.com/vi/" + imageTitleAuthor + "/mqdefault.jpg").execute().get();
             String details = new LoadDetailsTask(
@@ -399,6 +404,8 @@ public class PlayerService extends Service{
 
             viewBig.setTextViewText(R.id.author, author);
             viewSmall.setTextViewText(R.id.author, author);
+
+            notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
