@@ -26,4 +26,9 @@ public class JavaScript {
                 "      window.HtmlViewer.showToast(player.getPlayerState());\n" +
                 "  }";
     }
+
+    public static String getHtmlScript() {
+        return "window.HtmlViewer.showHTML" +
+                "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');";
+    }
 }

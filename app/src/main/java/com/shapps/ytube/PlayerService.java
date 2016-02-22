@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,8 +27,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
 
+import com.shapps.ytube.AsyncTask.ImageLoadTask;
+import com.shapps.ytube.AsyncTask.LoadDetailsTask;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by shyam on 12/2/16.
@@ -44,6 +53,8 @@ public class PlayerService extends Service{
     static boolean isVideoPlaying = true;
     static boolean notInitialized = true;
     boolean visible = true;
+    static RemoteViews viewBig;
+    static RemoteViews viewSmall;
 
     //if play initializeWith = 1
     //if pause initializeWith = 2
@@ -129,9 +140,11 @@ public class PlayerService extends Service{
     public static void startVid(String vId) {
         if(notInitialized) {
             initializePlayer(3, vId);
+            setImageTitleAuthor(vId);
         }
         else {
             player.loadUrl("javascript:" + JavaScript.loadPlayerScript(vId));
+            setImageTitleAuthor(vId);
         }
     }
 
@@ -171,12 +184,12 @@ public class PlayerService extends Service{
         }
 
         //Notification
-        RemoteViews viewBig = new RemoteViews(
+        viewBig = new RemoteViews(
                 this.getPackageName(),
                 R.layout.notification_large
         );
 
-        RemoteViews viewSmall = new RemoteViews(
+        viewSmall = new RemoteViews(
                 this.getPackageName(),
                 R.layout.notification_small
         );
@@ -202,6 +215,9 @@ public class PlayerService extends Service{
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             notification.bigContentView = viewBig;
         }
+
+        //Set Image and Headings
+        setImageTitleAuthor(VID_ID);
 
         //stop Service using doThings Intent
         viewSmall.setOnClickPendingIntent(R.id.stop_service,
@@ -254,8 +270,7 @@ public class PlayerService extends Service{
                                     }
                                     @Override
                                     public void onPageFinished(WebView view, String url) {
-                                        player.loadUrl("javascript:window.HtmlViewer.showHTML" +
-                                                "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');");
+                                        player.loadUrl("javascript:" + JavaScript.getHtmlScript());
                                     }
                                 }
         );
@@ -273,8 +288,7 @@ public class PlayerService extends Service{
                 public void run() {
                     Log.e("5 sec later : ", "HTML is ...");
 
-                    player.loadUrl("javascript:window.HtmlViewer.showHTML" +
-                            "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');");
+                    player.loadUrl("javascript:"+JavaScript.getHtmlScript());
 
                 }
             }, 5000);
@@ -364,5 +378,36 @@ public class PlayerService extends Service{
         foundPlayerId = true;
         PlayerId = Session.getPlayerId();
         Log.e("Player Id ", "Found!!!" + PlayerId);
+    }
+
+    //Set Image and Headings
+    public static void setImageTitleAuthor(String imageTitleAuthor) {
+
+        try {
+            Bitmap bitmap = new ImageLoadTask("https://i.ytimg.com/vi/" + imageTitleAuthor + "/mqdefault.jpg").execute().get();
+            String details = new LoadDetailsTask(
+                    "https://www.youtube.com/oembed?url=http://www.youtu.be/watch?v=" + imageTitleAuthor + "&format=json")
+                    .execute().get();
+            JSONObject detailsJson = new JSONObject(details);
+            String title = detailsJson.getString("title");
+            String author = detailsJson.getString("author_name");
+
+            viewBig.setImageViewBitmap(R.id.thumbnail, bitmap);
+            viewSmall.setImageViewBitmap(R.id.thumbnail, bitmap);
+
+            viewBig.setTextViewText(R.id.title, title);
+
+            viewBig.setTextViewText(R.id.author, author);
+            viewSmall.setTextViewText(R.id.author, author);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
