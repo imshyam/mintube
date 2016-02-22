@@ -3,7 +3,7 @@
         android:height="24dp"
         android:viewportWidth="24.0"
         android:viewportHeight="24.0">
-    <path
-        android:fillColor="#FFF"
-        android:pathData="@string/svg_pause"/>
+        <path
+            android:fillColor="#FFF"
+            android:pathData="@string/svg_pause"/>
 </vector>

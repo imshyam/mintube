@@ -50,7 +50,7 @@
                 android:id="@+id/pause_play_video"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_play"
+                android:src="@drawable/ic_pause"
                 android:layout_weight="1"/>
             <ImageView
                 android:layout_width="0dp"

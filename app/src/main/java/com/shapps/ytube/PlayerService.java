@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -66,10 +68,23 @@ public class PlayerService extends Service{
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == 1){
             isVideoPlaying = true;
+            viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
+            viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
         }
         else if(playingStatus == 2) {
             isVideoPlaying = false;
+            viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_play);
+            viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_play);
         }
+        else if(playingStatus == 0) {
+            isVideoPlaying = false;
+            viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+            viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+        }
+        notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
+//        if (drawable0 instanceof Animatable) {
+//            ((Animatable) drawable0).start();
+//        }
     }
 
 
