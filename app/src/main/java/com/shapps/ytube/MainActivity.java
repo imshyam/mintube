@@ -1,5 +1,7 @@
 package com.shapps.ytube;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -63,6 +65,16 @@ public class MainActivity extends AppCompatActivity {
                         String url = String.valueOf(request.getUrl());
                         String VID = url.substring(url.indexOf("&v=") + 3, url.length());
                         Log.e("VID ", VID);
+                        if (isServiceRunning(PlayerService.class)) {
+                            Log.e("Service : ", "Already Running!");
+                            PlayerService.startVid(VID);
+                        }
+                        else {
+                            Intent i = new Intent(MainActivity.this, PlayerService.class);
+                            i.putExtra("VID_ID", VID);
+                            i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+                            startService(i);
+                        }
                         Handler handler = new Handler(getMainLooper());
                         handler.post(new Runnable() {
                             @Override
@@ -80,6 +92,15 @@ public class MainActivity extends AppCompatActivity {
         youtubeView.canGoBack();
         youtubeView.loadUrl("http://m.youtube.com");
 
+    }
+    private boolean isServiceRunning(Class<PlayerService> playerServiceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (playerServiceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
