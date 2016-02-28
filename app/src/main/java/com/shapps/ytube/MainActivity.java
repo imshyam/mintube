@@ -63,13 +63,9 @@ public class MainActivity extends AppCompatActivity {
                     if (String.valueOf(request.getUrl()).contains("http://m.youtube.com/watch?") || String.valueOf(request.getUrl()).contains("https://m.youtube.com/watch?")) {
                         Log.e("Yay ", "Catches!!!!");
                         String url = String.valueOf(request.getUrl());
-                        String VID = url.substring(url.indexOf("&v=") + 3, url.length());
+                        final String VID = url.substring(url.indexOf("&v=") + 3, url.length());
                         Log.e("VID ", VID);
-                        if (isServiceRunning(PlayerService.class)) {
-                            Log.e("Service : ", "Already Running!");
-                            PlayerService.startVid(VID);
-                        }
-                        else {
+                        if (!isServiceRunning(PlayerService.class)) {
                             Intent i = new Intent(MainActivity.this, PlayerService.class);
                             i.putExtra("VID_ID", VID);
                             i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
@@ -79,6 +75,10 @@ public class MainActivity extends AppCompatActivity {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
+                                if(isServiceRunning(PlayerService.class)){
+                                    Log.e("Service : ", "Already Running!");
+                                    PlayerService.startVid(VID);
+                                }
                                 youtubeView.stopLoading();
                                 youtubeView.goBack();
 
