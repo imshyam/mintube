@@ -28,14 +28,13 @@ public class Session{
     }
 
     public static void setYouTubePlayerView(YouTubePlayerView View) {
-        Log.e("Yo ", " All Set!");
         youTubePlayerView = View;
     }
 
     public static void setPlayerId(String playerId) {
         Session.playerId = playerId;
         Session.foundPlayerId = true;
-        PlayerService.foundPlayerId();
+        Log.e("Setting ", " Player Id!!");
     }
 
     public static String getPlayerId() {

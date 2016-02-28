@@ -28,7 +28,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".YTubeView"
-            android:excludeFromRecents="true"
             android:label="@string/add_ytube"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>

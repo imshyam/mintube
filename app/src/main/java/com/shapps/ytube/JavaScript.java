@@ -28,7 +28,7 @@ public class JavaScript {
     }
 
     public static String getHtmlScript() {
-        return "window.HtmlViewer.showHTML" +
-                "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;');";
+        return "javascript:window.HtmlViewer.showHTML" +
+                "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;', player);";
     }
 }

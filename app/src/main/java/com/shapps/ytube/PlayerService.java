@@ -51,8 +51,6 @@ public class PlayerService extends Service{
     View view;
     static WebView player;
     String VID_ID = "RgKAFK5djSk";
-    static String PlayerId = "not yet";
-    static boolean foundPlayerId = false;
     static boolean isVideoPlaying = true;
     static boolean notInitialized = true;
     boolean visible = true;
@@ -119,12 +117,14 @@ public class PlayerService extends Service{
         }
 
         else if(intent.getAction().equals(Constants.ACTION.PAUSE_PLAY_ACTION)){
+            Log.e("IsVideoPlating : ", String.valueOf(isVideoPlaying));
             if(isVideoPlaying) {
                 Log.i("Trying To Pause Video ", "...");
                 if(notInitialized) {
                     initializePlayer(2, null);
                 }
                 else {
+                    Log.e("No need ", "To initialize!!");
                     player.loadUrl("javascript:" + JavaScript.pauseVideoScript());
                 }
             }
@@ -134,6 +134,7 @@ public class PlayerService extends Service{
                     initializePlayer(1, null);
                 }
                 else {
+                    Log.e("No need ", "To initialize!!");
                     player.loadUrl("javascript:" + JavaScript.playVideoScript());
                 }
             }
@@ -144,8 +145,8 @@ public class PlayerService extends Service{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        foundPlayerId = false;
         notInitialized = true;
+        isVideoPlaying = true;
         Session.finishWeb();
         Log.i("Status", "Destroyed!");
         if (view != null) {
@@ -160,6 +161,7 @@ public class PlayerService extends Service{
             setImageTitleAuthor(vId);
             initializePlayer(3, vId);
         } else {
+            Log.e("No need ", "To initialize!!");
             setImageTitleAuthor(vId);
             player.loadUrl("javascript:" + JavaScript.loadPlayerScript(vId));
         }
@@ -167,25 +169,25 @@ public class PlayerService extends Service{
 
     private static void initializePlayer(int type, String vId) {
         if(type == 1) {
-            if (foundPlayerId) {
+            if (Session.foundPlayerId()) {
                 Log.e("Player ", "Initialized");
-                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(PlayerId) +
+                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(Session.getPlayerId()) +
                         JavaScript.playVideoScript());
                 notInitialized = false;
             }
         }
         if(type == 2) {
-            if (foundPlayerId) {
+            if (Session.foundPlayerId()) {
                 Log.e("Player ", "Initialized");
-                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(PlayerId) +
+                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(Session.getPlayerId()) +
                         JavaScript.pauseVideoScript());
                 notInitialized = false;
             }
         }
         if(type == 3) {
-            if (foundPlayerId) {
+            if (Session.foundPlayerId()) {
                 Log.e("Player ", "Initialized");
-                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(PlayerId) +
+                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(Session.getPlayerId()) +
                         JavaScript.loadPlayerScript(vId));
                 notInitialized = false;
             }
@@ -288,29 +290,28 @@ public class PlayerService extends Service{
                                     }
                                     @Override
                                     public void onPageFinished(WebView view, String url) {
-                                        player.loadUrl("javascript:" + JavaScript.getHtmlScript());
+                                        player.loadUrl(JavaScript.getHtmlScript());
                                     }
                                 }
         );
 
-        foundPlayerId = Session.foundPlayerId();
-        if(foundPlayerId == true) {
-            PlayerId = Session.getPlayerId();
-            Log.i("Yaiks!!!" , "Found Player Id.");
-        }
-        else{
-            Log.i("Oops!!", "trying Again");
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.e("5 sec later : ", "HTML is ...");
-
-                    player.loadUrl("javascript:"+JavaScript.getHtmlScript());
-
-                }
-            }, 5000);
-        }
+//        if(Session.foundPlayerId() == true) {
+//            Log.i("Yaiks!!!" , "Found Player Id.");
+//        }
+//        else{
+//            Log.i("Oops!!", "trying Again");
+//            final Handler handler = new Handler();
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Log.e("5 sec later : ", "HTML is ...");
+//
+//                    player.loadUrl("javascript:"+JavaScript.getHtmlScript());
+//
+//                }
+//            }, 1000);
+//
+//        }
         //------------------------------Got Player Id--------------------------------------------------------
         Map hashMap = new HashMap();
         hashMap.put("Referer", "http://www.youtube.com");
@@ -392,16 +393,10 @@ public class PlayerService extends Service{
         });
     }
 
-    public static void foundPlayerId() {
-        foundPlayerId = true;
-        PlayerId = Session.getPlayerId();
-        Log.e("Player Id ", "Found!!!" + PlayerId);
-    }
-
     //Set Image and Headings
     public static void setImageTitleAuthor(String imageTitleAuthor) {
 
-        Log.e("Setting ", "Image, Titlt, Author");
+        Log.e("Setting ", "Image, Title, Author");
 
         try {
             Bitmap bitmap = new ImageLoadTask("https://i.ytimg.com/vi/" + imageTitleAuthor + "/mqdefault.jpg").execute().get();
@@ -431,5 +426,10 @@ public class PlayerService extends Service{
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void tryAgainForPID() {
+        Log.e("Trying Again : ", ":(");
+        player.loadUrl(JavaScript.getHtmlScript());
     }
 }
