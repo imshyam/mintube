@@ -17,6 +17,11 @@ public class Constants {
 
     //Repeat song or not
     public  static  boolean repeat = false;
+    public  static  String vIdToRepeat = "";
+
+    public static void setItsAPlaylist() {
+        linkType = 1;
+    }
 
     //Actions
     public interface ACTION {

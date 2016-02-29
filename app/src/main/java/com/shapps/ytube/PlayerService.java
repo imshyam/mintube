@@ -9,11 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -51,23 +48,32 @@ public class PlayerService extends Service{
     View view;
     static WebView player;
     String VID_ID = "RgKAFK5djSk";
+    String PLIST_ID = "RgKAFK5djSk";
     static boolean isVideoPlaying = true;
-    static boolean notInitialized = true;
     boolean visible = true;
     static RemoteViews viewBig;
     static RemoteViews viewSmall;
     static NotificationManager notificationManager;
     static Notification notification;
 
+    static boolean nextVid = false;
+
     //if play initializeWith = 1
     //if pause initializeWith = 2
     //if loadVideo initializeWith = 3
+    //if next video initialize with = 4
+    //if prev video initialize with = 5
+
 
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == 1){
             isVideoPlaying = true;
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
+            if(nextVid){
+                nextVid = false;
+                player.loadUrl(JavaScript.getVidUpdateNotiContent());
+            }
         }
         else if(playingStatus == 2) {
             isVideoPlaying = false;
@@ -75,9 +81,14 @@ public class PlayerService extends Service{
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_play);
         }
         else if(playingStatus == 0) {
-            isVideoPlaying = false;
-            viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
-            viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+            if(Constants.linkType == 1) {
+                player.loadUrl(JavaScript.nextVideo());
+                nextVid = true;
+            }
+            else {
+                viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+                viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+            }
         }
         notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
 //        if (drawable0 instanceof Animatable) {
@@ -117,27 +128,24 @@ public class PlayerService extends Service{
         }
 
         else if(intent.getAction().equals(Constants.ACTION.PAUSE_PLAY_ACTION)){
-            Log.e("IsVideoPlating : ", String.valueOf(isVideoPlaying));
             if(isVideoPlaying) {
-                Log.i("Trying To Pause Video ", "...");
-                if(notInitialized) {
-                    initializePlayer(2, null);
-                }
-                else {
-                    Log.e("No need ", "To initialize!!");
-                    player.loadUrl("javascript:" + JavaScript.pauseVideoScript());
-                }
+                Log.i("Trying to ", "Pause Video");
+                player.loadUrl(JavaScript.pauseVideoScript());
             }
             else{
-                Log.i("Trying To Play Video ", "...");
-                if(notInitialized) {
-                    initializePlayer(1, null);
-                }
-                else {
-                    Log.e("No need ", "To initialize!!");
-                    player.loadUrl("javascript:" + JavaScript.playVideoScript());
-                }
+                Log.i("Trying to ", "Play Video");
+                player.loadUrl(JavaScript.playVideoScript());
             }
+        }
+        else if(intent.getAction().equals(Constants.ACTION.NEXT_ACTION)){
+            Log.e("Trying to ", "Play Next");
+            player.loadUrl(JavaScript.nextVideo());
+            nextVid = true;
+        }
+        else if(intent.getAction().equals(Constants.ACTION.PREV_ACTION)){
+            Log.e("Trying to ", "Play Previous");
+            player.loadUrl(JavaScript.prevVideo());
+            nextVid = true;
         }
 
         return START_NOT_STICKY;
@@ -145,7 +153,6 @@ public class PlayerService extends Service{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        notInitialized = true;
         isVideoPlaying = true;
         Session.finishWeb();
         Log.i("Status", "Destroyed!");
@@ -156,41 +163,15 @@ public class PlayerService extends Service{
         }
     }
 
-    public static void startVid(String vId) {
-        if(notInitialized) {
+    public static void startVid(String vId, String pId) {
+        if(pId==null) {
             setImageTitleAuthor(vId);
-            initializePlayer(3, vId);
-        } else {
-            Log.e("No need ", "To initialize!!");
+            player.loadUrl(JavaScript.loadVideoScript(vId));
+        }
+        else{
+            Log.e("Starting ", "Playlist.");
             setImageTitleAuthor(vId);
-            player.loadUrl("javascript:" + JavaScript.loadPlayerScript(vId));
-        }
-    }
-
-    private static void initializePlayer(int type, String vId) {
-        if(type == 1) {
-            if (Session.foundPlayerId()) {
-                Log.e("Player ", "Initialized");
-                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(Session.getPlayerId()) +
-                        JavaScript.playVideoScript());
-                notInitialized = false;
-            }
-        }
-        if(type == 2) {
-            if (Session.foundPlayerId()) {
-                Log.e("Player ", "Initialized");
-                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(Session.getPlayerId()) +
-                        JavaScript.pauseVideoScript());
-                notInitialized = false;
-            }
-        }
-        if(type == 3) {
-            if (Session.foundPlayerId()) {
-                Log.e("Player ", "Initialized");
-                player.loadUrl("javascript:" + JavaScript.initializePlayerScript(Session.getPlayerId()) +
-                        JavaScript.loadPlayerScript(vId));
-                notInitialized = false;
-            }
+            player.loadUrl(JavaScript.loadPlaylistScript(pId));
         }
     }
 
@@ -200,6 +181,7 @@ public class PlayerService extends Service{
 
         if (b != null) {
             VID_ID = b.getString("VID_ID");
+            PLIST_ID = b.getString("PLAYLIST_ID");
         }
 
         //Notification
@@ -242,9 +224,9 @@ public class PlayerService extends Service{
         //stop Service using doThings Intent
         viewSmall.setOnClickPendingIntent(R.id.stop_service,
                 PendingIntent.getService(getApplicationContext(), 0,
-                        doThings.setAction(Constants.ACTION.STOPFOREGROUND_WEB_ACTION) , 0));
+                        doThings.setAction(Constants.ACTION.STOPFOREGROUND_WEB_ACTION), 0));
 
-        //Pause Video using doThings Intent
+        //Pause, Play Video using doThings Intent
         viewSmall.setOnClickPendingIntent(R.id.pause_play_video,
                 PendingIntent.getService(getApplicationContext(), 0,
                         doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION) , 0));
@@ -252,6 +234,20 @@ public class PlayerService extends Service{
         viewBig.setOnClickPendingIntent(R.id.pause_play_video,
                 PendingIntent.getService(getApplicationContext(), 0,
                         doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION), 0));
+
+        //Next Video using doThings Intent
+        viewSmall.setOnClickPendingIntent(R.id.next_video,
+                PendingIntent.getService(getApplicationContext(), 0,
+                        doThings.setAction(Constants.ACTION.NEXT_ACTION) , 0));
+
+        viewBig.setOnClickPendingIntent(R.id.next_video,
+                PendingIntent.getService(getApplicationContext(), 0,
+                        doThings.setAction(Constants.ACTION.NEXT_ACTION) , 0));
+
+        //Previous Video using doThings Intent
+        viewBig.setOnClickPendingIntent(R.id.previous_video,
+                PendingIntent.getService(getApplicationContext(), 0,
+                        doThings.setAction(Constants.ACTION.PREV_ACTION) , 0));
 
         //Start Foreground Service
         startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
@@ -294,30 +290,19 @@ public class PlayerService extends Service{
                                     }
                                 }
         );
-
-//        if(Session.foundPlayerId() == true) {
-//            Log.i("Yaiks!!!" , "Found Player Id.");
-//        }
-//        else{
-//            Log.i("Oops!!", "trying Again");
-//            final Handler handler = new Handler();
-//            handler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Log.e("5 sec later : ", "HTML is ...");
-//
-//                    player.loadUrl("javascript:"+JavaScript.getHtmlScript());
-//
-//                }
-//            }, 1000);
-//
-//        }
         //------------------------------Got Player Id--------------------------------------------------------
         Map hashMap = new HashMap();
         hashMap.put("Referer", "http://www.youtube.com");
-        player.loadUrl("https://www.youtube.com/embed/" + VID_ID
-                + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&playlist=" + VID_ID
-                , hashMap);
+        if(Constants.linkType == 1) {
+            player.loadUrl("https://www.youtube.com/embed/" + VID_ID
+                    + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&list=" + PLIST_ID
+                    , hashMap);
+        }
+        else {
+            player.loadUrl("https://www.youtube.com/embed/" + VID_ID
+                    + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&playlist=" + VID_ID
+                    , hashMap);
+        }
 
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -394,14 +379,14 @@ public class PlayerService extends Service{
     }
 
     //Set Image and Headings
-    public static void setImageTitleAuthor(String imageTitleAuthor) {
+    public static void setImageTitleAuthor(String videoId) {
 
         Log.e("Setting ", "Image, Title, Author");
 
         try {
-            Bitmap bitmap = new ImageLoadTask("https://i.ytimg.com/vi/" + imageTitleAuthor + "/mqdefault.jpg").execute().get();
+            Bitmap bitmap = new ImageLoadTask("https://i.ytimg.com/vi/" + videoId + "/mqdefault.jpg").execute().get();
             String details = new LoadDetailsTask(
-                    "https://www.youtube.com/oembed?url=http://www.youtu.be/watch?v=" + imageTitleAuthor + "&format=json")
+                    "https://www.youtube.com/oembed?url=http://www.youtu.be/watch?v=" + videoId + "&format=json")
                     .execute().get();
             JSONObject detailsJson = new JSONObject(details);
             String title = detailsJson.getString("title");
@@ -431,5 +416,10 @@ public class PlayerService extends Service{
     public static void tryAgainForPID() {
         Log.e("Trying Again : ", ":(");
         player.loadUrl(JavaScript.getHtmlScript());
+    }
+
+    public static void InitializePlayer() {
+        Log.e("Initializing ", Session.getPlayerId());
+        player.loadUrl(JavaScript.initializePlayerScript(Session.getPlayerId()));
     }
 }

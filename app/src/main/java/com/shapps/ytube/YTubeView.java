@@ -47,7 +47,7 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             Log.e("Video Id : ", vId);
             if (isServiceRunning(PlayerService.class)) {
                 Log.e("Service : ", "Already Running!");
-                PlayerService.startVid(vId);
+                PlayerService.startVid(vId, null);
                 finish();
             } else {
                 Intent i = new Intent(this, PlayerService.class);

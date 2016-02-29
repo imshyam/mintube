@@ -32,6 +32,12 @@ class GetHtmlInterface {
             Log.e("Player Id ", PlayerId);
             foundPlayerId = true;
             Session.setPlayerId(PlayerId);
+            handlerForJavascriptInterface.post(new Runnable() {
+                @Override
+                public void run() {
+                    PlayerService.InitializePlayer();
+                }
+            });
         }
         else {
             Log.e("Fuck it ", "Man!!!");
@@ -45,9 +51,24 @@ class GetHtmlInterface {
 
     }
     @JavascriptInterface
-    public void showToast(final int status) {
+    public void showPlayerState (final int status) {
         Log.e("Player Status ", String.valueOf(status));
-        PlayerService.setPlayingStatus(status);
+        handlerForJavascriptInterface.post(new Runnable() {
+            @Override
+            public void run() {
+                PlayerService.setPlayingStatus(status);
+            }
+        });
+    }
+    @JavascriptInterface
+    public void showVID (final String vId) {
+        Log.e("New Video Id ", vId);
+        handlerForJavascriptInterface.post(new Runnable() {
+            @Override
+            public void run() {
+                PlayerService.setImageTitleAuthor(vId);
+            }
+        });
     }
 
 }

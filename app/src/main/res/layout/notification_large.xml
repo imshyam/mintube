@@ -42,6 +42,7 @@
             android:orientation="horizontal"
             android:weightSum="3">
             <ImageView
+                android:id="@+id/previous_video"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_skip_previous"
@@ -53,6 +54,7 @@
                 android:src="@drawable/ic_pause"
                 android:layout_weight="1"/>
             <ImageView
+                android:id="@+id/next_video"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_skip_next"
