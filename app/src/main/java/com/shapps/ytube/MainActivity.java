@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                         //Playlist Id
                         final String listID = url.substring(url.indexOf("&list=") + 6, url.length());
                         Pattern pattern = Pattern.compile(
-                                "([A-Za-z0-9_]+)&[\\w]+=.*",
+                                "([A-Za-z0-9_-]+)&[\\w]+=.*",
                                 Pattern.CASE_INSENSITIVE);
                         Matcher matcher = pattern.matcher(listID.toString());
                         Log.e("ListID", listID);

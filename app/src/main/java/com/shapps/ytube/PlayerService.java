@@ -47,8 +47,8 @@ public class PlayerService extends Service{
     WindowManager windowManager;
     View view;
     static WebView player;
-    String VID_ID = "RgKAFK5djSk";
-    String PLIST_ID = "RgKAFK5djSk";
+    static String VID_ID = "";
+    String PLIST_ID = "";
     static boolean isVideoPlaying = true;
     boolean visible = true;
     static RemoteViews viewBig;
@@ -68,6 +68,9 @@ public class PlayerService extends Service{
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             if(nextVid){
                 nextVid = false;
+                player.loadUrl(JavaScript.getVidUpdateNotiContent());
+            }
+            if(VID_ID.length() < 1){
                 player.loadUrl(JavaScript.getVidUpdateNotiContent());
             }
         }
@@ -160,14 +163,14 @@ public class PlayerService extends Service{
     }
 
     public static void startVid(String vId, String pId) {
-        if(pId==null) {
+        if(pId == null) {
             setImageTitleAuthor(vId);
             player.loadUrl(JavaScript.loadVideoScript(vId));
         }
         else{
+            player.loadUrl(JavaScript.loadPlaylistScript(pId));
             Log.e("Starting ", "Playlist.");
             setImageTitleAuthor(vId);
-            player.loadUrl(JavaScript.loadPlaylistScript(pId));
         }
     }
 
@@ -290,13 +293,13 @@ public class PlayerService extends Service{
         Map hashMap = new HashMap();
         hashMap.put("Referer", "http://www.youtube.com");
         if(Constants.linkType == 1) {
-            player.loadUrl("https://www.youtube.com/embed/" + VID_ID
+            player.loadUrl("https://www.youtube.com/embed/"
                     + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&list=" + PLIST_ID
                     , hashMap);
         }
         else {
             player.loadUrl("https://www.youtube.com/embed/" + VID_ID
-                    + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&playlist=" + VID_ID
+                    + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1"
                     , hashMap);
         }
 

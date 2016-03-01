@@ -35,8 +35,8 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             } else {
                 link = intent.getStringExtra("android.intent.extra.TEXT");
             }
-            Log.e("Link : ", link);
-            String vId = "RgKAFK5djSk";
+            Log.e("Link : ", link.toString());
+            String vId = "";
             Pattern pattern = Pattern.compile(
                     "^https?://.*(?:youtu.be/|v/|u/\\\\w/|embed/|watch[?]v=)([^#&?]*).*$",
                     Pattern.CASE_INSENSITIVE);
@@ -45,13 +45,28 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
                 vId = matcher.group(1);
             }
             Log.e("Video Id : ", vId);
+            //Getting Playlist id
+            final String listID = link.substring(link.indexOf("http") + 4, link.length());
+            Log.e("List ID Is : ", listID);
+            String pId = null;
+            String regex = ".*list=([A-Za-z0-9_-]+).*?";
+            pattern = Pattern.compile(regex,
+                    Pattern.CASE_INSENSITIVE);
+            matcher = pattern.matcher(link.toString());
+            if (matcher.matches()) {
+                pId = matcher.group(1);
+                Log.e("PID Is : ", pId);
+                Constants.setItsAPlaylist();
+            }
+
             if (isServiceRunning(PlayerService.class)) {
                 Log.e("Service : ", "Already Running!");
-                PlayerService.startVid(vId, null);
+                PlayerService.startVid(vId, pId);
                 finish();
             } else {
                 Intent i = new Intent(this, PlayerService.class);
                 i.putExtra("VID_ID", vId);
+                i.putExtra("PLAYLIST_ID", pId);
                 i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
                 startService(i);
                 finish();
