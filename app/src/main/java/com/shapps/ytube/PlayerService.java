@@ -58,14 +58,10 @@ public class PlayerService extends Service{
 
     static boolean nextVid = false;
 
-    //if play initializeWith = 1
-    //if pause initializeWith = 2
-    //if loadVideo initializeWith = 3
-    //if next video initialize with = 4
-    //if prev video initialize with = 5
-
-
     public static void setPlayingStatus(int playingStatus) {
+        if(playingStatus == -1){
+            nextVid = true;
+        }
         if(playingStatus == 1){
             isVideoPlaying = true;
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
