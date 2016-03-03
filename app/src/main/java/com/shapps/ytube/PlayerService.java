@@ -213,13 +213,23 @@ public class PlayerService extends Service{
         }
         else if(intent.getAction().equals(Constants.ACTION.NEXT_ACTION)){
             Log.e("Trying to ", "Play Next");
-            player.loadUrl(JavaScript.nextVideo());
-            nextVid = true;
+            if(Constants.linkType == 0){
+                player.loadUrl(JavaScript.seekToZero());
+            }
+            else {
+                player.loadUrl(JavaScript.nextVideo());
+                nextVid = true;
+            }
         }
         else if(intent.getAction().equals(Constants.ACTION.PREV_ACTION)){
             Log.e("Trying to ", "Play Previous");
-            player.loadUrl(JavaScript.prevVideo());
-            nextVid = true;
+            if(Constants.linkType == 0){
+                player.loadUrl(JavaScript.seekToZero());
+            }
+            else {
+                player.loadUrl(JavaScript.prevVideo());
+                nextVid = true;
+            }
         }
 
         return START_NOT_STICKY;
