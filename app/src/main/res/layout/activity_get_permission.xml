@@ -22,6 +22,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <include layout="@layout/content_get_permission" />
 
 </android.support.design.widget.CoordinatorLayout>

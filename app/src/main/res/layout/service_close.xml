@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="100dp"
+    android:layout_height="100dp">
+
+    <RelativeLayout
+        android:id="@+id/close_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:gravity="center">
+        <com.shapps.ytube.CustomViews.CircularImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:civ_border_width="2dp"
+            android:src="@drawable/ic_close"
+            app:civ_border_color="#bbb"/>
+    </RelativeLayout>
+</FrameLayout>

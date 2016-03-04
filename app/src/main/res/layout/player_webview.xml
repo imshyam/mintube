@@ -2,15 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-
-    <ImageView
-        android:id="@+id/song_icon"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/circle"/>
     <RelativeLayout
         android:id="@+id/view_to_hide"
-        android:layout_marginTop="80dp"
         android:layout_width="240dp"
         android:layout_height="210dp">
         <ImageView

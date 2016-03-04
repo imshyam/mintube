@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,39 +14,60 @@ import java.util.regex.Pattern;
  */
 class GetHtmlInterface {
     Context context;
-    static String PlayerId;
+    static String PlayerId = "";
     static boolean foundPlayerId;
     static Handler handlerForJavascriptInterface = new Handler();
     public GetHtmlInterface(PlayerService playerService) {
         this.context = playerService;
     }
 
-    public static String getPlayerId() {
-        return PlayerId;
-    }
-
     @JavascriptInterface
-    public void showHTML(final String html)
-    {
-        handlerForJavascriptInterface.post(new Runnable()
-                                           {
-                                               @Override
-                                               public void run()
-                                               {
-                                                   Pattern pattern = Pattern.compile(
-                                                           ".*\\n.*(player_uid_\\d+_1).*\\n.*",Pattern.CASE_INSENSITIVE);
-                                                   Matcher matcher = pattern.matcher(html);
-                                                   if (matcher.matches()) {
-                                                       PlayerId = matcher.group(1);
-                                                       foundPlayerId = true;
-                                                   }
-                                                   Log.e("Player Id ", PlayerId);
-                                               }
-                                           }
-        );
+    public void showHTML(final String html, WebView player) {
+        Pattern pattern = Pattern.compile(
+                ".*\\n.*(player_uid_\\d+_1).*\\n.*",Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(html);
+        if (matcher.matches()) {
+            PlayerId = matcher.group(1);
+            Log.e("Player Id ", PlayerId);
+            foundPlayerId = true;
+            Session.setPlayerId(PlayerId);
+            handlerForJavascriptInterface.post(new Runnable() {
+                @Override
+                public void run() {
+                    PlayerService.InitializePlayer();
+                }
+            });
+        }
+        else {
+            Log.e("Fuck it ", "Man!!!");
+            handlerForJavascriptInterface.post(new Runnable() {
+                @Override
+                public void run() {
+                    PlayerService.tryAgainForPlayerID();
+                }
+            });
+        }
+
+    }
+    @JavascriptInterface
+    public void showPlayerState (final int status) {
+        Log.e("Player Status ", String.valueOf(status));
+        handlerForJavascriptInterface.post(new Runnable() {
+            @Override
+            public void run() {
+                PlayerService.setPlayingStatus(status);
+            }
+        });
+    }
+    @JavascriptInterface
+    public void showVID (final String vId) {
+        Log.e("New Video Id ", vId);
+        handlerForJavascriptInterface.post(new Runnable() {
+            @Override
+            public void run() {
+                PlayerService.setImageTitleAuthor(vId);
+            }
+        });
     }
 
-    public static boolean foundPlayerId() {
-        return foundPlayerId;
-    }
 }
