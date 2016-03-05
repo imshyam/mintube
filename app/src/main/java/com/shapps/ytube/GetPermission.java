@@ -68,7 +68,7 @@ public class GetPermission extends AppCompatActivity {
     private void needPermissionDialog(final int requestCode) {
         if(requestCode == OVERLAY_PERMISSION_REQ_CODE) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("You need to allow permission.");
+            builder.setMessage("You need to grant the permission.");
             builder.setPositiveButton("OK",
                     new android.content.DialogInterface.OnClickListener() {
                         @Override
