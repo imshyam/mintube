@@ -13,6 +13,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -350,7 +351,9 @@ public class PlayerService extends Service{
 
         param_player.gravity = Gravity.TOP | Gravity.LEFT;
         param_player.x = 0;
-        param_player.y = 240;
+        param_player.y = 235;
+
+        Log.e("Dp To Px", String.valueOf(dpToPx(80)));
 
         Log.e("Chat Size,Player Param ", chatHeadImage.getHeight() + " " + param_player.y);
 
@@ -367,6 +370,7 @@ public class PlayerService extends Service{
                 PixelFormat.TRANSLUCENT);
         param_close.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
 
+        serviceClose.setVisibility(View.GONE);
         windowManager.addView(serviceClose, param_close);
 
         chatHeadImage.setOnClickListener(new View.OnClickListener() {
@@ -397,16 +401,26 @@ public class PlayerService extends Service{
             public boolean onTouch(View v, MotionEvent event) {
                 WindowManager.LayoutParams params = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
                 WindowManager.LayoutParams param_player = (WindowManager.LayoutParams) player_view.getLayoutParams();
+                Handler handleLongTouch = new Handler();
+                Runnable setVisible = new Runnable() {
+                    @Override
+                    public void run() {
+                        serviceClose.setVisibility(View.VISIBLE);
+                    }
+                };
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         initialX = params.x;
                         initialY = params.y;
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
+                        handleLongTouch.postDelayed(setVisible, 500);
                         return true;
                     case MotionEvent.ACTION_UP:
                         finalTouchX = event.getRawX();
                         finalTouchY = event.getRawY();
+                        handleLongTouch.removeCallbacksAndMessages(null);
+                        serviceClose.setVisibility(View.GONE);
                         if (isClicked(initialTouchX, finalTouchX, initialTouchY, finalTouchY)) {
                             chatHeadImage.performClick();
                         }
@@ -414,9 +428,19 @@ public class PlayerService extends Service{
                     case MotionEvent.ACTION_MOVE:
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                        if(params.x >= 0) {
+                            param_player.x = params.x;
+                        }
+                        else {
+                            params.x = 0;
+                        }
+                        if(params.y >= 0) {
+                            param_player.y = params.y + chatHeadImage.getHeight();
+                        }
+                        else {
+                            params.y = 0;
+                        }
                         windowManager.updateViewLayout(serviceHead, params);
-                        param_player.x = params.x;
-                        param_player.y = params.y + chatHeadImage.getHeight();
                         if(visible) {
                             windowManager.updateViewLayout(player_view, param_player);
                         }
@@ -434,6 +458,12 @@ public class PlayerService extends Service{
                 return true;
             }
         });
+    }
+
+    private int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
     }
 
     //Set Image and Headings

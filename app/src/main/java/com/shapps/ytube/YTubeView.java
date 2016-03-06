@@ -93,7 +93,7 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
         }
         else {
             Intent i = new Intent(this, PlayerService.class);
-            i.putExtra("VID_ID", "w7lNCCSFowk");
+            i.putExtra("VID_ID", "nIkFW78x6UA");
             i.putExtra("PLAYLIST_ID", (String[]) null);
             i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
             startService(i);
@@ -111,7 +111,7 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
                     finish();
                 }else{
                     Intent i = new Intent(this, PlayerService.class);
-                    i.putExtra("VID_ID", "w7lNCCSFowk");
+                    i.putExtra("VID_ID", "nIkFW78x6UA");
                     i.putExtra("PLAYLIST_ID", (String[]) null);
                     i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
                     startService(i);

@@ -55,7 +55,7 @@ public class GetPermission extends AppCompatActivity {
                     needPermissionDialog(requestCode);
                 }else{
                     Intent i = new Intent(this, PlayerService.class);
-                    i.putExtra("VID_ID", "w7lNCCSFowk");
+                    i.putExtra("VID_ID", "nIkFW78x6UA");
                     i.putExtra("PLAYLIST_ID", (String[]) null);
                     i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
                     startService(i);
