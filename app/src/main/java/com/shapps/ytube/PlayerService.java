@@ -27,6 +27,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.TranslateAnimation;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -67,7 +68,7 @@ public class PlayerService extends Service{
     static NotificationManager notificationManager;
     static Notification notification;
     static ImageView chatHeadImage;
-    int scrnWidth, scrnHeight, playerWidth, playerHeight, chatHeadSize;
+    int scrnWidth, scrnHeight, playerWidth, playerHeight, chatHeadSize, xAtHiding, yAtHiding;
 
     static boolean nextVid = false;
     static boolean replayVid = false;
@@ -281,11 +282,11 @@ public class PlayerService extends Service{
         //Service Head
         serviceHead = (LinearLayout) inflater.inflate(R.layout.service_head, null, false);
         chatHeadImage = (ImageView) serviceHead.findViewById(R.id.song_icon);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT
         );
 
@@ -397,17 +398,30 @@ public class PlayerService extends Service{
             @Override
             public void onClick(View v) {
                 Log.e("Clicked", "Click!");
-                WindowManager.LayoutParams params = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
-                WindowManager.LayoutParams param_player = (WindowManager.LayoutParams) player_view.getLayoutParams();
                 if (visible) {
                     Log.e("Head x , y ", params.x + " " + params.y);
                     Log.e("Player x , y ", param_player.x + " " + param_player.y);
                     Log.e("Head Size", String.valueOf(chatHeadImage.getHeight()));
+                    xAtHiding = params.x;
+                    yAtHiding = params.y;
+
+                    if(params.x > scrnWidth /2 ){
+                        params.x = scrnWidth -  chatHeadSize + chatHeadSize/4;
+                    }
+                    else{
+                        params.x = -chatHeadSize/4;
+                    }
                     viewToHide.setVisibility(View.GONE);
+                    windowManager.updateViewLayout(serviceHead, params);
                     visible = false;
                 } else {
+                    params.x = xAtHiding;
+                    params.y = yAtHiding;
+                    param_player.x = xAtHiding;
+                    param_player.y = yAtHiding + chatHeadSize;
                     viewToHide.setVisibility(View.VISIBLE);
                     windowManager.updateViewLayout(player_view, param_player);
+                    windowManager.updateViewLayout(serviceHead, params);
                     visible = true;
                 }
             }
@@ -452,39 +466,44 @@ public class PlayerService extends Service{
                         if (isClicked(initialTouchX, finalTouchX, initialTouchY, finalTouchY)) {
                             chatHeadImage.performClick();
                         }
+                        else {
+                            if (!visible) {
+                                if (params.x > scrnWidth / 2) {
+                                    params.x = scrnWidth -  chatHeadSize + chatHeadSize/4;
+                                } else {
+                                    params.x = -chatHeadSize / 4;
+                                }
+                                windowManager.updateViewLayout(serviceHead, params);
+                            }
+                        }
                         return true;
                     case MotionEvent.ACTION_MOVE:
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                        if(params.x < 0) {
-                            param_player.x = 0;
-                            params.x = 0;
-                        }
-                        else if(playerWidth + params.x > scrnWidth) {
-                            if (visible) {
+                        if(visible) {
+                            if (params.x < 0) {
+                                param_player.x = 0;
+                                params.x = 0;
+                            } else if (playerWidth + params.x > scrnWidth) {
                                 param_player.x = scrnWidth - playerWidth;
                                 params.x = scrnWidth - playerWidth;
+                            } else {
+                                param_player.x = params.x;
                             }
-                        }
-                        else{
-                            param_player.x = params.x;
-                        }
-                        if(params.y < 0) {
-                            param_player.y = chatHeadSize;
-                            params.y = 0;
-                        }
-                        else if(playerHeight + params.y + chatHeadSize> scrnHeight) {
-                            if (visible) {
-                                param_player.y = scrnHeight- playerHeight;
+                            if (params.y < 0) {
+                                param_player.y = chatHeadSize;
+                                params.y = 0;
+                            } else if (playerHeight + params.y + chatHeadSize > scrnHeight) {
+                                param_player.y = scrnHeight - playerHeight;
                                 params.y = scrnHeight - playerHeight - chatHeadSize;
+                            } else {
+                                param_player.y = params.y + chatHeadSize;
                             }
+                            windowManager.updateViewLayout(serviceHead, params);
+                            windowManager.updateViewLayout(player_view, param_player);
                         }
                         else{
-                            param_player.y = params.y + chatHeadSize;
-                        }
-                        windowManager.updateViewLayout(serviceHead, params);
-                        if(visible) {
-                            windowManager.updateViewLayout(player_view, param_player);
+                            windowManager.updateViewLayout(serviceHead, params);
                         }
                         return true;
                 }
