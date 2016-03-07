@@ -25,6 +25,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -66,6 +67,7 @@ public class PlayerService extends Service{
     static NotificationManager notificationManager;
     static Notification notification;
     static ImageView chatHeadImage;
+    int scrnWidth, scrnHeight, playerWidth, playerHeight, chatHeadSize;
 
     static boolean nextVid = false;
     static boolean replayVid = false;
@@ -290,7 +292,6 @@ public class PlayerService extends Service{
         params.gravity = Gravity.TOP | Gravity.LEFT;
         params.x = 0;
         params.y = 0;
-
         windowManager.addView(serviceHead, params);
 
         //Player View
@@ -341,29 +342,48 @@ public class PlayerService extends Service{
                     , hashMap);
         }
 
-        WindowManager.LayoutParams param_player = new WindowManager.LayoutParams(
+        final WindowManager.LayoutParams param_player = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
-
         param_player.gravity = Gravity.TOP | Gravity.LEFT;
         param_player.x = 0;
-        param_player.y = 235;
-
-        Log.e("Dp To Px", String.valueOf(dpToPx(80)));
-
-        Log.e("Chat Size,Player Param ", chatHeadImage.getHeight() + " " + param_player.y);
-
+        param_player.y = chatHeadSize;
         windowManager.addView(player_view, param_player);
+
+        //ChatHead Size
+        ViewTreeObserver vto = serviceHead.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                serviceHead.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                chatHeadSize = serviceHead.getMeasuredHeight();
+                Log.e("ChatHead Size", String.valueOf(chatHeadSize));
+                param_player.y = chatHeadSize;
+                windowManager.updateViewLayout(player_view, param_player);
+            }
+        });
+
+        //Player Width and Height
+        vto = player_view.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                player_view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                playerWidth = player_view.getMeasuredWidth();
+                playerHeight = player_view.getMeasuredHeight();
+                Log.e("Player W and H ", playerWidth + " " + playerHeight);
+            }
+        });
 
         //Chat Head Close
         serviceClose = (LinearLayout) inflater.inflate(R.layout.service_close, null, false);
 
         WindowManager.LayoutParams param_close = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -392,6 +412,14 @@ public class PlayerService extends Service{
                 }
             }
         });
+
+        //getting Screen Width and Height
+        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        scrnWidth = size.x;
+        scrnHeight = size.y;
 
         chatHeadImage.setOnTouchListener(new View.OnTouchListener() {
             private int initialX, initialY;
@@ -428,17 +456,31 @@ public class PlayerService extends Service{
                     case MotionEvent.ACTION_MOVE:
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                        if(params.x >= 0) {
-                            param_player.x = params.x;
-                        }
-                        else {
+                        if(params.x < 0) {
+                            param_player.x = 0;
                             params.x = 0;
                         }
-                        if(params.y >= 0) {
-                            param_player.y = params.y + chatHeadImage.getHeight();
+                        else if(playerWidth + params.x > scrnWidth) {
+                            if (visible) {
+                                param_player.x = scrnWidth - playerWidth;
+                                params.x = scrnWidth - playerWidth;
+                            }
                         }
-                        else {
+                        else{
+                            param_player.x = params.x;
+                        }
+                        if(params.y < 0) {
+                            param_player.y = chatHeadSize;
                             params.y = 0;
+                        }
+                        else if(playerHeight + params.y + chatHeadSize> scrnHeight) {
+                            if (visible) {
+                                param_player.y = scrnHeight- playerHeight;
+                                params.y = scrnHeight - playerHeight - chatHeadSize;
+                            }
+                        }
+                        else{
+                            param_player.y = params.y + chatHeadSize;
                         }
                         windowManager.updateViewLayout(serviceHead, params);
                         if(visible) {
