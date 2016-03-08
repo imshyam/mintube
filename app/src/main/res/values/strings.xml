@@ -12,4 +12,6 @@
     <string name="svg_pause">M6,19h4V5H6v14zm8,-14v14h4V5h-4z</string>
     <string name="dialog_get_permission">Permit to Draw over other apps</string>
     <string name="string_get_permission">Allow this app to draw over other apps. This permission allows an app to display on the top of other apps you\'re using.</string>
+    <string name="title_activity_settings">Settings</string>
+
 </resources>

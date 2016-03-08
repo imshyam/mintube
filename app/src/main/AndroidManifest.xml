@@ -7,8 +7,8 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:hardwareAccelerated="true"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -16,7 +16,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".PlayerService"
@@ -28,8 +28,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".GetPermission"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".YTubeView"/>
+            android:parentActivityName=".YTubeView"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".YTubeView"
             android:label="@string/add_ytube"
@@ -65,6 +65,15 @@
 
                 <data android:mimeType="text/plain" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="MainActivity" />
         </activity>
     </application>
 
