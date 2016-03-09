@@ -3,11 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/close_gradient"
-    android:layout_width="match_parent"
-    android:layout_height="120dp">
+    android:layout_width="wrap_content"
+    android:layout_height="150dp">
 
     <RelativeLayout
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp"
         android:id="@+id/close_image"
         android:layout_width="100dp"
         android:layout_height="100dp"

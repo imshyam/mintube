@@ -10,12 +10,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -27,11 +25,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.view.animation.TranslateAnimation;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -56,7 +52,7 @@ public class PlayerService extends Service{
     static Bitmap bitmap;
     static PlayerService playerService;
     WindowManager windowManager;
-    LinearLayout player_view, serviceHead, serviceClose;
+    LinearLayout player_view, serviceHead, serviceClose, serviceCloseBackground;
     RelativeLayout viewToHide;
     static WebView player;
     static String VID_ID = "";
@@ -67,10 +63,13 @@ public class PlayerService extends Service{
     static RemoteViews viewSmall;
     static NotificationManager notificationManager;
     static Notification notification;
-    static ImageView chatHeadImage;
-    int scrnWidth, scrnHeight, playerWidth, playerHeight, chatHeadSize, xAtHiding, yAtHiding;
+    static ImageView playerHeadImage;
+    int scrnWidth, scrnHeight, playerWidth, playerHeight, playerHeadSize, xAtHiding, yAtHiding;
+    int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeMaxY;
 
+    //Next Video to check whether next video is played or not
     static boolean nextVid = false;
+    //Replay Video if it's ended
     static boolean replayVid = false;
 
     public static void setPlayingStatus(int playingStatus) {
@@ -281,7 +280,7 @@ public class PlayerService extends Service{
 
         //Service Head
         serviceHead = (LinearLayout) inflater.inflate(R.layout.service_head, null, false);
-        chatHeadImage = (ImageView) serviceHead.findViewById(R.id.song_icon);
+        playerHeadImage = (ImageView) serviceHead.findViewById(R.id.song_icon);
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -352,7 +351,7 @@ public class PlayerService extends Service{
 
         param_player.gravity = Gravity.TOP | Gravity.LEFT;
         param_player.x = 0;
-        param_player.y = chatHeadSize;
+        param_player.y = playerHeadSize;
         windowManager.addView(player_view, param_player);
 
         //ChatHead Size
@@ -361,9 +360,9 @@ public class PlayerService extends Service{
             @Override
             public void onGlobalLayout() {
                 serviceHead.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                chatHeadSize = serviceHead.getMeasuredHeight();
-                Log.e("ChatHead Size", String.valueOf(chatHeadSize));
-                param_player.y = chatHeadSize;
+                playerHeadSize = serviceHead.getMeasuredHeight();
+                Log.e("ChatHead Size", String.valueOf(playerHeadSize));
+                param_player.y = playerHeadSize;
                 windowManager.updateViewLayout(player_view, param_player);
             }
         });
@@ -381,35 +380,44 @@ public class PlayerService extends Service{
         });
 
         //Chat Head Close
-        serviceClose = (LinearLayout) inflater.inflate(R.layout.service_close, null, false);
-
-        WindowManager.LayoutParams param_close = new WindowManager.LayoutParams(
+        serviceCloseBackground = (LinearLayout) inflater.inflate(R.layout.service_close_background, null, false);
+        final WindowManager.LayoutParams param_close_back = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
-        param_close.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
+        param_close_back.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
+        serviceCloseBackground.setVisibility(View.GONE);
+        windowManager.addView(serviceCloseBackground, param_close_back);
 
+        serviceClose = (LinearLayout) inflater.inflate(R.layout.service_close, null, false);
+        final WindowManager.LayoutParams param_close = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT);
+        param_close.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         serviceClose.setVisibility(View.GONE);
         windowManager.addView(serviceClose, param_close);
 
-        chatHeadImage.setOnClickListener(new View.OnClickListener() {
+        //-----------------Handle Click-----------------------------
+        playerHeadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.e("Clicked", "Click!");
                 if (visible) {
                     Log.e("Head x , y ", params.x + " " + params.y);
                     Log.e("Player x , y ", param_player.x + " " + param_player.y);
-                    Log.e("Head Size", String.valueOf(chatHeadImage.getHeight()));
+                    Log.e("Head Size", String.valueOf(playerHeadImage.getHeight()));
                     xAtHiding = params.x;
                     yAtHiding = params.y;
 
-                    if(params.x > scrnWidth /2 ){
-                        params.x = scrnWidth -  chatHeadSize + chatHeadSize/4;
-                    }
-                    else{
-                        params.x = -chatHeadSize/4;
+                    if (params.x > scrnWidth / 2) {
+                        params.x = scrnWidth - playerHeadSize + playerHeadSize / 4;
+                    } else {
+                        params.x = -playerHeadSize / 4;
                     }
                     viewToHide.setVisibility(View.GONE);
                     windowManager.updateViewLayout(serviceHead, params);
@@ -418,7 +426,7 @@ public class PlayerService extends Service{
                     params.x = xAtHiding;
                     params.y = yAtHiding;
                     param_player.x = xAtHiding;
-                    param_player.y = yAtHiding + chatHeadSize;
+                    param_player.y = yAtHiding + playerHeadSize;
                     viewToHide.setVisibility(View.VISIBLE);
                     windowManager.updateViewLayout(player_view, param_player);
                     windowManager.updateViewLayout(serviceHead, params);
@@ -435,7 +443,8 @@ public class PlayerService extends Service{
         scrnWidth = size.x;
         scrnHeight = size.y;
 
-        chatHeadImage.setOnTouchListener(new View.OnTouchListener() {
+        //-----------------Handle Touch-----------------------------
+        playerHeadImage.setOnTouchListener(new View.OnTouchListener() {
             private int initialX, initialY;
             private float initialTouchX, initialTouchY, finalTouchX, finalTouchY;
 
@@ -443,6 +452,7 @@ public class PlayerService extends Service{
             public boolean onTouch(View v, MotionEvent event) {
                 WindowManager.LayoutParams params = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
                 WindowManager.LayoutParams param_player = (WindowManager.LayoutParams) player_view.getLayoutParams();
+                serviceCloseBackground.setVisibility(View.VISIBLE);
                 Handler handleLongTouch = new Handler();
                 Runnable setVisible = new Runnable() {
                     @Override
@@ -462,16 +472,44 @@ public class PlayerService extends Service{
                         finalTouchX = event.getRawX();
                         finalTouchY = event.getRawY();
                         handleLongTouch.removeCallbacksAndMessages(null);
+                        serviceCloseBackground.setVisibility(View.GONE);
                         serviceClose.setVisibility(View.GONE);
                         if (isClicked(initialTouchX, finalTouchX, initialTouchY, finalTouchY)) {
-                            chatHeadImage.performClick();
+                            playerHeadImage.performClick();
                         }
                         else {
-                            if (!visible) {
+                            playerHeadCenterX = params.x + playerHeadSize / 2;
+                            playerHeadCenterY = params.y + playerHeadSize / 2;
+                            //Player Width and Height
+                            final RelativeLayout closeImage = (RelativeLayout) serviceClose.findViewById(R.id.close_image);
+                            ViewTreeObserver vto = closeImage.getViewTreeObserver();
+                            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    closeImage.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                                    int closeImageSize = closeImage.getMeasuredHeight();
+                                    int [] t = new int[2];
+                                    closeImage.getLocationOnScreen(t);
+                                    closeMinX = t[0];
+                                    closeMinY = t[1];
+                                    closeMaxX = closeMinX + closeImageSize;
+                                    closeMaxY = closeMinY + closeImageSize;
+                                    Log.e("Close Image Size ", String.valueOf(closeImageSize));
+                                    Log.e("X ", closeMinX + " " + playerHeadCenterX + " " + closeMaxX);
+                                    Log.e("Y ", closeMinY + " " + playerHeadCenterY + " " + closeMaxY);
+                                }
+                            });
+                            if(isInsideClose()){
+                                Log.i("Inside Close ", "...");
+                                stopForeground(true);
+                                stopSelf();
+                                stopService(new Intent(PlayerService.this, PlayerService.class));
+                            }
+                            else if (!visible) {
                                 if (params.x > scrnWidth / 2) {
-                                    params.x = scrnWidth -  chatHeadSize + chatHeadSize/4;
+                                    params.x = scrnWidth - playerHeadSize + playerHeadSize / 4;
                                 } else {
-                                    params.x = -chatHeadSize / 4;
+                                    params.x = -playerHeadSize / 4;
                                 }
                                 windowManager.updateViewLayout(serviceHead, params);
                             }
@@ -480,7 +518,7 @@ public class PlayerService extends Service{
                     case MotionEvent.ACTION_MOVE:
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                        if(visible) {
+                        if (visible) {
                             if (params.x < 0) {
                                 param_player.x = 0;
                                 params.x = 0;
@@ -491,18 +529,18 @@ public class PlayerService extends Service{
                                 param_player.x = params.x;
                             }
                             if (params.y < 0) {
-                                param_player.y = chatHeadSize;
+                                param_player.y = playerHeadSize;
                                 params.y = 0;
-                            } else if (playerHeight + params.y + chatHeadSize > scrnHeight) {
+                            } else if (playerHeight + params.y + playerHeadSize > scrnHeight) {
                                 param_player.y = scrnHeight - playerHeight;
-                                params.y = scrnHeight - playerHeight - chatHeadSize;
+                                params.y = scrnHeight - playerHeight - playerHeadSize;
                             } else {
-                                param_player.y = params.y + chatHeadSize;
+                                param_player.y = params.y + playerHeadSize;
                             }
                             windowManager.updateViewLayout(serviceHead, params);
                             windowManager.updateViewLayout(player_view, param_player);
                         }
-                        else{
+                        else {
                             windowManager.updateViewLayout(serviceHead, params);
                         }
                         return true;
@@ -543,7 +581,7 @@ public class PlayerService extends Service{
 
             viewBig.setImageViewBitmap(R.id.thumbnail, bitmap);
             viewSmall.setImageViewBitmap(R.id.thumbnail, bitmap);
-//            chatHeadImage.setImageBitmap(bitmap);
+//            playerHeadImage.setImageBitmap(bitmap);
 
             viewBig.setTextViewText(R.id.title, title);
 
@@ -571,5 +609,14 @@ public class PlayerService extends Service{
     public static void InitializePlayer() {
         Log.e("Initializing ", Session.getPlayerId());
         player.loadUrl(JavaScript.initializePlayerScript(Session.getPlayerId()));
+    }
+
+    public boolean isInsideClose() {
+        if(playerHeadCenterX >= closeMinX && playerHeadCenterX <= closeMaxX){
+            if(playerHeadCenterY >= closeMinY && playerHeadCenterY <= closeMaxY){
+                return true;
+            }
+        }
+        return false;
     }
 }
