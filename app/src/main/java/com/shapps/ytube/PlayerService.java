@@ -1,6 +1,7 @@
 package com.shapps.ytube;
 
 import android.annotation.TargetApi;
+import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -35,6 +36,7 @@ import android.widget.RemoteViews;
 
 import com.shapps.ytube.AsyncTask.ImageLoadTask;
 import com.shapps.ytube.AsyncTask.LoadDetailsTask;
+import com.shapps.ytube.CustomViews.CircularImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,9 +66,11 @@ public class PlayerService extends Service{
     static NotificationManager notificationManager;
     static Notification notification;
     static ImageView playerHeadImage;
-    int scrnWidth, scrnHeight, playerWidth, playerHeight, playerHeadSize, xAtHiding, yAtHiding;
-    int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeMaxY;
+    int scrnWidth, scrnHeight, playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding;
+    int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
 
+    //is inside the close button so to stop video
+    boolean isInsideClose = false;
     //Next Video to check whether next video is played or not
     static boolean nextVid = false;
     //Replay Video if it's ended
@@ -197,6 +201,16 @@ public class PlayerService extends Service{
 
     /////-----------------*****************----------------onStartCommand---------------*****************-----------
     private void doThis(Intent intent) {
+
+
+        //---------Device Lock State------------
+        KeyguardManager myKM = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
+        if( myKM.inKeyguardRestrictedInputMode()) {
+            Log.e("Device State ", "Locked");
+        } else {
+            Log.e("Device State ", "Unlocked");
+        }
+
         Bundle b = intent.getExtras();
 
         if (b != null) {
@@ -401,6 +415,18 @@ public class PlayerService extends Service{
         param_close.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         serviceClose.setVisibility(View.GONE);
         windowManager.addView(serviceClose, param_close);
+        final RelativeLayout closeImageLayout = (RelativeLayout) serviceClose.findViewById(R.id.close_image_layout);
+        vto = closeImageLayout.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                closeImageLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                closeImageLayoutSize = closeImageLayout.getMeasuredHeight();
+                Log.e("Close Image Size ", String.valueOf(closeImageLayoutSize));
+            }
+        });
+
+        final CircularImageView closeImage = (CircularImageView) serviceClose.findViewById(R.id.close_image);
 
         //-----------------Handle Click-----------------------------
         playerHeadImage.setOnClickListener(new View.OnClickListener() {
@@ -444,20 +470,26 @@ public class PlayerService extends Service{
         scrnHeight = size.y;
 
         //-----------------Handle Touch-----------------------------
+
+        //if just a click no need to show the close button
+        final boolean[] needToShow = {true};
+
         playerHeadImage.setOnTouchListener(new View.OnTouchListener() {
             private int initialX, initialY;
             private float initialTouchX, initialTouchY, finalTouchX, finalTouchY;
 
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                WindowManager.LayoutParams params = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
+            public boolean onTouch(View v, final MotionEvent event) {
+                final WindowManager.LayoutParams params = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
                 WindowManager.LayoutParams param_player = (WindowManager.LayoutParams) player_view.getLayoutParams();
                 serviceCloseBackground.setVisibility(View.VISIBLE);
-                Handler handleLongTouch = new Handler();
-                Runnable setVisible = new Runnable() {
+                final Handler handleLongTouch = new Handler();
+                final Runnable setVisible = new Runnable() {
                     @Override
                     public void run() {
-                        serviceClose.setVisibility(View.VISIBLE);
+                        if(needToShow[0]) {
+                            serviceClose.setVisibility(View.VISIBLE);
+                        }
                     }
                 };
                 switch (event.getAction()) {
@@ -466,11 +498,14 @@ public class PlayerService extends Service{
                         initialY = params.y;
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
-                        handleLongTouch.postDelayed(setVisible, 500);
+                        needToShow[0] = true;
+                        handleLongTouch.postDelayed(setVisible, 100);
+                        closeImgSize = closeImage.getLayoutParams().width;
                         return true;
                     case MotionEvent.ACTION_UP:
                         finalTouchX = event.getRawX();
                         finalTouchY = event.getRawY();
+                        needToShow[0] = false;
                         handleLongTouch.removeCallbacksAndMessages(null);
                         serviceCloseBackground.setVisibility(View.GONE);
                         serviceClose.setVisibility(View.GONE);
@@ -478,28 +513,8 @@ public class PlayerService extends Service{
                             playerHeadImage.performClick();
                         }
                         else {
-                            playerHeadCenterX = params.x + playerHeadSize / 2;
-                            playerHeadCenterY = params.y + playerHeadSize / 2;
-                            //Player Width and Height
-                            final RelativeLayout closeImage = (RelativeLayout) serviceClose.findViewById(R.id.close_image);
-                            ViewTreeObserver vto = closeImage.getViewTreeObserver();
-                            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                                @Override
-                                public void onGlobalLayout() {
-                                    closeImage.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                                    int closeImageSize = closeImage.getMeasuredHeight();
-                                    int [] t = new int[2];
-                                    closeImage.getLocationOnScreen(t);
-                                    closeMinX = t[0];
-                                    closeMinY = t[1];
-                                    closeMaxX = closeMinX + closeImageSize;
-                                    closeMaxY = closeMinY + closeImageSize;
-                                    Log.e("Close Image Size ", String.valueOf(closeImageSize));
-                                    Log.e("X ", closeMinX + " " + playerHeadCenterX + " " + closeMaxX);
-                                    Log.e("Y ", closeMinY + " " + playerHeadCenterY + " " + closeMaxY);
-                                }
-                            });
-                            if(isInsideClose()){
+                            //stop if inside the close Button
+                            if(isInsideClose){
                                 Log.i("Inside Close ", "...");
                                 stopForeground(true);
                                 stopSelf();
@@ -516,31 +531,62 @@ public class PlayerService extends Service{
                         }
                         return true;
                     case MotionEvent.ACTION_MOVE:
-                        params.x = initialX + (int) (event.getRawX() - initialTouchX);
-                        params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                        int newX, newY;
+                        newX = initialX + (int) (event.getRawX() - initialTouchX);
+                        newY = initialY + (int) (event.getRawY() - initialTouchY);
                         if (visible) {
-                            if (params.x < 0) {
+                            if (newX < 0) {
                                 param_player.x = 0;
                                 params.x = 0;
-                            } else if (playerWidth + params.x > scrnWidth) {
+                            } else if (playerWidth + newX > scrnWidth) {
                                 param_player.x = scrnWidth - playerWidth;
                                 params.x = scrnWidth - playerWidth;
                             } else {
-                                param_player.x = params.x;
+                                param_player.x = newX;
+                                params.x = newX;
                             }
-                            if (params.y < 0) {
+                            if (newY < 0) {
                                 param_player.y = playerHeadSize;
                                 params.y = 0;
-                            } else if (playerHeight + params.y + playerHeadSize > scrnHeight) {
+                            } else if (playerHeight + newY + playerHeadSize > scrnHeight) {
                                 param_player.y = scrnHeight - playerHeight;
                                 params.y = scrnHeight - playerHeight - playerHeadSize;
                             } else {
-                                param_player.y = params.y + playerHeadSize;
+                                param_player.y = newY + playerHeadSize;
+                                params.y = newY;
                             }
                             windowManager.updateViewLayout(serviceHead, params);
                             windowManager.updateViewLayout(player_view, param_player);
                         }
                         else {
+                            if(newY + playerHeadSize > scrnHeight){
+                                params.y = scrnHeight - playerHeadSize;
+                            }
+                            else{
+                                params.y = newY;
+                            }
+                            params.x = newX;
+                            int [] t = new int[2];
+                            closeImageLayout.getLocationOnScreen(t);
+                            updateIsInsideClose(params.x, params.y, t);
+                            if(isInsideClose){
+                                params.x = t[0];
+                                params.y = t[1] - getStatusBarHeight();
+                                params.width = closeImageLayoutSize;
+                                params.height = closeImageLayoutSize;
+                                if(closeImage.getLayoutParams().width == closeImgSize){
+                                    closeImage.getLayoutParams().width = closeImgSize * 2;
+                                    closeImage.getLayoutParams().height = closeImgSize * 2;
+                                    closeImage.requestLayout();
+                                }
+                            }
+                            else{
+                                if(closeImage.getLayoutParams().width > closeImgSize){
+                                    closeImage.getLayoutParams().width = closeImgSize;
+                                    closeImage.getLayoutParams().height = closeImgSize;
+                                    closeImage.requestLayout();
+                                }
+                            }
                             windowManager.updateViewLayout(serviceHead, params);
                         }
                         return true;
@@ -611,12 +657,29 @@ public class PlayerService extends Service{
         player.loadUrl(JavaScript.initializePlayerScript(Session.getPlayerId()));
     }
 
+    private void updateIsInsideClose(int x, int y, int[] t) {
+        playerHeadCenterX = x + playerHeadSize / 2 ;
+        playerHeadCenterY = y + playerHeadSize / 2;
+        closeMinX = t[0] - 10;
+        closeMinY = t[1] - getStatusBarHeight() - 10;
+        closeMaxX = closeMinX + closeImageLayoutSize + 10;
+        if(isInsideClose()){
+            isInsideClose = true;
+        }
+        else {
+            isInsideClose = false;
+        }
+    }
     public boolean isInsideClose() {
         if(playerHeadCenterX >= closeMinX && playerHeadCenterX <= closeMaxX){
-            if(playerHeadCenterY >= closeMinY && playerHeadCenterY <= closeMaxY){
+            if(playerHeadCenterY >= closeMinY){
                 return true;
             }
         }
         return false;
+    }
+    private int getStatusBarHeight() {
+        int statusBarHeight = (int) Math.ceil(25 * getApplicationContext().getResources().getDisplayMetrics().density);
+        return statusBarHeight;
     }
 }
