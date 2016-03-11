@@ -19,6 +19,9 @@ import android.widget.Button;
 public class GetPermission extends AppCompatActivity {
 
     public static int OVERLAY_PERMISSION_REQ_CODE = 12345;
+    public static int OVERLAY_PERMISSION_REQ_BACKTO_ACT_CODE = 23456;
+    String vId, pId;
+    int permissionCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +29,15 @@ public class GetPermission extends AppCompatActivity {
 
         setContentView(R.layout.activity_get_permission);
 
-
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            vId = extras.getString("VID");
+            pId = extras.getString("PID");
+            permissionCode = OVERLAY_PERMISSION_REQ_CODE;
+        }
+        else{
+            permissionCode = OVERLAY_PERMISSION_REQ_BACKTO_ACT_CODE;
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -38,7 +49,7 @@ public class GetPermission extends AppCompatActivity {
                     if (!Settings.canDrawOverlays(GetPermission.this)) {
                         Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                 Uri.parse("package:" + getPackageName()));
-                        startActivityForResult(i, OVERLAY_PERMISSION_REQ_CODE);
+                        startActivityForResult(i, permissionCode);
                     }
                 }
             }
@@ -53,12 +64,21 @@ public class GetPermission extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (!Settings.canDrawOverlays(this)) {
                     needPermissionDialog(requestCode);
-                }else{
+                } else {
                     Intent i = new Intent(this, PlayerService.class);
-                    i.putExtra("VID_ID", "nIkFW78x6UA");
-                    i.putExtra("PLAYLIST_ID", (String[]) null);
+                    i.putExtra("VID_ID", vId);
+                    i.putExtra("PLAYLIST_ID", pId);
                     i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
                     startService(i);
+                    finish();
+                }
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    needPermissionDialog(requestCode);
+                } else {
+                    startActivity(new Intent(this, MainActivity.class));
                     finish();
                 }
             }

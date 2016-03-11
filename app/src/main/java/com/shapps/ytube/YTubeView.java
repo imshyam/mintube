@@ -22,7 +22,11 @@ import java.util.regex.Pattern;
 public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity {
 
 //    YouTubePlayerView youTubeView;
+    String vId, pId;
+
+    //For Result Activity
     public static int OVERLAY_PERMISSION_REQ = 1234;
+    public static int OVERLAY_PERMISSION_REQ_BACKTO_ACT = 2345;
 
 
     @Override
@@ -35,90 +39,116 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
 
 
         final Intent intent = getIntent();
-//        if(intent.getData() != null || intent.getStringExtra("android.intent.extra.TEXT") != null) {
-//            String link;
-//            if (intent.getData() != null) {
-//                link = intent.getData().toString();
-//            } else {
-//                link = intent.getStringExtra("android.intent.extra.TEXT");
-//            }
-//            Log.e("Link : ", link.toString());
-//            String vId = "";
-//            Pattern pattern = Pattern.compile(
-//                    "^https?://.*(?:youtu.be/|v/|u/\\\\w/|embed/|watch[?]v=)([^#&?]*).*$",
-//                    Pattern.CASE_INSENSITIVE);
-//            Matcher matcher = pattern.matcher(link.toString());
-//            if (matcher.matches()) {
-//                vId = matcher.group(1);
-//            }
-//            Log.e("Video Id : ", vId);
-//            //Getting Playlist id
-//            final String listID = link.substring(link.indexOf("http") + 4, link.length());
-//            Log.e("List ID Is : ", listID);
-//            String pId = null;
-//            String regex = ".*list=([A-Za-z0-9_-]+).*?";
-//            pattern = Pattern.compile(regex,
-//                    Pattern.CASE_INSENSITIVE);
-//            matcher = pattern.matcher(link.toString());
-//            if (matcher.matches()) {
-//                pId = matcher.group(1);
-//                Log.e("PID Is : ", pId);
-//                Constants.setItsAPlaylist();
-//            }
-//
-//            if (isServiceRunning(PlayerService.class)) {
-//                Log.e("Service : ", "Already Running!");
-//                PlayerService.startVid(vId, pId);
-//                finish();
-//            } else {
-//                Intent i = new Intent(this, PlayerService.class);
-//                i.putExtra("VID_ID", vId);
-//                i.putExtra("PLAYLIST_ID", pId);
-//                i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
-//                startService(i);
-//                finish();
-//            }
-//        }
-//        else {
-//            startActivity(new Intent(this, MainActivity.class));
-//            finish();
-//        }
+        if(intent.getData() != null || intent.getStringExtra("android.intent.extra.TEXT") != null) {
+            String link;
+            if (intent.getData() != null) {
+                link = intent.getData().toString();
+            } else {
+                link = intent.getStringExtra("android.intent.extra.TEXT");
+            }
+            Log.e("Link : ", link.toString());
+            vId = "";
+            Pattern pattern = Pattern.compile(
+                    "^https?://.*(?:youtu.be/|v/|u/\\\\w/|embed/|watch[?]v=)([^#&?]*).*$",
+                    Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(link.toString());
+            if (matcher.matches()) {
+                vId = matcher.group(1);
+            }
+            Log.e("Video Id : ", vId);
+            //Getting Playlist id
+            final String listID = link.substring(link.indexOf("http") + 4, link.length());
+            Log.e("List ID Is : ", listID);
+            pId = null;
+            String regex = ".*list=([A-Za-z0-9_-]+).*?";
+            pattern = Pattern.compile(regex,
+                    Pattern.CASE_INSENSITIVE);
+            matcher = pattern.matcher(link.toString());
+            if (matcher.matches()) {
+                pId = matcher.group(1);
+                Log.e("PID Is : ", pId);
+                Constants.setItsAPlaylist();
+            }
 
-        //Remove this
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            Intent i = new Intent(this,
-                    GetPermission.class);
-            startActivityForResult(i, OVERLAY_PERMISSION_REQ);
-            finish();
+            if (isServiceRunning(PlayerService.class)) {
+                Log.e("Service : ", "Already Running!");
+                PlayerService.startVid(vId, pId);
+                finish();
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                    Intent i = new Intent(this,
+                            GetPermission.class);
+                    i.putExtra("VID", vId);
+                    i.putExtra("PID", pId);
+                    startActivityForResult(i, OVERLAY_PERMISSION_REQ);
+                    finish();
+                }
+                else {
+                    Intent i = new Intent(this, PlayerService.class);
+                    i.putExtra("VID_ID", vId);
+                    i.putExtra("PLAYLIST_ID", pId);
+                    i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+                    startService(i);
+                    finish();
+                }
+            }
         }
         else {
-            Intent i = new Intent(this, PlayerService.class);
-            i.putExtra("VID_ID", "nIkFW78x6UA");
-            i.putExtra("PLAYLIST_ID", (String[]) null);
-            i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
-            startService(i);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                Intent i = new Intent(this,
+                        GetPermission.class);
+                startActivityForResult(i, OVERLAY_PERMISSION_REQ_BACKTO_ACT);
+                finish();
+            }
+            else {
+                startActivity(new Intent(this, MainActivity.class));
+            }
             finish();
         }
+
+//        //Remove this
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+//            Intent i = new Intent(this,
+//                    GetPermission.class);
+//            startActivityForResult(i, OVERLAY_PERMISSION_REQ);
+//            finish();
+//        }
+//        else {
+//            Intent i = new Intent(this, PlayerService.class);
+//            i.putExtra("VID_ID", "nIkFW78x6UA");
+//            i.putExtra("PLAYLIST_ID", (String[]) null);
+//            i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+//            startService(i);
+//            finish();
+//        }
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == OVERLAY_PERMISSION_REQ_BACKTO_ACT){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    finish();
+                }else{
+                    startActivity(new Intent(this, MainActivity.class));
+                }
+            }
+        }
         if (requestCode == OVERLAY_PERMISSION_REQ) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (!Settings.canDrawOverlays(this)) {
                     finish();
                 }else{
                     Intent i = new Intent(this, PlayerService.class);
-                    i.putExtra("VID_ID", "nIkFW78x6UA");
-                    i.putExtra("PLAYLIST_ID", (String[]) null);
+                    i.putExtra("VID_ID", vId);
+                    i.putExtra("PLAYLIST_ID", pId);
                     i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
                     startService(i);
                     finish();
                 }
             }
-
         }
     }
 

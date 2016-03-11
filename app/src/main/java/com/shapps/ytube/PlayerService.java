@@ -178,6 +178,7 @@ public class PlayerService extends Service{
     public void onDestroy() {
         super.onDestroy();
         isVideoPlaying = true;
+        Constants.linkType = 0;
         Session.finishWeb();
         Log.i("Status", "Destroyed!");
         if (player_view != null) {
@@ -203,15 +204,6 @@ public class PlayerService extends Service{
 
     /////-----------------*****************----------------onStartCommand---------------*****************-----------
     private void doThis(Intent intent) {
-
-
-        //---------Device Lock State------------
-        KeyguardManager myKM = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
-        if( myKM.inKeyguardRestrictedInputMode()) {
-            Log.e("Device State ", "Locked");
-        } else {
-            Log.e("Device State ", "Unlocked");
-        }
 
         Bundle b = intent.getExtras();
 
