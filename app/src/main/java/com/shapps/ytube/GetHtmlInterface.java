@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,11 +39,10 @@ class GetHtmlInterface {
             });
         }
         else {
-            Log.e("Fuck it ", "Man!!!");
             handlerForJavascriptInterface.post(new Runnable() {
                 @Override
                 public void run() {
-                    PlayerService.tryAgainForPID();
+                    PlayerService.tryAgainForPlayerID();
                 }
             });
         }

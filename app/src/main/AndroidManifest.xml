@@ -27,6 +27,10 @@
             android:label="@string/add_ytube"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".GetPermission"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".YTubeView"/>
+        <activity
             android:name=".YTubeView"
             android:label="@string/add_ytube"
             android:theme="@android:style/Theme.NoDisplay">

@@ -1,36 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-
-    <ImageView
-        android:id="@+id/song_icon"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/circle"/>
-    <RelativeLayout
-        android:id="@+id/null_to_hide"
-        android:layout_marginLeft="80dp"
-        android:layout_width="160dp"
-        android:layout_height="80dp"
-        android:background="#00000000"></RelativeLayout>
     <RelativeLayout
         android:id="@+id/view_to_hide"
-        android:layout_marginTop="80dp"
-        android:layout_width="240dp"
-        android:layout_height="210dp">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginTop="-5dp"
             android:layout_marginLeft="25dp"
             android:src="@drawable/arrow_dropdown"/>
-        <WebView
-            android:id="@+id/playerView"
-            android:layout_marginTop="10dp"
+        <RelativeLayout
             android:layout_width="240dp"
-            android:layout_height="200dp"/>
+            android:layout_height="200dp">
+            <WebView
+                android:id="@+id/playerView"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </RelativeLayout>
     </RelativeLayout>
 
 
-</FrameLayout>
+</LinearLayout>

@@ -2,14 +2,18 @@ package com.shapps.ytube;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
     WebView youtubeView;
     String currUrl;
     boolean doubleClickToExit = false;
+    //For Result Activity
+    public static int OVERLAY_PERMISSION_REQ = 1234;
+    String VID, PID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("Yay ", "Catches!!!!");
                         String url = String.valueOf(request.getUrl());
                         //Video Id
-                        final String VID = url.substring(url.indexOf("&v=") + 3, url.length());
+                        VID = url.substring(url.indexOf("&v=") + 3, url.length());
                         Log.e("VID ", VID);
                         //Playlist Id
                         final String listID = url.substring(url.indexOf("&list=") + 6, url.length());
@@ -90,13 +97,13 @@ public class MainActivity extends AppCompatActivity {
                                 Pattern.CASE_INSENSITIVE);
                         Matcher matcher = pattern.matcher(listID.toString());
                         Log.e("ListID", listID);
-                        String PID = "";
+                        PID = "";
                         if (matcher.matches()) {
                             PID = matcher.group(1);
                         }
                         if(listID.contains("m.youtube.com")){
-                            PID = null;
                             Log.e("Not a ", "Playlist.");
+                            PID = null;
                         }
                         else {
                             Constants.setItsAPlaylist();
@@ -114,11 +121,24 @@ public class MainActivity extends AppCompatActivity {
                                     PlayerService.startVid(VID, finalPID);
                                 }
                                 else {
-                                    Intent i = new Intent(MainActivity.this, PlayerService.class);
-                                    i.putExtra("VID_ID", VID);
-                                    i.putExtra("PLAYLIST_ID", finalPID);
-                                    i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
-                                    startService(i);
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
+                                        Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                Uri.parse("package:" + getPackageName()));
+                                        startActivityForResult(i, OVERLAY_PERMISSION_REQ);
+                                    }
+                                    else {
+                                        Intent i = new Intent(MainActivity.this, PlayerService.class);
+                                        i.putExtra("VID_ID", VID);
+                                        i.putExtra("PLAYLIST_ID", finalPID);
+                                        i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+                                        startService(i);
+                                    }
+
+//                                    Intent i = new Intent(MainActivity.this, PlayerService.class);
+//                                    i.putExtra("VID_ID", VID);
+//                                    i.putExtra("PLAYLIST_ID", finalPID);
+//                                    i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+//                                    startService(i);
                                 }
 
                             }
@@ -141,7 +161,48 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == OVERLAY_PERMISSION_REQ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    needPermissionDialog(requestCode);
+                } else {
+                    Intent i = new Intent(this, PlayerService.class);
+                    i.putExtra("VID_ID", VID);
+                    i.putExtra("PLAYLIST_ID", PID);
+                    i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+                    startService(i);
+                }
+            }
+        }
+    }
+    private void needPermissionDialog(final int requestCode) {
+        if(requestCode == OVERLAY_PERMISSION_REQ) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("You need to grant the permission.");
+            builder.setPositiveButton("OK",
+                    new android.content.DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // TODO Auto-generated method stub
+                            Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                    Uri.parse("package:" + getPackageName()));
+                            startActivityForResult(i, OVERLAY_PERMISSION_REQ);
+                        }
+                    });
+            builder.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // TODO Auto-generated method stub
 
+                }
+            });
+            builder.setCancelable(false);
+            builder.show();
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -165,8 +226,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        if(currUrl.contains("m.youtube.com") && !currUrl.contains("m.youtube.com/terms")
-                && !currUrl.contains("m.youtube.com/select_site")) {
+        if(currUrl.equals("https://m.youtube.com/")) {
             if (doubleClickToExit) {
                 super.onBackPressed();
                 return;
