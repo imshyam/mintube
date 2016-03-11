@@ -24,6 +24,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
@@ -67,8 +68,8 @@ public class PlayerService extends Service{
     static NotificationManager notificationManager;
     static Notification notification;
     static ImageView playerHeadImage;
-    int scrnWidth, scrnHeight, playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding;
     int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
+    int scrnWidth, scrnHeight, playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
 
     //is inside the close button so to stop video
     boolean isInsideClose = false;
@@ -378,6 +379,7 @@ public class PlayerService extends Service{
                 playerHeadSize = serviceHead.getMeasuredHeight();
                 Log.e("ChatHead Size", String.valueOf(playerHeadSize));
                 param_player.y = playerHeadSize;
+                xOnAppear = - playerHeadSize / 4;
                 windowManager.updateViewLayout(player_view, param_player);
             }
         });
@@ -440,21 +442,37 @@ public class PlayerService extends Service{
                     Log.e("Head Size", String.valueOf(playerHeadImage.getHeight()));
                     xAtHiding = params.x;
                     yAtHiding = params.y;
-
-                    if (params.x > scrnWidth / 2) {
-                        params.x = scrnWidth - playerHeadSize + playerHeadSize / 4;
-                    } else {
-                        params.x = -playerHeadSize / 4;
-                    }
+                    params.x = xOnAppear;
+                    params.y = yOnAppear;
+                    //To hide the Player View
+                    final WindowManager.LayoutParams tmpPlayerParams = new WindowManager.LayoutParams(
+                            100,
+                            100,
+                            WindowManager.LayoutParams.TYPE_PHONE,
+                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                            PixelFormat.TRANSLUCENT);
+                    tmpPlayerParams.x = xAtHiding;
+                    tmpPlayerParams.y = xAtHiding;
+                    windowManager.updateViewLayout(player_view, tmpPlayerParams);
                     viewToHide.setVisibility(View.GONE);
+
                     windowManager.updateViewLayout(serviceHead, params);
                     visible = false;
                 } else {
+                    viewToHide.setVisibility(View.VISIBLE);
+                    //Store current to again hidden icon will come here
+                    if(params.x > 0) {
+                        xOnAppear = scrnWidth - playerHeadSize + playerHeadSize / 4;
+                    }
+                    else{
+                        xOnAppear = - playerHeadSize / 4;
+                    }
+                    yOnAppear = params.y;
+                    //Update the icon and player to player's hidden position
                     params.x = xAtHiding;
                     params.y = yAtHiding;
                     param_player.x = xAtHiding;
                     param_player.y = yAtHiding + playerHeadSize;
-                    viewToHide.setVisibility(View.VISIBLE);
                     windowManager.updateViewLayout(player_view, param_player);
                     windowManager.updateViewLayout(serviceHead, params);
                     visible = true;

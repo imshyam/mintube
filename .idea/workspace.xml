@@ -32,12 +32,14 @@
       <file leaf-file-name="PlayerService.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6199377">
-              <caret line="324" column="28" selection-start-line="324" selection-start-column="28" selection-end-line="324" selection-end-column="28" />
+            <state vertical-scroll-proportion="1.2679127">
+              <caret line="464" column="84" selection-start-line="464" selection-start-column="84" selection-end-line="464" selection-end-column="84" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#4257#4258#0" expanded="true" />
-                <element signature="e#4284#4285#0" expanded="true" />
+                <element signature="e#4314#4315#0" expanded="true" />
+                <element signature="e#4341#4342#0" expanded="true" />
+                <element signature="e#17991#20386#0" expanded="true" />
+                <element signature="e#20385#20386#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -2015,8 +2017,10 @@
           <caret line="501" column="65" selection-start-line="501" selection-start-column="65" selection-end-line="501" selection-end-column="65" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#4257#4258#0" expanded="true" />
-            <element signature="e#4284#4285#0" expanded="true" />
+            <element signature="e#4314#4315#0" expanded="true" />
+            <element signature="e#4341#4342#0" expanded="true" />
+            <element signature="e#17991#20386#0" expanded="true" />
+            <element signature="e#20385#20386#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2057,8 +2061,10 @@
           <caret line="501" column="65" selection-start-line="501" selection-start-column="65" selection-end-line="501" selection-end-column="65" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#4257#4258#0" expanded="true" />
-            <element signature="e#4284#4285#0" expanded="true" />
+            <element signature="e#4314#4315#0" expanded="true" />
+            <element signature="e#4341#4342#0" expanded="true" />
+            <element signature="e#17991#20386#0" expanded="true" />
+            <element signature="e#20385#20386#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2099,8 +2105,10 @@
           <caret line="546" column="62" selection-start-line="546" selection-start-column="62" selection-end-line="546" selection-end-column="62" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#4257#4258#0" expanded="true" />
-            <element signature="e#4284#4285#0" expanded="true" />
+            <element signature="e#4314#4315#0" expanded="true" />
+            <element signature="e#4341#4342#0" expanded="true" />
+            <element signature="e#17991#20386#0" expanded="true" />
+            <element signature="e#20385#20386#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2174,12 +2182,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6199377">
-          <caret line="324" column="28" selection-start-line="324" selection-start-column="28" selection-end-line="324" selection-end-column="28" />
+        <state vertical-scroll-proportion="1.2679127">
+          <caret line="464" column="84" selection-start-line="464" selection-start-column="84" selection-end-line="464" selection-end-column="84" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#4257#4258#0" expanded="true" />
-            <element signature="e#4284#4285#0" expanded="true" />
+            <element signature="e#4314#4315#0" expanded="true" />
+            <element signature="e#4341#4342#0" expanded="true" />
+            <element signature="e#17991#20386#0" expanded="true" />
+            <element signature="e#20385#20386#0" expanded="true" />
           </folding>
         </state>
       </provider>
