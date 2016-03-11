@@ -52,6 +52,7 @@ import java.util.concurrent.ExecutionException;
 public class PlayerService extends Service{
 
     static Bitmap bitmap;
+    static String title, author;
     static PlayerService playerService;
     WindowManager windowManager;
     LinearLayout player_view, serviceHead, serviceClose, serviceCloseBackground;
@@ -622,8 +623,8 @@ public class PlayerService extends Service{
                     "https://www.youtube.com/oembed?url=http://www.youtu.be/watch?v=" + videoId + "&format=json")
                     .execute().get();
             JSONObject detailsJson = new JSONObject(details);
-            String title = detailsJson.getString("title");
-            String author = detailsJson.getString("author_name");
+            title = detailsJson.getString("title");
+            author = detailsJson.getString("author_name");
 
             viewBig.setImageViewBitmap(R.id.thumbnail, bitmap);
             viewSmall.setImageViewBitmap(R.id.thumbnail, bitmap);
