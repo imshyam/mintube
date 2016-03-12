@@ -13,5 +13,9 @@
     <string name="dialog_get_permission">Permit to Draw over other apps</string>
     <string name="string_get_permission">Allow this app to draw over other apps. This permission allows an app to display on the top of other apps you\'re using.</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="repeat_type">REPEAT_TYPE</string>
+    <string name="no_of_repeats">NO_OF_REPEATS</string>
+    <string name="player_type">PLAYER_TYPE</string>
+    <string name="init">INITIALIZED</string>
 
 </resources>

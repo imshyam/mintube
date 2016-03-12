@@ -64,8 +64,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public boolean shouldOverrideUrlLoading (WebView view, String url){
-                if(url.startsWith("http://www.youtube.com/?app=desktop") ||
-                        url.startsWith("https://www.youtube.com/?app=desktop")){
+                if(url.contains("?app=desktop") && !url.contains("signin?app=desktop")) {
                     Log.e("Url stopped to load : ", url);
                     CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
                     final Snackbar snackbar = Snackbar
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                             PID = null;
                         }
                         else {
-                            Constants.setItsAPlaylist();
+                            Constants.linkType = 1;
                             Log.e("PlaylistID ", PID);
                         }
                         Handler handler = new Handler(getMainLooper());

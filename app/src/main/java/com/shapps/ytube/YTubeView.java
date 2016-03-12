@@ -3,18 +3,13 @@ package com.shapps.ytube;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerView;
-import com.shapps.ytube.YouTube.YouTubeFailureRecoveryActivity;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,11 +22,31 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
     //For Result Activity
     public static int OVERLAY_PERMISSION_REQ = 1234;
     public static int OVERLAY_PERMISSION_REQ_BACKTO_ACT = 2345;
+    static SharedPreferences sharedPref;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        if (!sharedPref.contains(getString(R.string.init))) {
+            Log.e("Initializing ", "Shared Preferences");
+            SharedPreferences.Editor editor = sharedPref.edit();
+            //init to check if shared preference is initialized
+            editor.putBoolean(getString(R.string.init), true);
+            //Repeat
+            //if repeatType = 0  --> no repeatType
+            //if repeatType = 1  --> repeatType complete
+            //if repeatType = 2  --> repeatType single
+            editor.putInt(getString(R.string.repeat_type), 0);
+            editor.putInt(getString(R.string.no_of_repeats), 5);
+            //Type of player
+            //WebView player = 0
+            //Youtube player = 1
+            editor.putInt(getString(R.string.player_type), 0);
+            editor.commit();
+        }
 //
 //        youTubeView = new YouTubePlayerView(this);
 //
@@ -67,7 +82,7 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             if (matcher.matches()) {
                 pId = matcher.group(1);
                 Log.e("PID Is : ", pId);
-                Constants.setItsAPlaylist();
+                Constants.linkType = 1;
             }
 
             if (isServiceRunning(PlayerService.class)) {
@@ -160,6 +175,10 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             }
         }
         return false;
+    }
+
+    public static SharedPreferences getSharedPref() {
+        return sharedPref;
     }
 
 //

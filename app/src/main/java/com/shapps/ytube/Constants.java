@@ -1,5 +1,8 @@
 package com.shapps.ytube;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 /**
  * Created by shyam on 16/2/16.
  */
@@ -15,13 +18,15 @@ public class Constants {
     //Playlist link = 1
     public  static  int linkType = 0;
 
-    //Repeat song or not
-    public  static  boolean repeat = false;
+    //Repeat
+    //if repeatType = 0  --> no repeatType
+    //if repeatType = 1  --> repeatType complete
+    //if repeatType = 2  --> repeatType single
+    public  static  int repeatType = 0;
+    public  static  int noOfRepeats = 0;
+    //if repeatType is 2 then Video id to repeatType
     public  static  String vIdToRepeat = "";
 
-    public static void setItsAPlaylist() {
-        linkType = 1;
-    }
 
     //Actions
     public interface ACTION {

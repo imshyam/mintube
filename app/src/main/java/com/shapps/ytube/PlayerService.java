@@ -1,13 +1,13 @@
 package com.shapps.ytube;
 
 import android.annotation.TargetApi;
-import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -24,7 +25,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
@@ -56,7 +56,7 @@ public class PlayerService extends Service{
     static String title, author;
     static PlayerService playerService;
     WindowManager windowManager;
-    LinearLayout player_view, serviceHead, serviceClose, serviceCloseBackground;
+    LinearLayout playerView, serviceHead, serviceClose, serviceCloseBackground;
     RelativeLayout viewToHide;
     static WebView player;
     static String VID_ID = "";
@@ -77,6 +77,9 @@ public class PlayerService extends Service{
     static boolean nextVid = false;
     //Replay Video if it's ended
     static boolean replayVid = false;
+
+    ImageView repeatTypeImg, entireWidthImg, fullScreenImg;
+    SharedPreferences sharedPref;
 
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == -1){
@@ -101,13 +104,20 @@ public class PlayerService extends Service{
         }
         else if(playingStatus == 0) {
             if(Constants.linkType == 1) {
-                player.loadUrl(JavaScript.nextVideo());
-                nextVid = true;
+                Log.e("Repeat Type ", Constants.repeatType + "");
+                if(Constants.repeatType == 2){
+                    player.loadUrl(JavaScript.prevVideo());
+                }
             }
             else {
-                replayVid = true;
-                viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
-                viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+                if(Constants.repeatType > 0){
+                    player.loadUrl(JavaScript.playVideoScript());
+                }
+                else {
+                    replayVid = true;
+                    viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+                    viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+                }
             }
         }
         notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
@@ -136,6 +146,10 @@ public class PlayerService extends Service{
         this.playerService = this;
         if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_WEB_ACTION)) {
             Log.e("Service ", "Started!");
+            sharedPref = YTubeView.getSharedPref();
+            Constants.playerType = sharedPref.getInt(getString(R.string.player_type), 0);
+            Constants.repeatType = sharedPref.getInt(getString(R.string.repeat_type), 0);
+            Constants.noOfRepeats = sharedPref.getInt(getString(R.string.no_of_repeats), 5);
             doThis(intent);
 
         }
@@ -181,10 +195,10 @@ public class PlayerService extends Service{
         Constants.linkType = 0;
         Session.finishWeb();
         Log.i("Status", "Destroyed!");
-        if (player_view != null) {
+        if (playerView != null) {
             player.destroy();
             player = null;
-            windowManager.removeView(player_view);
+            windowManager.removeView(playerView);
             windowManager.removeView(serviceHead);
             windowManager.removeView(serviceClose);
         }
@@ -303,10 +317,40 @@ public class PlayerService extends Service{
         windowManager.addView(serviceHead, params);
 
         //Player View
-        player_view = (LinearLayout) inflater.inflate(R.layout.player_webview, null, false);
-        viewToHide= (RelativeLayout) player_view.findViewById(R.id.view_to_hide);
+        playerView = (LinearLayout) inflater.inflate(R.layout.player_webview, null, false);
+        viewToHide = (RelativeLayout) playerView.findViewById(R.id.view_to_hide);
+        repeatTypeImg = (ImageView) playerView.findViewById(R.id.repeat_type);
+        entireWidthImg = (ImageView) playerView.findViewById(R.id.entire_width);
+        fullScreenImg = (ImageView) playerView.findViewById(R.id.fullscreen);
 
-        player = (WebView) player_view.findViewById(R.id.playerView);
+        //update Repeat Type Onclick
+        updateRepeatTypeImage();
+        repeatTypeImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = sharedPref.edit();
+                if(Constants.repeatType == 0){
+                    editor.putInt(getString(R.string.repeat_type), 1);
+                    editor.commit();
+                    Constants.repeatType = 1;
+                    updateRepeatTypeImage();
+                }
+                else if(Constants.repeatType == 1){
+                    editor.putInt(getString(R.string.repeat_type), 2);
+                    editor.commit();
+                    Constants.repeatType = 2;
+                    updateRepeatTypeImage();
+                }
+                else if(Constants.repeatType == 2){
+                    editor.putInt(getString(R.string.repeat_type), 0);
+                    editor.commit();
+                    Constants.repeatType = 0;
+                    updateRepeatTypeImage();
+                }
+            }
+        });
+
+        player = (WebView) playerView.findViewById(R.id.playerView);
         player.getSettings().setJavaScriptEnabled(true);
 
 //         For debugging using chrome on PC
@@ -328,6 +372,7 @@ public class PlayerService extends Service{
                                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
                                         return true;
                                     }
+
                                     @Override
                                     public void onPageFinished(WebView view, String url) {
                                         player.loadUrl(JavaScript.getHtmlScript());
@@ -360,7 +405,7 @@ public class PlayerService extends Service{
         param_player.gravity = Gravity.TOP | Gravity.LEFT;
         param_player.x = 0;
         param_player.y = playerHeadSize;
-        windowManager.addView(player_view, param_player);
+        windowManager.addView(playerView, param_player);
 
         //ChatHead Size
         ViewTreeObserver vto = serviceHead.getViewTreeObserver();
@@ -372,18 +417,18 @@ public class PlayerService extends Service{
                 Log.e("ChatHead Size", String.valueOf(playerHeadSize));
                 param_player.y = playerHeadSize;
                 xOnAppear = - playerHeadSize / 4;
-                windowManager.updateViewLayout(player_view, param_player);
+                windowManager.updateViewLayout(playerView, param_player);
             }
         });
 
         //Player Width and Height
-        vto = player_view.getViewTreeObserver();
+        vto = playerView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                player_view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                playerWidth = player_view.getMeasuredWidth();
-                playerHeight = player_view.getMeasuredHeight();
+                playerView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                playerWidth = playerView.getMeasuredWidth();
+                playerHeight = playerView.getMeasuredHeight();
                 Log.e("Player W and H ", playerWidth + " " + playerHeight);
             }
         });
@@ -445,7 +490,7 @@ public class PlayerService extends Service{
                             PixelFormat.TRANSLUCENT);
                     tmpPlayerParams.x = scrnWidth;
                     tmpPlayerParams.y = scrnHeight;
-                    windowManager.updateViewLayout(player_view, tmpPlayerParams);
+                    windowManager.updateViewLayout(playerView, tmpPlayerParams);
                     viewToHide.setVisibility(View.GONE);
 
                     windowManager.updateViewLayout(serviceHead, params);
@@ -465,7 +510,7 @@ public class PlayerService extends Service{
                     params.y = yAtHiding;
                     param_player.x = xAtHiding;
                     param_player.y = yAtHiding + playerHeadSize;
-                    windowManager.updateViewLayout(player_view, param_player);
+                    windowManager.updateViewLayout(playerView, param_player);
                     windowManager.updateViewLayout(serviceHead, params);
                     visible = true;
                 }
@@ -492,7 +537,7 @@ public class PlayerService extends Service{
             @Override
             public boolean onTouch(View v, final MotionEvent event) {
                 final WindowManager.LayoutParams params = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
-                WindowManager.LayoutParams param_player = (WindowManager.LayoutParams) player_view.getLayoutParams();
+                WindowManager.LayoutParams param_player = (WindowManager.LayoutParams) playerView.getLayoutParams();
                 serviceCloseBackground.setVisibility(View.VISIBLE);
                 final Handler handleLongTouch = new Handler();
                 final Runnable setVisible = new Runnable() {
@@ -567,7 +612,7 @@ public class PlayerService extends Service{
                                 params.y = newY;
                             }
                             windowManager.updateViewLayout(serviceHead, params);
-                            windowManager.updateViewLayout(player_view, param_player);
+                            windowManager.updateViewLayout(playerView, param_player);
                         }
                         else {
                             if(newY + playerHeadSize > scrnHeight){
@@ -614,6 +659,18 @@ public class PlayerService extends Service{
                 return true;
             }
         });
+    }
+
+    private void updateRepeatTypeImage() {
+        if(Constants.repeatType == 0){
+            repeatTypeImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_none));
+        }
+        else if(Constants.repeatType == 1){
+            repeatTypeImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat));
+        }
+        else if(Constants.repeatType == 2){
+            repeatTypeImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_one));
+        }
     }
 
     private int dpToPx(int dp) {
