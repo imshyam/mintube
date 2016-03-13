@@ -47,4 +47,25 @@ public class JavaScript {
     public static String getVidUpdateNotiContent() {
         return "javascript:window.HtmlViewer.showVID(player.getVideoData()['video_id']);";
     }
+
+    public static String seekToZero() {
+        return "javascript:player.seekTo(0)";
+    }
+
+    public static String setLoopPlaylist() {
+        return "javascript:player.setLoop(true)";
+    }
+
+    public static String unsetLoopPlaylist() {
+        return "javascript:player.setLoop(false)";
+    }
+
+    public static String replayPlaylistScript() {
+        return "javascript:player.playVideoAt(0)";
+    }
+
+    public static String isPlaylistEnded() {
+        return "javascript:window.HtmlViewer.playlistItems(player.getPlaylist());" +
+                "window.HtmlViewer.currVidIndex(player.getPlaylistIndex());";
+    }
 }

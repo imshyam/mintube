@@ -77,9 +77,12 @@ public class PlayerService extends Service{
     static boolean nextVid = false;
     //Replay Video if it's ended
     static boolean replayVid = false;
+    static boolean replayPlaylist = false;
 
     ImageView repeatTypeImg, entireWidthImg, fullScreenImg;
     SharedPreferences sharedPref;
+    private static int noItemsInPlaylist;
+    private static int currVideoIndex;
 
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == -1){
@@ -108,6 +111,10 @@ public class PlayerService extends Service{
                 if(Constants.repeatType == 2){
                     player.loadUrl(JavaScript.prevVideo());
                 }
+                //If not repeating then set notification icon to repeat when playlist ends
+                if(Constants.repeatType == 0){
+                    isPlaylistEnded();
+                }
             }
             else {
                 if(Constants.repeatType > 0){
@@ -126,6 +133,28 @@ public class PlayerService extends Service{
 //        }
     }
 
+    public static void isPlaylistEnded() {
+        player.loadUrl(JavaScript.isPlaylistEnded());
+    }
+
+    public static void setNoItemsInPlaylist(int noItemsInPlaylist) {
+        PlayerService.noItemsInPlaylist = noItemsInPlaylist;
+    }
+
+    public static void setCurrVideoIndex(int currVideoIndex) {
+        PlayerService.currVideoIndex = currVideoIndex;
+    }
+
+    public static void compare() {
+        Log.e("Compairing", PlayerService.currVideoIndex + " " + PlayerService.noItemsInPlaylist);
+        if(PlayerService.currVideoIndex == PlayerService.noItemsInPlaylist -1){
+            Log.e("Playlist ", "Ended");
+            replayPlaylist = true;
+            viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+            viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+            notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
+        }
+    }
 
     @Nullable
     @Override
@@ -160,10 +189,17 @@ public class PlayerService extends Service{
             stopService(new Intent(this, PlayerService.class));
         } else if(intent.getAction().equals(Constants.ACTION.PAUSE_PLAY_ACTION)){
             if(isVideoPlaying) {
-                if(replayVid){
-                    Log.i("Trying to ", "Replay Video");
-                    player.loadUrl(JavaScript.playVideoScript());
-                    replayVid = false;
+                if(replayVid || replayPlaylist){
+                    if(Constants.linkType == 1){
+                        Log.i("Trying to ", "Replay Playlist");
+                        player.loadUrl(JavaScript.replayPlaylistScript());
+                        replayPlaylist = false;
+                    }
+                    else {
+                        Log.i("Trying to ", "Replay Video");
+                        player.loadUrl(JavaScript.playVideoScript());
+                        replayVid = false;
+                    }
                 }
                 else {
                     Log.i("Trying to ", "Pause Video");
@@ -333,18 +369,27 @@ public class PlayerService extends Service{
                     editor.putInt(getString(R.string.repeat_type), 1);
                     editor.commit();
                     Constants.repeatType = 1;
+                    if(Constants.linkType == 1){
+                        player.loadUrl(JavaScript.setLoopPlaylist());
+                    }
                     updateRepeatTypeImage();
                 }
                 else if(Constants.repeatType == 1){
                     editor.putInt(getString(R.string.repeat_type), 2);
                     editor.commit();
                     Constants.repeatType = 2;
+                    if(Constants.linkType == 1){
+                        player.loadUrl(JavaScript.unsetLoopPlaylist());
+                    }
                     updateRepeatTypeImage();
                 }
                 else if(Constants.repeatType == 2){
                     editor.putInt(getString(R.string.repeat_type), 0);
                     editor.commit();
                     Constants.repeatType = 0;
+                    if(Constants.linkType == 1){
+                        player.loadUrl(JavaScript.unsetLoopPlaylist());
+                    }
                     updateRepeatTypeImage();
                 }
             }
@@ -750,4 +795,5 @@ public class PlayerService extends Service{
         int statusBarHeight = (int) Math.ceil(25 * getApplicationContext().getResources().getDisplayMetrics().density);
         return statusBarHeight;
     }
+
 }

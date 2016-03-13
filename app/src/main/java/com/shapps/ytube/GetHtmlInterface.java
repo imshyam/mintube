@@ -68,5 +68,17 @@ class GetHtmlInterface {
             }
         });
     }
+    @JavascriptInterface
+    public void playlistItems (final String[] items) {
+        Log.e("Playlist Items", String.valueOf(items.length));
+        PlayerService.setNoItemsInPlaylist(items.length);
+        PlayerService.compare();
+    }
+    @JavascriptInterface
+    public void currVidIndex (final int index) {
+        Log.e("Current Video Index ", String.valueOf(index));
+        PlayerService.setCurrVideoIndex(index);
+        PlayerService.compare();
+    }
 
 }
