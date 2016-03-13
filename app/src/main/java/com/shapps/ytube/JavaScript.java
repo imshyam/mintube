@@ -68,4 +68,11 @@ public class JavaScript {
         return "javascript:window.HtmlViewer.playlistItems(player.getPlaylist());" +
                 "window.HtmlViewer.currVidIndex(player.getPlaylistIndex());";
     }
+    public static String CurrVidIndex() {
+        return "javascript:window.HtmlViewer.currVidIndex(player.getPlaylistIndex());";
+    }
+
+    public static String getTime() {
+        return "javascript:window.HtmlViewer.currTime(player.getCurrentTime());";
+    }
 }

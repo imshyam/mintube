@@ -80,5 +80,10 @@ class GetHtmlInterface {
         PlayerService.setCurrVideoIndex(index);
         PlayerService.compare();
     }
+    @JavascriptInterface
+    public void currTime (final int time) {
+        Log.e("Current Time", String.valueOf(time));
+        PlayerService.setCurrTime(time);
+    }
 
 }

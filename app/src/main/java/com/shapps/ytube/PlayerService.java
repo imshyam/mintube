@@ -35,9 +35,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
 
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.shapps.ytube.AsyncTask.ImageLoadTask;
 import com.shapps.ytube.AsyncTask.LoadDetailsTask;
 import com.shapps.ytube.CustomViews.CircularImageView;
+import com.shapps.ytube.YouTube.ApiKey;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +54,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class PlayerService extends Service{
 
+    static Context mContext;
     static Bitmap bitmap;
     static String title, author;
     static PlayerService playerService;
@@ -60,7 +63,7 @@ public class PlayerService extends Service{
     RelativeLayout viewToHide;
     static WebView player;
     static String VID_ID = "";
-    String PLIST_ID = "";
+    static String PLIST_ID = "";
     static boolean isVideoPlaying = true;
     boolean visible = true;
     static RemoteViews viewBig;
@@ -70,6 +73,8 @@ public class PlayerService extends Service{
     static ImageView playerHeadImage;
     int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
     int scrnWidth, scrnHeight, playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
+
+    static Intent standAloneIntent;
 
     //is inside the close button so to stop video
     boolean isInsideClose = false;
@@ -81,8 +86,7 @@ public class PlayerService extends Service{
 
     ImageView repeatTypeImg, entireWidthImg, fullScreenImg;
     SharedPreferences sharedPref;
-    private static int noItemsInPlaylist;
-    private static int currVideoIndex;
+    private static int noItemsInPlaylist, currVideoIndex, currTime;
 
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == -1){
@@ -144,6 +148,14 @@ public class PlayerService extends Service{
     public static void setCurrVideoIndex(int currVideoIndex) {
         PlayerService.currVideoIndex = currVideoIndex;
     }
+    public static void setCurrTime(int currTime) {
+        PlayerService.currTime= currTime;
+        standAloneIntent.putExtra("START_AT", PlayerService.currTime);
+        mContext.startActivity(standAloneIntent);
+    }
+    public static Context getAppContext(){
+        return mContext;
+    }
 
     public static void compare() {
         Log.e("Compairing", PlayerService.currVideoIndex + " " + PlayerService.noItemsInPlaylist);
@@ -165,6 +177,7 @@ public class PlayerService extends Service{
     @Override
     public void onCreate() {
 
+        mContext = this.getApplicationContext();
         super.onCreate();
 
     }
@@ -251,6 +264,8 @@ public class PlayerService extends Service{
     }
 
     public static void startVid(String vId, String pId) {
+        PlayerService.VID_ID = vId;
+        PlayerService.PLIST_ID = pId;
         if(pId == null) {
             setImageTitleAuthor(vId);
             player.loadUrl(JavaScript.loadVideoScript(vId));
@@ -268,8 +283,8 @@ public class PlayerService extends Service{
         Bundle b = intent.getExtras();
 
         if (b != null) {
-            VID_ID = b.getString("VID_ID");
-            PLIST_ID = b.getString("PLAYLIST_ID");
+            PlayerService.VID_ID = b.getString("VID_ID");
+            PlayerService.PLIST_ID = b.getString("PLAYLIST_ID");
         }
 
         //Notification
@@ -401,6 +416,26 @@ public class PlayerService extends Service{
                         player.loadUrl(JavaScript.unsetLoopPlaylist());
                     }
                     updateRepeatTypeImage();
+                }
+            }
+        });
+
+        //Handle Full Screen With Youtube StandAlone Player
+        fullScreenImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                player.loadUrl(JavaScript.pauseVideoScript());
+                standAloneIntent = new Intent(getAppContext(), YouTubeStandAloneActivity.class);
+
+                if(Constants.linkType == 1) {
+                    player.loadUrl(JavaScript.CurrVidIndex());
+                    standAloneIntent.putExtra("INDEX", PlayerService.currVideoIndex);
+                    standAloneIntent.putExtra("PID", PlayerService.PLIST_ID);
+                } else {
+                    player.loadUrl(JavaScript.getTime());
+                    Log.e("Time at", String.valueOf(PlayerService.currTime));
+                    standAloneIntent.putExtra("VID", PlayerService.VID_ID);
+                    standAloneIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 }
             }
         });

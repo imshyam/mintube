@@ -22,6 +22,10 @@
             android:name=".PlayerService"
             android:exported="true" />
 
+        <activity android:name=".YouTubeStandAloneActivity"
+            android:label="StandAlone Player"
+            android:theme="@android:style/Theme.NoDisplay" />
+
         <activity
             android:name=".YouTube.YoutubePlayer"
             android:label="@string/add_ytube"
