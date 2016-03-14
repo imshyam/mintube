@@ -22,9 +22,11 @@
             android:name=".PlayerService"
             android:exported="true" />
 
-        <activity android:name=".YouTubeStandAloneActivity"
-            android:label="StandAlone Player"
-            android:theme="@android:style/Theme.NoDisplay" />
+        <activity
+            android:screenOrientation="landscape"
+            android:name=".YouTubeFullScreenActivity"
+            android:label="FullScreen Player"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
 
         <activity
             android:name=".YouTube.YoutubePlayer"

@@ -75,4 +75,8 @@ public class JavaScript {
     public static String getTime() {
         return "javascript:window.HtmlViewer.currTime(player.getCurrentTime());";
     }
+
+    public static String SeekTo(int currentTimeMillis) {
+        return "javascript:player.seekTo(" + currentTimeMillis/1000 + ")";
+    }
 }

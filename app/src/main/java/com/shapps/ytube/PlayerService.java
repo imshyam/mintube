@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -35,11 +34,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
 
-import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.shapps.ytube.AsyncTask.ImageLoadTask;
 import com.shapps.ytube.AsyncTask.LoadDetailsTask;
 import com.shapps.ytube.CustomViews.CircularImageView;
-import com.shapps.ytube.YouTube.ApiKey;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,8 +55,9 @@ public class PlayerService extends Service{
     static Bitmap bitmap;
     static String title, author;
     static PlayerService playerService;
-    WindowManager windowManager;
-    LinearLayout playerView, serviceHead, serviceClose, serviceCloseBackground;
+    static WindowManager windowManager;
+    static LinearLayout serviceHead, serviceClose, serviceCloseBackground, playerView;
+    static  WindowManager.LayoutParams servHeadParams, servCloseParams, servCloseBackParams, playerViewParams;
     RelativeLayout viewToHide;
     static WebView player;
     static String VID_ID = "";
@@ -148,9 +146,18 @@ public class PlayerService extends Service{
     public static void setCurrVideoIndex(int currVideoIndex) {
         PlayerService.currVideoIndex = currVideoIndex;
     }
+    //start Youtube Full Screen Player
     public static void setCurrTime(int currTime) {
         PlayerService.currTime= currTime;
         standAloneIntent.putExtra("START_AT", PlayerService.currTime);
+        windowManager.removeView(serviceHead);
+        servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
+        windowManager.removeView(serviceClose);
+        servCloseParams = (WindowManager.LayoutParams) serviceClose.getLayoutParams();
+        windowManager.removeView(serviceCloseBackground);
+        servCloseBackParams = (WindowManager.LayoutParams) serviceCloseBackground.getLayoutParams();
+        windowManager.removeView(playerView);
+        playerViewParams = (WindowManager.LayoutParams) playerView.getLayoutParams();
         mContext.startActivity(standAloneIntent);
     }
     public static Context getAppContext(){
@@ -201,27 +208,29 @@ public class PlayerService extends Service{
             stopSelf();
             stopService(new Intent(this, PlayerService.class));
         } else if(intent.getAction().equals(Constants.ACTION.PAUSE_PLAY_ACTION)){
-            if(isVideoPlaying) {
-                if(replayVid || replayPlaylist){
-                    if(Constants.linkType == 1){
-                        Log.i("Trying to ", "Replay Playlist");
-                        player.loadUrl(JavaScript.replayPlaylistScript());
-                        replayPlaylist = false;
-                    }
-                    else {
-                        Log.i("Trying to ", "Replay Video");
-                        player.loadUrl(JavaScript.playVideoScript());
-                        replayVid = false;
-                    }
-                }
-                else {
-                    Log.i("Trying to ", "Pause Video");
-                    player.loadUrl(JavaScript.pauseVideoScript());
-                }
+            if(YouTubeFullScreenActivity.active){
+                YouTubeFullScreenActivity.getInstance().onBackPressed();
             }
-            else{
-                Log.i("Trying to ", "Play Video");
-                player.loadUrl(JavaScript.playVideoScript());
+            else {
+                if (isVideoPlaying) {
+                    if (replayVid || replayPlaylist) {
+                        if (Constants.linkType == 1) {
+                            Log.i("Trying to ", "Replay Playlist");
+                            player.loadUrl(JavaScript.replayPlaylistScript());
+                            replayPlaylist = false;
+                        } else {
+                            Log.i("Trying to ", "Replay Video");
+                            player.loadUrl(JavaScript.playVideoScript());
+                            replayVid = false;
+                        }
+                    } else {
+                        Log.i("Trying to ", "Pause Video");
+                        player.loadUrl(JavaScript.pauseVideoScript());
+                    }
+                } else {
+                    Log.i("Trying to ", "Play Video");
+                    player.loadUrl(JavaScript.playVideoScript());
+                }
             }
         }
         else if(intent.getAction().equals(Constants.ACTION.NEXT_ACTION)){
@@ -425,7 +434,7 @@ public class PlayerService extends Service{
             @Override
             public void onClick(View v) {
                 player.loadUrl(JavaScript.pauseVideoScript());
-                standAloneIntent = new Intent(getAppContext(), YouTubeStandAloneActivity.class);
+                standAloneIntent = new Intent(getAppContext(), YouTubeFullScreenActivity.class);
 
                 if(Constants.linkType == 1) {
                     player.loadUrl(JavaScript.CurrVidIndex());
@@ -841,4 +850,12 @@ public class PlayerService extends Service{
         return statusBarHeight;
     }
 
+    public static void startAgainAt(int currentTimeMillis) {
+        windowManager.addView(serviceHead, servHeadParams);
+        windowManager.addView(serviceClose, servCloseParams);
+        windowManager.addView(serviceCloseBackground, servCloseBackParams);
+        windowManager.addView(playerView, playerViewParams);
+        player.loadUrl(JavaScript.SeekTo(currentTimeMillis));
+        player.loadUrl(JavaScript.playVideoScript());
+    }
 }
