@@ -5,15 +5,27 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-    <RelativeLayout
-        android:id="@+id/view_to_hide"
-        android:layout_width="240dp"
-        android:layout_height="200dp">
-    </RelativeLayout>
-    <include layout="@layout/controls"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        />
+        <LinearLayout
+            android:gravity="center"
+            android:layout_gravity="top|left"
+            android:layout_width="80dp"
+            android:layout_height="20dp">
+            <ImageView
+                android:layout_marginTop="-8dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/arrow_drop_up"/>
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_marginTop="10dp"
+            android:id="@+id/view_to_hide"
+            android:layout_width="240dp"
+            android:layout_height="200dp">
+        </RelativeLayout>
+        <include layout="@layout/controls"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            />
     </FrameLayout>
 </LinearLayout>

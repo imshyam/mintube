@@ -54,10 +54,9 @@ public class PlayerService extends Service{
     static String title, author;
     static PlayerService playerService;
     static WindowManager windowManager;
-    static LinearLayout serviceHead, dropArrow, serviceClose, serviceCloseBackground, playerView;
+    static LinearLayout serviceHead, serviceClose, serviceCloseBackground, playerView;
     static  WindowManager.LayoutParams servHeadParams, servCloseParams, servCloseBackParams, playerViewParams;
     RelativeLayout viewToHide;
-    static WebView playerWebView;
     static WebPlayer webPlayer;
     static String VID_ID = "";
     static String PLIST_ID = "";
@@ -368,8 +367,6 @@ public class PlayerService extends Service{
         params.x = 0;
         params.y = 0;
         windowManager.addView(serviceHead, params);
-        //drop Arrow (Need to hide)
-        dropArrow = (LinearLayout) serviceHead.findViewById(R.id.drop_arrow);
 
         //Player View
         playerView = (LinearLayout) inflater.inflate(R.layout.player_webview, null, false);
@@ -564,12 +561,10 @@ public class PlayerService extends Service{
                     tmpPlayerParams.y = scrnHeight;
                     windowManager.updateViewLayout(playerView, tmpPlayerParams);
                     viewToHide.setVisibility(View.GONE);
-                    dropArrow.setVisibility(View.GONE);
                     windowManager.updateViewLayout(serviceHead, params);
                     visible = false;
                 } else {
                     viewToHide.setVisibility(View.VISIBLE);
-                    dropArrow.setVisibility(View.VISIBLE);
                     //Store current to again hidden icon will come here
                     if(params.x > 0) {
                         xOnAppear = scrnWidth - playerHeadSize + playerHeadSize / 4;
