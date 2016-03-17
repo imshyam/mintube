@@ -21,13 +21,6 @@
         <service
             android:name=".PlayerService"
             android:exported="true" />
-
-        <activity
-            android:screenOrientation="landscape"
-            android:name=".YouTubeFullScreenActivity"
-            android:label="FullScreen Player"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-
         <activity
             android:name=".YouTube.YoutubePlayer"
             android:label="@string/add_ytube"
@@ -81,6 +74,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainActivity" />
         </activity>
+        <activity
+            android:name=".FullscreenWebPlayer"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
     </application>
 
 </manifest>

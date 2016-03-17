@@ -26,9 +26,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -56,10 +54,11 @@ public class PlayerService extends Service{
     static String title, author;
     static PlayerService playerService;
     static WindowManager windowManager;
-    static LinearLayout serviceHead, serviceClose, serviceCloseBackground, playerView;
+    static LinearLayout serviceHead, dropArrow, serviceClose, serviceCloseBackground, playerView;
     static  WindowManager.LayoutParams servHeadParams, servCloseParams, servCloseBackParams, playerViewParams;
     RelativeLayout viewToHide;
-    static WebView player;
+    static WebView playerWebView;
+    static WebPlayer webPlayer;
     static String VID_ID = "";
     static String PLIST_ID = "";
     static boolean isVideoPlaying = true;
@@ -72,7 +71,7 @@ public class PlayerService extends Service{
     int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
     int scrnWidth, scrnHeight, playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
 
-    static Intent standAloneIntent;
+    static Intent fullScreenIntent;
 
     //is inside the close button so to stop video
     boolean isInsideClose = false;
@@ -84,7 +83,7 @@ public class PlayerService extends Service{
 
     ImageView repeatTypeImg, entireWidthImg, fullScreenImg;
     SharedPreferences sharedPref;
-    private static int noItemsInPlaylist, currVideoIndex, currTime;
+    private static int noItemsInPlaylist, currVideoIndex;
 
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == -1){
@@ -96,10 +95,10 @@ public class PlayerService extends Service{
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             if(nextVid){
                 nextVid = false;
-                player.loadUrl(JavaScript.getVidUpdateNotiContent());
+                webPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
             }
             if(VID_ID.length() < 1){
-                player.loadUrl(JavaScript.getVidUpdateNotiContent());
+                webPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
             }
         }
         else if(playingStatus == 2) {
@@ -111,7 +110,7 @@ public class PlayerService extends Service{
             if(Constants.linkType == 1) {
                 Log.e("Repeat Type ", Constants.repeatType + "");
                 if(Constants.repeatType == 2){
-                    player.loadUrl(JavaScript.prevVideo());
+                    webPlayer.loadScript(JavaScript.prevVideo());
                 }
                 //If not repeating then set notification icon to repeat when playlist ends
                 if(Constants.repeatType == 0){
@@ -120,7 +119,7 @@ public class PlayerService extends Service{
             }
             else {
                 if(Constants.repeatType > 0){
-                    player.loadUrl(JavaScript.playVideoScript());
+                    webPlayer.loadScript(JavaScript.playVideoScript());
                 }
                 else {
                     replayVid = true;
@@ -136,7 +135,7 @@ public class PlayerService extends Service{
     }
 
     public static void isPlaylistEnded() {
-        player.loadUrl(JavaScript.isPlaylistEnded());
+        webPlayer.loadScript(JavaScript.isPlaylistEnded());
     }
 
     public static void setNoItemsInPlaylist(int noItemsInPlaylist) {
@@ -146,20 +145,7 @@ public class PlayerService extends Service{
     public static void setCurrVideoIndex(int currVideoIndex) {
         PlayerService.currVideoIndex = currVideoIndex;
     }
-    //start Youtube Full Screen Player
-    public static void setCurrTime(int currTime) {
-        PlayerService.currTime= currTime;
-        standAloneIntent.putExtra("START_AT", PlayerService.currTime);
-        windowManager.removeView(serviceHead);
-        servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
-        windowManager.removeView(serviceClose);
-        servCloseParams = (WindowManager.LayoutParams) serviceClose.getLayoutParams();
-        windowManager.removeView(serviceCloseBackground);
-        servCloseBackParams = (WindowManager.LayoutParams) serviceCloseBackground.getLayoutParams();
-        windowManager.removeView(playerView);
-        playerViewParams = (WindowManager.LayoutParams) playerView.getLayoutParams();
-        mContext.startActivity(standAloneIntent);
-    }
+
     public static Context getAppContext(){
         return mContext;
     }
@@ -208,48 +194,43 @@ public class PlayerService extends Service{
             stopSelf();
             stopService(new Intent(this, PlayerService.class));
         } else if(intent.getAction().equals(Constants.ACTION.PAUSE_PLAY_ACTION)){
-            if(YouTubeFullScreenActivity.active){
-                YouTubeFullScreenActivity.getInstance().onBackPressed();
-            }
-            else {
                 if (isVideoPlaying) {
                     if (replayVid || replayPlaylist) {
                         if (Constants.linkType == 1) {
                             Log.i("Trying to ", "Replay Playlist");
-                            player.loadUrl(JavaScript.replayPlaylistScript());
+                            webPlayer.loadScript(JavaScript.replayPlaylistScript());
                             replayPlaylist = false;
                         } else {
                             Log.i("Trying to ", "Replay Video");
-                            player.loadUrl(JavaScript.playVideoScript());
+                            webPlayer.loadScript(JavaScript.playVideoScript());
                             replayVid = false;
                         }
                     } else {
                         Log.i("Trying to ", "Pause Video");
-                        player.loadUrl(JavaScript.pauseVideoScript());
+                        webPlayer.loadScript(JavaScript.pauseVideoScript());
                     }
                 } else {
                     Log.i("Trying to ", "Play Video");
-                    player.loadUrl(JavaScript.playVideoScript());
+                    webPlayer.loadScript(JavaScript.playVideoScript());
                 }
-            }
         }
         else if(intent.getAction().equals(Constants.ACTION.NEXT_ACTION)){
             Log.e("Trying to ", "Play Next");
             if(Constants.linkType == 0){
-                player.loadUrl(JavaScript.seekToZero());
+                webPlayer.loadScript(JavaScript.seekToZero());
             }
             else {
-                player.loadUrl(JavaScript.nextVideo());
+                webPlayer.loadScript(JavaScript.nextVideo());
                 nextVid = true;
             }
         }
         else if(intent.getAction().equals(Constants.ACTION.PREV_ACTION)){
             Log.e("Trying to ", "Play Previous");
             if(Constants.linkType == 0){
-                player.loadUrl(JavaScript.seekToZero());
+                webPlayer.loadScript(JavaScript.seekToZero());
             }
             else {
-                player.loadUrl(JavaScript.prevVideo());
+                webPlayer.loadScript(JavaScript.prevVideo());
                 nextVid = true;
             }
         }
@@ -264,8 +245,10 @@ public class PlayerService extends Service{
         Session.finishWeb();
         Log.i("Status", "Destroyed!");
         if (playerView != null) {
-            player.destroy();
-            player = null;
+            if(FullscreenWebPlayer.active){
+                FullscreenWebPlayer.fullScreenAct.onBackPressed();
+            }
+            webPlayer.destroy();
             windowManager.removeView(playerView);
             windowManager.removeView(serviceHead);
             windowManager.removeView(serviceClose);
@@ -277,10 +260,10 @@ public class PlayerService extends Service{
         PlayerService.PLIST_ID = pId;
         if(pId == null) {
             setImageTitleAuthor(vId);
-            player.loadUrl(JavaScript.loadVideoScript(vId));
+            webPlayer.loadScript(JavaScript.loadVideoScript(vId));
         }
         else{
-            player.loadUrl(JavaScript.loadPlaylistScript(pId));
+            webPlayer.loadScript(JavaScript.loadPlaylistScript(pId));
             Log.e("Starting ", "Playlist.");
             setImageTitleAuthor(vId);
         }
@@ -385,111 +368,35 @@ public class PlayerService extends Service{
         params.x = 0;
         params.y = 0;
         windowManager.addView(serviceHead, params);
+        //drop Arrow (Need to hide)
+        dropArrow = (LinearLayout) serviceHead.findViewById(R.id.drop_arrow);
 
         //Player View
         playerView = (LinearLayout) inflater.inflate(R.layout.player_webview, null, false);
         viewToHide = (RelativeLayout) playerView.findViewById(R.id.view_to_hide);
-        repeatTypeImg = (ImageView) playerView.findViewById(R.id.repeat_type);
-        entireWidthImg = (ImageView) playerView.findViewById(R.id.entire_width);
-        fullScreenImg = (ImageView) playerView.findViewById(R.id.fullscreen);
 
-        //update Repeat Type Onclick
-        updateRepeatTypeImage();
-        repeatTypeImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = sharedPref.edit();
-                if(Constants.repeatType == 0){
-                    editor.putInt(getString(R.string.repeat_type), 1);
-                    editor.commit();
-                    Constants.repeatType = 1;
-                    if(Constants.linkType == 1){
-                        player.loadUrl(JavaScript.setLoopPlaylist());
-                    }
-                    updateRepeatTypeImage();
-                }
-                else if(Constants.repeatType == 1){
-                    editor.putInt(getString(R.string.repeat_type), 2);
-                    editor.commit();
-                    Constants.repeatType = 2;
-                    if(Constants.linkType == 1){
-                        player.loadUrl(JavaScript.unsetLoopPlaylist());
-                    }
-                    updateRepeatTypeImage();
-                }
-                else if(Constants.repeatType == 2){
-                    editor.putInt(getString(R.string.repeat_type), 0);
-                    editor.commit();
-                    Constants.repeatType = 0;
-                    if(Constants.linkType == 1){
-                        player.loadUrl(JavaScript.unsetLoopPlaylist());
-                    }
-                    updateRepeatTypeImage();
-                }
-            }
-        });
-
-        //Handle Full Screen With Youtube StandAlone Player
-        fullScreenImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                player.loadUrl(JavaScript.pauseVideoScript());
-                standAloneIntent = new Intent(getAppContext(), YouTubeFullScreenActivity.class);
-
-                if(Constants.linkType == 1) {
-                    player.loadUrl(JavaScript.CurrVidIndex());
-                    standAloneIntent.putExtra("INDEX", PlayerService.currVideoIndex);
-                    standAloneIntent.putExtra("PID", PlayerService.PLIST_ID);
-                } else {
-                    player.loadUrl(JavaScript.getTime());
-                    Log.e("Time at", String.valueOf(PlayerService.currTime));
-                    standAloneIntent.putExtra("VID", PlayerService.VID_ID);
-                    standAloneIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                }
-            }
-        });
-
-        player = (WebView) playerView.findViewById(R.id.playerView);
-        player.getSettings().setJavaScriptEnabled(true);
-
-//         For debugging using chrome on PC
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//                player.setWebContentsDebuggingEnabled(true);
-//            }
-
-        player.setWebChromeClient(new WebChromeClient());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            player.getSettings().setMediaPlaybackRequiresUserGesture(false);
-        }
-        player.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:21.0.0) Gecko/20121011 Firefox/21.0.0");
-
-        //----------------------------To get Player Id-------------------------------------------
-
-        player.addJavascriptInterface(new GetHtmlInterface(this), "HtmlViewer");
-        player.setWebViewClient(new WebViewClient() {
-                                    @Override
-                                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                                        return true;
-                                    }
-
-                                    @Override
-                                    public void onPageFinished(WebView view, String url) {
-                                        player.loadUrl(JavaScript.getHtmlScript());
-                                    }
-                                }
+        WindowManager.LayoutParams parWebView = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
         );
+
+        webPlayer = new WebPlayer(this);
+        webPlayer.setupPlayer();
+
+        viewToHide.addView(webPlayer.getPlayer(), parWebView);
+
         //------------------------------Got Player Id--------------------------------------------------------
         Map hashMap = new HashMap();
         hashMap.put("Referer", "http://www.youtube.com");
         if(Constants.linkType == 1) {
             Log.e("Starting ", "Playlist!!!");
-            player.loadUrl("https://www.youtube.com/embed/"
+            webPlayer.loadUrl("https://www.youtube.com/embed/"
                     + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&list=" + PLIST_ID
                     , hashMap);
         }
         else {
             Log.e("Starting ", "Single Video!!!");
-            player.loadUrl("https://www.youtube.com/embed/" + VID_ID
+            webPlayer.loadUrl("https://www.youtube.com/embed/" + VID_ID
                     + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1"
                     , hashMap);
         }
@@ -513,6 +420,7 @@ public class PlayerService extends Service{
             public void onGlobalLayout() {
                 serviceHead.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 playerHeadSize = serviceHead.getMeasuredHeight();
+
                 Log.e("ChatHead Size", String.valueOf(playerHeadSize));
                 param_player.y = playerHeadSize;
                 xOnAppear = - playerHeadSize / 4;
@@ -529,6 +437,71 @@ public class PlayerService extends Service{
                 playerWidth = playerView.getMeasuredWidth();
                 playerHeight = playerView.getMeasuredHeight();
                 Log.e("Player W and H ", playerWidth + " " + playerHeight);
+            }
+        });
+
+
+        //Player Controls
+        repeatTypeImg = (ImageView) playerView.findViewById(R.id.repeat_type);
+        entireWidthImg = (ImageView) playerView.findViewById(R.id.entire_width);
+        fullScreenImg = (ImageView) playerView.findViewById(R.id.fullscreen);
+
+        //update Repeat Type Onclick
+        updateRepeatTypeImage();
+        repeatTypeImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = sharedPref.edit();
+                if(Constants.repeatType == 0){
+                    editor.putInt(getString(R.string.repeat_type), 1);
+                    editor.commit();
+                    Constants.repeatType = 1;
+                    if(Constants.linkType == 1){
+                        webPlayer.loadScript(JavaScript.setLoopPlaylist());
+                    }
+                    updateRepeatTypeImage();
+                }
+                else if(Constants.repeatType == 1){
+                    editor.putInt(getString(R.string.repeat_type), 2);
+                    editor.commit();
+                    Constants.repeatType = 2;
+                    if(Constants.linkType == 1){
+                        webPlayer.loadScript(JavaScript.unsetLoopPlaylist());
+                    }
+                    updateRepeatTypeImage();
+                }
+                else if(Constants.repeatType == 2){
+                    editor.putInt(getString(R.string.repeat_type), 0);
+                    editor.commit();
+                    Constants.repeatType = 0;
+                    if(Constants.linkType == 1){
+                        webPlayer.loadScript(JavaScript.unsetLoopPlaylist());
+                    }
+                    updateRepeatTypeImage();
+                }
+            }
+        });
+
+        //Handle Full Screen
+        fullScreenImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                webPlayer.loadScript(JavaScript.pauseVideoScript());
+                fullScreenIntent = new Intent(getAppContext(), FullscreenWebPlayer.class);
+                fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                //remove Views
+                windowManager.removeView(serviceHead);
+                servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
+                windowManager.removeView(serviceClose);
+                servCloseParams = (WindowManager.LayoutParams) serviceClose.getLayoutParams();
+                windowManager.removeView(serviceCloseBackground);
+                servCloseBackParams = (WindowManager.LayoutParams) serviceCloseBackground.getLayoutParams();
+                windowManager.removeView(playerView);
+                playerViewParams = (WindowManager.LayoutParams) playerView.getLayoutParams();
+
+                //start full Screen Player
+                mContext.startActivity(fullScreenIntent);
             }
         });
 
@@ -591,11 +564,12 @@ public class PlayerService extends Service{
                     tmpPlayerParams.y = scrnHeight;
                     windowManager.updateViewLayout(playerView, tmpPlayerParams);
                     viewToHide.setVisibility(View.GONE);
-
+                    dropArrow.setVisibility(View.GONE);
                     windowManager.updateViewLayout(serviceHead, params);
                     visible = false;
                 } else {
                     viewToHide.setVisibility(View.VISIBLE);
+                    dropArrow.setVisibility(View.VISIBLE);
                     //Store current to again hidden icon will come here
                     if(params.x > 0) {
                         xOnAppear = scrnWidth - playerHeadSize + playerHeadSize / 4;
@@ -816,12 +790,12 @@ public class PlayerService extends Service{
 
     public static void tryAgainForPlayerID() {
         Log.e("Trying Again : ", ":(");
-        player.loadUrl(JavaScript.getHtmlScript());
+        webPlayer.loadScript(JavaScript.getHtmlScript());
     }
 
     public static void InitializePlayer() {
         Log.e("Initializing ", Session.getPlayerId());
-        player.loadUrl(JavaScript.initializePlayerScript(Session.getPlayerId()));
+        webPlayer.loadScript(JavaScript.initializePlayerScript(Session.getPlayerId()));
     }
 
     private void updateIsInsideClose(int x, int y, int[] t) {
@@ -850,12 +824,11 @@ public class PlayerService extends Service{
         return statusBarHeight;
     }
 
-    public static void startAgainAt(int currentTimeMillis) {
+    public static void startAgain() {
         windowManager.addView(serviceHead, servHeadParams);
         windowManager.addView(serviceClose, servCloseParams);
         windowManager.addView(serviceCloseBackground, servCloseBackParams);
         windowManager.addView(playerView, playerViewParams);
-        player.loadUrl(JavaScript.SeekTo(currentTimeMillis));
-        player.loadUrl(JavaScript.playVideoScript());
+        webPlayer.loadScript(JavaScript.playVideoScript());
     }
 }

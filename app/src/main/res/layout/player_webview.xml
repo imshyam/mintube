@@ -2,53 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-    <RelativeLayout
-        android:id="@+id/view_to_hide"
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="-5dp"
-            android:layout_marginLeft="25dp"
-            android:src="@drawable/arrow_dropdown"/>
-        <RelativeLayout
-            android:layout_width="240dp"
-            android:layout_height="200dp">
-            <WebView
-                android:id="@+id/playerView"
-                android:layout_marginTop="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-            <LinearLayout
-                android:id="@+id/player_controls"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_width="150dp"
-                android:layout_height="25dp"
-                android:orientation="horizontal"
-                android:weightSum="3">
-                <ImageView
-                    android:id="@+id/repeat_type"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_repeat_none" />
-                <ImageView
-                    android:id="@+id/entire_width"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_entire_width"/>
-                <ImageView
-                    android:id="@+id/fullscreen"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_fullscreen"/>
-            </LinearLayout>
-        </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/view_to_hide"
+        android:layout_width="240dp"
+        android:layout_height="200dp">
     </RelativeLayout>
-
-
+    <include layout="@layout/controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        />
+    </FrameLayout>
 </LinearLayout>
