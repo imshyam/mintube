@@ -70,7 +70,7 @@ public class PlayerService extends Service{
     int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
     int scrnWidth, scrnHeight, playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
 
-    static Intent fullScreenIntent;
+    static Intent fullScreenIntent, entireWidthIntent;
 
     //is inside the close button so to stop video
     boolean isInsideClose = false;
@@ -246,6 +246,9 @@ public class PlayerService extends Service{
         if (playerView != null) {
             if(FullscreenWebPlayer.active){
                 FullscreenWebPlayer.fullScreenAct.onBackPressed();
+            }
+            if(EntireWidthWebPlayer.active){
+                EntireWidthWebPlayer.entWidthAct.onBackPressed();
             }
             webPlayer.destroy();
             windowManager.removeView(playerView);
@@ -449,33 +452,55 @@ public class PlayerService extends Service{
             @Override
             public void onClick(View v) {
                 SharedPreferences.Editor editor = sharedPref.edit();
-                if(Constants.repeatType == 0){
+                if (Constants.repeatType == 0) {
                     editor.putInt(getString(R.string.repeat_type), 1);
                     editor.commit();
                     Constants.repeatType = 1;
-                    if(Constants.linkType == 1){
+                    if (Constants.linkType == 1) {
                         webPlayer.loadScript(JavaScript.setLoopPlaylist());
                     }
                     updateRepeatTypeImage();
-                }
-                else if(Constants.repeatType == 1){
+                } else if (Constants.repeatType == 1) {
                     editor.putInt(getString(R.string.repeat_type), 2);
                     editor.commit();
                     Constants.repeatType = 2;
-                    if(Constants.linkType == 1){
+                    if (Constants.linkType == 1) {
                         webPlayer.loadScript(JavaScript.unsetLoopPlaylist());
                     }
                     updateRepeatTypeImage();
-                }
-                else if(Constants.repeatType == 2){
+                } else if (Constants.repeatType == 2) {
                     editor.putInt(getString(R.string.repeat_type), 0);
                     editor.commit();
                     Constants.repeatType = 0;
-                    if(Constants.linkType == 1){
+                    if (Constants.linkType == 1) {
                         webPlayer.loadScript(JavaScript.unsetLoopPlaylist());
                     }
                     updateRepeatTypeImage();
                 }
+            }
+        });
+
+        //Handle Entire Width
+
+        entireWidthImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                webPlayer.loadScript(JavaScript.pauseVideoScript());
+                entireWidthIntent = new Intent(getAppContext(), EntireWidthWebPlayer.class);
+                entireWidthIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                //remove Views
+                windowManager.removeView(serviceHead);
+                servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
+                windowManager.removeView(serviceClose);
+                servCloseParams = (WindowManager.LayoutParams) serviceClose.getLayoutParams();
+                windowManager.removeView(serviceCloseBackground);
+                servCloseBackParams = (WindowManager.LayoutParams) serviceCloseBackground.getLayoutParams();
+                windowManager.removeView(playerView);
+                playerViewParams = (WindowManager.LayoutParams) playerView.getLayoutParams();
+
+                //start full Screen Player
+                mContext.startActivity(entireWidthIntent);
             }
         });
 
