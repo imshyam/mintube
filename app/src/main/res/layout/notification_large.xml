@@ -18,15 +18,25 @@
         android:orientation="vertical"
         android:layout_height="match_parent"
         android:background="#e62920">
-        <TextView
-            android:id="@+id/title"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:padding="5dp"
-            android:text="Loading Title"
-            android:textSize="12dp"
-            android:textStyle="bold"
-            android:textColor="#fff"/>
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/stop_service"
+                android:src="@drawable/ic_close_dark"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="top|right" />
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:padding="5dp"
+                android:text="Loading Title"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:textColor="#fff"/>
+        </FrameLayout>
         <TextView
             android:id="@+id/author"
             android:layout_width="match_parent"

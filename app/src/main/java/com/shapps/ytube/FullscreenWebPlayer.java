@@ -40,15 +40,20 @@ public class FullscreenWebPlayer extends Activity {
     }
     @Override
     public void onBackPressed() {
+        if(active){
+            ((ViewGroup) player.getParent()).removeView(player);
+            parent.addView(player);
+            PlayerService.startAgain();
+        }
         active = false;
-        ((ViewGroup) player.getParent()).removeView(player);
-        parent.addView(player);
-        PlayerService.startAgain();
         super.onBackPressed();
     }
     @Override
     protected void onPause() {
-        fullScreenAct.onBackPressed();
+        if(active) {
+            fullScreenAct.onBackPressed();
+        }
+        active = false;
         super.onPause();
     }
 }

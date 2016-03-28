@@ -305,14 +305,13 @@ public class PlayerService extends Service implements View.OnClickListener{
         notificationManager = (NotificationManager) getSystemService(this.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
 
-                .setSmallIcon(R.drawable.thumbnail)
+                .setSmallIcon(R.drawable.ic_play)
 
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
 
                 .setContent(viewSmall)
 
-
-                        // Automatically dismiss the notification when it is touched.
+                // Automatically dismiss the notification when it is touched.
                 .setAutoCancel(false);
 
         notification = builder.build();
@@ -326,6 +325,10 @@ public class PlayerService extends Service implements View.OnClickListener{
 
         //stop Service using doThings Intent
         viewSmall.setOnClickPendingIntent(R.id.stop_service,
+                PendingIntent.getService(getApplicationContext(), 0,
+                        doThings.setAction(Constants.ACTION.STOPFOREGROUND_WEB_ACTION), 0));
+
+        viewBig.setOnClickPendingIntent(R.id.stop_service,
                 PendingIntent.getService(getApplicationContext(), 0,
                         doThings.setAction(Constants.ACTION.STOPFOREGROUND_WEB_ACTION), 0));
 
