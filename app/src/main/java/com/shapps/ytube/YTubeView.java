@@ -177,9 +177,6 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
         return false;
     }
 
-    public static SharedPreferences getSharedPref() {
-        return sharedPref;
-    }
 
 //
 //    @Override

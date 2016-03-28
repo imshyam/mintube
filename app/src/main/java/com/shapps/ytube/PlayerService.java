@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -180,7 +181,7 @@ public class PlayerService extends Service{
         this.playerService = this;
         if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_WEB_ACTION)) {
             Log.e("Service ", "Started!");
-            sharedPref = YTubeView.getSharedPref();
+            sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
             Constants.playerType = sharedPref.getInt(getString(R.string.player_type), 0);
             Constants.repeatType = sharedPref.getInt(getString(R.string.repeat_type), 0);
             Constants.noOfRepeats = sharedPref.getInt(getString(R.string.no_of_repeats), 5);
@@ -499,7 +500,7 @@ public class PlayerService extends Service{
                 windowManager.removeView(playerView);
                 playerViewParams = (WindowManager.LayoutParams) playerView.getLayoutParams();
 
-                //start full Screen Player
+                //start entire Screen Player
                 mContext.startActivity(entireWidthIntent);
             }
         });
