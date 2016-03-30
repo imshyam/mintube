@@ -48,4 +48,10 @@ public class FullscreenWebPlayer extends Activity {
         super.onBackPressed();
     }
 
+    @Override
+    protected void onPause() {
+        fullScreenAct.onBackPressed();
+        super.onPause();
+    }
+    
 }

@@ -78,6 +78,7 @@
         <activity
             android:name=".FullscreenWebPlayer"
             android:screenOrientation="landscape"
+            android:excludeFromRecents="true"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
         <activity
             android:name=".EntireWidthWebPlayer"
