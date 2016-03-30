@@ -49,7 +49,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by shyam on 12/2/16.
  */
-public class PlayerService extends Service{
+public class PlayerService extends Service implements View.OnClickListener{
 
     static Context mContext;
     static Bitmap bitmap;
@@ -59,7 +59,8 @@ public class PlayerService extends Service{
     static LinearLayout serviceHead, serviceClose, serviceCloseBackground, playerView, webPlayerLL;
     FrameLayout webPlayerFrame;
     static  WindowManager.LayoutParams servHeadParams, servCloseParams, servCloseBackParams, playerViewParams;
-    RelativeLayout viewToHide;
+    WindowManager.LayoutParams param_player, params, param_close, param_close_back, parWebView;
+    RelativeLayout viewToHide, closeImageLayout;
     static WebPlayer webPlayer;
     static String VID_ID = "";
     static String PLIST_ID = "";
@@ -349,7 +350,7 @@ public class PlayerService extends Service{
         //Previous Video using doThings Intent
         viewBig.setOnClickPendingIntent(R.id.previous_video,
                 PendingIntent.getService(getApplicationContext(), 0,
-                        doThings.setAction(Constants.ACTION.PREV_ACTION) , 0));
+                        doThings.setAction(Constants.ACTION.PREV_ACTION), 0));
 
         //Start Foreground Service
         startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
@@ -357,19 +358,15 @@ public class PlayerService extends Service{
         //View
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
+        //Initialize Layout Parameters For All View
+        InitParams();
+
         LayoutInflater inflater = (LayoutInflater) this.getSystemService
                 (Context.LAYOUT_INFLATER_SERVICE);
 
         //Service Head
         serviceHead = (LinearLayout) inflater.inflate(R.layout.service_head, null, false);
         playerHeadImage = (ImageView) serviceHead.findViewById(R.id.song_icon);
-        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                PixelFormat.TRANSLUCENT
-        );
 
         params.gravity = Gravity.TOP | Gravity.LEFT;
         params.x = 0;
@@ -381,11 +378,6 @@ public class PlayerService extends Service{
         viewToHide = (RelativeLayout) playerView.findViewById(R.id.view_to_hide);
         webPlayerFrame = (FrameLayout) playerView.findViewById(R.id.web_player_frame);
         webPlayerLL = (LinearLayout) playerView.findViewById(R.id.web_player_ll);
-
-        final WindowManager.LayoutParams parWebView = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
-        );
 
         webPlayer = new WebPlayer(this);
         webPlayer.setupPlayer();
@@ -407,13 +399,6 @@ public class PlayerService extends Service{
                     + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1"
                     , hashMap);
         }
-
-        final WindowManager.LayoutParams param_player = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                PixelFormat.TRANSLUCENT);
 
         param_player.gravity = Gravity.TOP | Gravity.LEFT;
         param_player.x = 0;
@@ -456,126 +441,28 @@ public class PlayerService extends Service{
 
         //update Repeat Type Onclick
         updateRepeatTypeImage();
-        repeatTypeImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = sharedPref.edit();
-                if (Constants.repeatType == 0) {
-                    editor.putInt(getString(R.string.repeat_type), 1);
-                    editor.commit();
-                    Constants.repeatType = 1;
-                    if (Constants.linkType == 1) {
-                        webPlayer.loadScript(JavaScript.setLoopPlaylist());
-                    }
-                    updateRepeatTypeImage();
-                } else if (Constants.repeatType == 1) {
-                    editor.putInt(getString(R.string.repeat_type), 2);
-                    editor.commit();
-                    Constants.repeatType = 2;
-                    if (Constants.linkType == 1) {
-                        webPlayer.loadScript(JavaScript.unsetLoopPlaylist());
-                    }
-                    updateRepeatTypeImage();
-                } else if (Constants.repeatType == 2) {
-                    editor.putInt(getString(R.string.repeat_type), 0);
-                    editor.commit();
-                    Constants.repeatType = 0;
-                    if (Constants.linkType == 1) {
-                        webPlayer.loadScript(JavaScript.unsetLoopPlaylist());
-                    }
-                    updateRepeatTypeImage();
-                }
-            }
-        });
+        repeatTypeImg.setOnClickListener(this);
 
         //Handle Entire Width
 
-        entireWidthImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(WebPlayer.getPlayer().getMeasuredWidth() != scrnWidth) {
-                    param_player.width = WindowManager.LayoutParams.MATCH_PARENT;
-                    windowManager.updateViewLayout(playerView, param_player);
-                    ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
-                    fillWidthParamLL.width = WindowManager.LayoutParams.MATCH_PARENT;
-                    webPlayerLL.setLayoutParams(fillWidthParamLL);
-                    ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
-                    fillWidthParamFrame.width = WindowManager.LayoutParams.MATCH_PARENT;
-                    webPlayerFrame.setLayoutParams(fillWidthParamFrame);
-                    ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
-                    fillWidthParam.width = WindowManager.LayoutParams.MATCH_PARENT;
-                    viewToHide.setLayoutParams(fillWidthParam);
-                    ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
-                    playerEntireWidPar.width = WindowManager.LayoutParams.MATCH_PARENT;
-                    viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
-                    isEntireWidth = true;
-                }
-                else{
-                    param_player.width = defaultPlayerWidth;
-                    windowManager.updateViewLayout(playerView, param_player);
-                    ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
-                    fillWidthParamLL.width = defaultPlayerWidth;
-                    webPlayerLL.setLayoutParams(fillWidthParamLL);
-                    ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
-                    fillWidthParamFrame.width = defaultPlayerWidth;
-                    webPlayerFrame.setLayoutParams(fillWidthParamFrame);
-                    ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
-                    fillWidthParam.width = defaultPlayerWidth;
-                    viewToHide.setLayoutParams(fillWidthParam);
-                    ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
-                    playerEntireWidPar.width = defaultPlayerWidth;
-                    viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
-                    isEntireWidth = false;
-                }
-            }
-        });
+        entireWidthImg.setOnClickListener(this);
 
         //Handle Full Screen
-        fullScreenImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                webPlayer.loadScript(JavaScript.pauseVideoScript());
-                fullScreenIntent = new Intent(getAppContext(), FullscreenWebPlayer.class);
-                fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                //remove Views
-                windowManager.removeView(serviceHead);
-                servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
-                windowManager.removeView(serviceClose);
-                servCloseParams = (WindowManager.LayoutParams) serviceClose.getLayoutParams();
-                windowManager.removeView(serviceCloseBackground);
-                servCloseBackParams = (WindowManager.LayoutParams) serviceCloseBackground.getLayoutParams();
-                windowManager.removeView(playerView);
-                playerViewParams = (WindowManager.LayoutParams) playerView.getLayoutParams();
-
-                //start full Screen Player
-                mContext.startActivity(fullScreenIntent);
-            }
-        });
+        fullScreenImg.setOnClickListener(this);
 
         //Chat Head Close
         serviceCloseBackground = (LinearLayout) inflater.inflate(R.layout.service_close_background, null, false);
-        final WindowManager.LayoutParams param_close_back = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                PixelFormat.TRANSLUCENT);
+
         param_close_back.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         serviceCloseBackground.setVisibility(View.GONE);
         windowManager.addView(serviceCloseBackground, param_close_back);
 
         serviceClose = (LinearLayout) inflater.inflate(R.layout.service_close, null, false);
-        final WindowManager.LayoutParams param_close = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                PixelFormat.TRANSLUCENT);
+
         param_close.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         serviceClose.setVisibility(View.GONE);
         windowManager.addView(serviceClose, param_close);
-        final RelativeLayout closeImageLayout = (RelativeLayout) serviceClose.findViewById(R.id.close_image_layout);
+        closeImageLayout = (RelativeLayout) serviceClose.findViewById(R.id.close_image_layout);
         vto = closeImageLayout.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -589,52 +476,7 @@ public class PlayerService extends Service{
         final CircularImageView closeImage = (CircularImageView) serviceClose.findViewById(R.id.close_image);
 
         //-----------------Handle Click-----------------------------
-        playerHeadImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("Clicked", "Click!");
-                if (visible) {
-                    Log.e("Head x , y ", params.x + " " + params.y);
-                    Log.e("Player x , y ", param_player.x + " " + param_player.y);
-                    Log.e("Head Size", String.valueOf(playerHeadImage.getHeight()));
-                    xAtHiding = params.x;
-                    yAtHiding = params.y;
-                    params.x = xOnAppear;
-                    params.y = yOnAppear;
-                    //To hide the Player View
-                    final WindowManager.LayoutParams tmpPlayerParams = new WindowManager.LayoutParams(
-                            100,
-                            100,
-                            WindowManager.LayoutParams.TYPE_PHONE,
-                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                            PixelFormat.TRANSLUCENT);
-                    tmpPlayerParams.x = scrnWidth;
-                    tmpPlayerParams.y = scrnHeight;
-                    windowManager.updateViewLayout(playerView, tmpPlayerParams);
-                    viewToHide.setVisibility(View.GONE);
-                    windowManager.updateViewLayout(serviceHead, params);
-                    visible = false;
-                } else {
-                    viewToHide.setVisibility(View.VISIBLE);
-                    //Store current to again hidden icon will come here
-                    if(params.x > 0) {
-                        xOnAppear = scrnWidth - playerHeadSize + playerHeadSize / 4;
-                    }
-                    else{
-                        xOnAppear = - playerHeadSize / 4;
-                    }
-                    yOnAppear = params.y;
-                    //Update the icon and player to player's hidden position
-                    params.x = xAtHiding;
-                    params.y = yAtHiding;
-                    param_player.x = xAtHiding;
-                    param_player.y = yAtHiding + playerHeadSize;
-                    windowManager.updateViewLayout(playerView, param_player);
-                    windowManager.updateViewLayout(serviceHead, params);
-                    visible = true;
-                }
-            }
-        });
+        playerHeadImage.setOnClickListener(this);
 
         //getting Screen Width and Height
         WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
@@ -762,6 +604,8 @@ public class PlayerService extends Service{
                                 }
                             }
                             else{
+                                params.width = playerHeadSize;
+                                params.height = playerHeadSize;
                                 if(closeImage.getLayoutParams().width > closeImgSize){
                                     closeImage.getLayoutParams().width = closeImgSize;
                                     closeImage.getLayoutParams().height = closeImgSize;
@@ -785,7 +629,7 @@ public class PlayerService extends Service{
             }
         });
     }
-
+    //Update Image of Repeat Type Button
     private void updateRepeatTypeImage() {
         if(Constants.repeatType == 0){
             repeatTypeImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_none));
@@ -798,13 +642,7 @@ public class PlayerService extends Service{
         }
     }
 
-    private int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return px;
-    }
-
-    //Set Image and Headings
+    //Set Image and Headings in Notification
     public static void setImageTitleAuthor(String videoId) {
 
         Log.e("Setting ", "Image, Title, Author");
@@ -849,7 +687,6 @@ public class PlayerService extends Service{
         Log.e("Initializing ", Session.getPlayerId());
         webPlayer.loadScript(JavaScript.initializePlayerScript(Session.getPlayerId()));
     }
-
     private void updateIsInsideClose(int x, int y, int[] t) {
         playerHeadCenterX = x + playerHeadSize / 2 ;
         playerHeadCenterY = y + playerHeadSize / 2;
@@ -876,11 +713,189 @@ public class PlayerService extends Service{
         return statusBarHeight;
     }
 
+    //Play video again on exit full screen
     public static void startAgain() {
         windowManager.addView(serviceHead, servHeadParams);
         windowManager.addView(serviceClose, servCloseParams);
         windowManager.addView(serviceCloseBackground, servCloseBackParams);
         windowManager.addView(playerView, playerViewParams);
         webPlayer.loadScript(JavaScript.playVideoScript());
+    }
+
+
+    //Clicks Handled
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            //Handle Hiding of player
+            case R.id.song_icon:
+                Log.e("Clicked", "Click!");
+                if (visible) {
+                    Log.e("Head x , y ", params.x + " " + params.y);
+                    Log.e("Player x , y ", param_player.x + " " + param_player.y);
+                    Log.e("Head Size", String.valueOf(playerHeadImage.getHeight()));
+                    xAtHiding = params.x;
+                    yAtHiding = params.y;
+                    params.x = xOnAppear;
+                    params.y = yOnAppear;
+                    //To hide the Player View
+                    final WindowManager.LayoutParams tmpPlayerParams = new WindowManager.LayoutParams(
+                            100,
+                            100,
+                            WindowManager.LayoutParams.TYPE_PHONE,
+                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                            PixelFormat.TRANSLUCENT);
+                    tmpPlayerParams.x = scrnWidth;
+                    tmpPlayerParams.y = scrnHeight;
+                    windowManager.updateViewLayout(playerView, tmpPlayerParams);
+                    viewToHide.setVisibility(View.GONE);
+                    windowManager.updateViewLayout(serviceHead, params);
+                    visible = false;
+                } else {
+                    viewToHide.setVisibility(View.VISIBLE);
+                    //Store current to again hidden icon will come here
+                    if(params.x > 0) {
+                        xOnAppear = scrnWidth - playerHeadSize + playerHeadSize / 4;
+                    }
+                    else{
+                        xOnAppear = - playerHeadSize / 4;
+                    }
+                    yOnAppear = params.y;
+                    //Update the icon and player to player's hidden position
+                    params.x = xAtHiding;
+                    params.y = yAtHiding;
+                    param_player.x = xAtHiding;
+                    param_player.y = yAtHiding + playerHeadSize;
+                    windowManager.updateViewLayout(playerView, param_player);
+                    windowManager.updateViewLayout(serviceHead, params);
+                    visible = true;
+                }
+                break;
+            //Handle Full Screen
+            case R.id.fullscreen:
+                webPlayer.loadScript(JavaScript.pauseVideoScript());
+                fullScreenIntent = new Intent(getAppContext(), FullscreenWebPlayer.class);
+                fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                //remove Views
+                windowManager.removeView(serviceHead);
+                servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
+                windowManager.removeView(serviceClose);
+                servCloseParams = (WindowManager.LayoutParams) serviceClose.getLayoutParams();
+                windowManager.removeView(serviceCloseBackground);
+                servCloseBackParams = (WindowManager.LayoutParams) serviceCloseBackground.getLayoutParams();
+                windowManager.removeView(playerView);
+                playerViewParams = (WindowManager.LayoutParams) playerView.getLayoutParams();
+                //start full Screen Player
+                mContext.startActivity(fullScreenIntent);
+                break;
+            //Handle Entire Width
+            case R.id.entire_width:
+                if(WebPlayer.getPlayer().getMeasuredWidth() != scrnWidth) {
+                    param_player.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    windowManager.updateViewLayout(playerView, param_player);
+                    ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
+                    fillWidthParamLL.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    webPlayerLL.setLayoutParams(fillWidthParamLL);
+                    ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
+                    fillWidthParamFrame.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    webPlayerFrame.setLayoutParams(fillWidthParamFrame);
+                    ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
+                    fillWidthParam.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    viewToHide.setLayoutParams(fillWidthParam);
+                    ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
+                    playerEntireWidPar.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
+                    isEntireWidth = true;
+                }
+                else{
+                    param_player.width = defaultPlayerWidth;
+                    windowManager.updateViewLayout(playerView, param_player);
+                    ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
+                    fillWidthParamLL.width = defaultPlayerWidth;
+                    webPlayerLL.setLayoutParams(fillWidthParamLL);
+                    ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
+                    fillWidthParamFrame.width = defaultPlayerWidth;
+                    webPlayerFrame.setLayoutParams(fillWidthParamFrame);
+                    ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
+                    fillWidthParam.width = defaultPlayerWidth;
+                    viewToHide.setLayoutParams(fillWidthParam);
+                    ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
+                    playerEntireWidPar.width = defaultPlayerWidth;
+                    viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
+                    isEntireWidth = false;
+                }
+                break;
+            //Handle Repeat Settings
+            case R.id.repeat_type:
+                SharedPreferences.Editor editor = sharedPref.edit();
+                if (Constants.repeatType == 0) {
+                    editor.putInt(getString(R.string.repeat_type), 1);
+                    editor.commit();
+                    Constants.repeatType = 1;
+                    if (Constants.linkType == 1) {
+                        webPlayer.loadScript(JavaScript.setLoopPlaylist());
+                    }
+                    updateRepeatTypeImage();
+                } else if (Constants.repeatType == 1) {
+                    editor.putInt(getString(R.string.repeat_type), 2);
+                    editor.commit();
+                    Constants.repeatType = 2;
+                    if (Constants.linkType == 1) {
+                        webPlayer.loadScript(JavaScript.unsetLoopPlaylist());
+                    }
+                    updateRepeatTypeImage();
+                } else if (Constants.repeatType == 2) {
+                    editor.putInt(getString(R.string.repeat_type), 0);
+                    editor.commit();
+                    Constants.repeatType = 0;
+                    if (Constants.linkType == 1) {
+                        webPlayer.loadScript(JavaScript.unsetLoopPlaylist());
+                    }
+                    updateRepeatTypeImage();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    //Layout Params Initialized
+    private void InitParams() {
+        //Service Head Params
+        params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT
+        );
+        //Web Player Params
+        parWebView = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+        );
+
+        //Player View Params
+        param_player = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT);
+        //Close Backgroung Params
+        param_close_back = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT);
+        //Close Image Params
+        param_close = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT);
+
     }
 }
