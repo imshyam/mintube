@@ -38,7 +38,6 @@ public class FullscreenWebPlayer extends Activity {
         WebPlayer.loadScript(JavaScript.playVideoScript());
 
     }
-
     @Override
     public void onBackPressed() {
         active = false;
@@ -47,11 +46,9 @@ public class FullscreenWebPlayer extends Activity {
         PlayerService.startAgain();
         super.onBackPressed();
     }
-
     @Override
     protected void onPause() {
         fullScreenAct.onBackPressed();
         super.onPause();
     }
-    
 }
