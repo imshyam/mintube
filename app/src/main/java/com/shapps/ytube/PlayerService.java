@@ -71,12 +71,14 @@ public class PlayerService extends Service{
     static Notification notification;
     static ImageView playerHeadImage;
     int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
-    int scrnWidth, scrnHeight, playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
+    int scrnWidth, scrnHeight, defaultPlayerWidth,playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
 
     static Intent fullScreenIntent;
 
     //is inside the close button so to stop video
     boolean isInsideClose = false;
+    //is width entire to show video properly
+    boolean isEntireWidth = false;
     //Next Video to check whether next video is played or not
     static boolean nextVid = false;
     //Replay Video if it's ended
@@ -440,6 +442,7 @@ public class PlayerService extends Service{
             public void onGlobalLayout() {
                 playerView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 playerWidth = playerView.getMeasuredWidth();
+                defaultPlayerWidth = playerWidth;
                 playerHeight = playerView.getMeasuredHeight();
                 Log.e("Player W and H ", playerWidth + " " + playerHeight);
             }
@@ -490,22 +493,40 @@ public class PlayerService extends Service{
         entireWidthImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                param_player.width = WindowManager.LayoutParams.MATCH_PARENT;
-                windowManager.updateViewLayout(playerView, param_player);
-                ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
-                fillWidthParamLL.width = WindowManager.LayoutParams.MATCH_PARENT;
-                webPlayerLL.setLayoutParams(fillWidthParamLL);
-                ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
-                fillWidthParamFrame.width = WindowManager.LayoutParams.MATCH_PARENT;
-                webPlayerFrame.setLayoutParams(fillWidthParamFrame);
-                ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
-                fillWidthParam.width = WindowManager.LayoutParams.MATCH_PARENT;
-                viewToHide.setLayoutParams(fillWidthParam);
-                ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
-                playerEntireWidPar.width = WindowManager.LayoutParams.MATCH_PARENT;
-                viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
-
+                if(WebPlayer.getPlayer().getMeasuredWidth() != scrnWidth) {
+                    param_player.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    windowManager.updateViewLayout(playerView, param_player);
+                    ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
+                    fillWidthParamLL.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    webPlayerLL.setLayoutParams(fillWidthParamLL);
+                    ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
+                    fillWidthParamFrame.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    webPlayerFrame.setLayoutParams(fillWidthParamFrame);
+                    ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
+                    fillWidthParam.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    viewToHide.setLayoutParams(fillWidthParam);
+                    ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
+                    playerEntireWidPar.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
+                    isEntireWidth = true;
+                }
+                else{
+                    param_player.width = defaultPlayerWidth;
+                    windowManager.updateViewLayout(playerView, param_player);
+                    ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
+                    fillWidthParamLL.width = defaultPlayerWidth;
+                    webPlayerLL.setLayoutParams(fillWidthParamLL);
+                    ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
+                    fillWidthParamFrame.width = defaultPlayerWidth;
+                    webPlayerFrame.setLayoutParams(fillWidthParamFrame);
+                    ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
+                    fillWidthParam.width = defaultPlayerWidth;
+                    viewToHide.setLayoutParams(fillWidthParam);
+                    ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
+                    playerEntireWidPar.width = defaultPlayerWidth;
+                    viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
+                    isEntireWidth = false;
+                }
             }
         });
 
@@ -634,6 +655,12 @@ public class PlayerService extends Service{
 
             @Override
             public boolean onTouch(View v, final MotionEvent event) {
+                if(isEntireWidth) {
+                    playerWidth = scrnWidth;
+                }
+                else{
+                    playerWidth = defaultPlayerWidth;
+                }
                 final WindowManager.LayoutParams params = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
                 WindowManager.LayoutParams param_player = (WindowManager.LayoutParams) playerView.getLayoutParams();
                 serviceCloseBackground.setVisibility(View.VISIBLE);
