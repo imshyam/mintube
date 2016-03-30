@@ -25,9 +25,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.webkit.WebView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -55,7 +56,8 @@ public class PlayerService extends Service{
     static String title, author;
     static PlayerService playerService;
     static WindowManager windowManager;
-    static LinearLayout serviceHead, serviceClose, serviceCloseBackground, playerView;
+    static LinearLayout serviceHead, serviceClose, serviceCloseBackground, playerView, webPlayerLL;
+    FrameLayout webPlayerFrame;
     static  WindowManager.LayoutParams servHeadParams, servCloseParams, servCloseBackParams, playerViewParams;
     RelativeLayout viewToHide;
     static WebPlayer webPlayer;
@@ -71,7 +73,7 @@ public class PlayerService extends Service{
     int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
     int scrnWidth, scrnHeight, playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
 
-    static Intent fullScreenIntent, entireWidthIntent;
+    static Intent fullScreenIntent;
 
     //is inside the close button so to stop video
     boolean isInsideClose = false;
@@ -375,8 +377,10 @@ public class PlayerService extends Service{
         //Player View
         playerView = (LinearLayout) inflater.inflate(R.layout.player_webview, null, false);
         viewToHide = (RelativeLayout) playerView.findViewById(R.id.view_to_hide);
+        webPlayerFrame = (FrameLayout) playerView.findViewById(R.id.web_player_frame);
+        webPlayerLL = (LinearLayout) playerView.findViewById(R.id.web_player_ll);
 
-        WindowManager.LayoutParams parWebView = new WindowManager.LayoutParams(
+        final WindowManager.LayoutParams parWebView = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT
         );
@@ -486,22 +490,22 @@ public class PlayerService extends Service{
         entireWidthImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                webPlayer.loadScript(JavaScript.pauseVideoScript());
-                entireWidthIntent = new Intent(getAppContext(), EntireWidthWebPlayer.class);
-                entireWidthIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                //remove Views
-                windowManager.removeView(serviceHead);
-                servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
-                windowManager.removeView(serviceClose);
-                servCloseParams = (WindowManager.LayoutParams) serviceClose.getLayoutParams();
-                windowManager.removeView(serviceCloseBackground);
-                servCloseBackParams = (WindowManager.LayoutParams) serviceCloseBackground.getLayoutParams();
-                windowManager.removeView(playerView);
-                playerViewParams = (WindowManager.LayoutParams) playerView.getLayoutParams();
+                param_player.width = WindowManager.LayoutParams.MATCH_PARENT;
+                windowManager.updateViewLayout(playerView, param_player);
+                ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
+                fillWidthParamLL.width = WindowManager.LayoutParams.MATCH_PARENT;
+                webPlayerLL.setLayoutParams(fillWidthParamLL);
+                ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
+                fillWidthParamFrame.width = WindowManager.LayoutParams.MATCH_PARENT;
+                webPlayerFrame.setLayoutParams(fillWidthParamFrame);
+                ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
+                fillWidthParam.width = WindowManager.LayoutParams.MATCH_PARENT;
+                viewToHide.setLayoutParams(fillWidthParam);
+                ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
+                playerEntireWidPar.width = WindowManager.LayoutParams.MATCH_PARENT;
+                viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
 
-                //start entire Screen Player
-                mContext.startActivity(entireWidthIntent);
             }
         });
 
