@@ -29,6 +29,13 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shapps.ytube.AsyncTask.SearchSuggestionTask;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.MalformedURLException;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -227,7 +234,23 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    return false;
+                    try {
+                        newText = newText.replace(" ", "+");
+                        String suggestion = new SearchSuggestionTask(
+                                "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q=" + newText)
+                                .execute().get();
+                        JSONObject jsonObject = new JSONObject(suggestion);
+                        Log.e("Suggestion", jsonObject.getString(newText));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return true;
                 }
             });
         }
