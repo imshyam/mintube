@@ -5,6 +5,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -14,27 +16,32 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shapps.ytube.AsyncTask.SearchSuggestionTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -218,13 +225,11 @@ public class MainActivity extends AppCompatActivity {
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        //SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
-        SearchView searchView =
+        final SearchView searchView =
                 (SearchView) menu.findItem(R.id.search).getActionView();
         if(searchView != null){
             searchView.setSearchableInfo(
                     searchManager.getSearchableInfo(getComponentName()));
-            searchView.setQueryHint(getString(R.string.search_hint));
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -236,11 +241,57 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onQueryTextChange(String newText) {
                     try {
                         newText = newText.replace(" ", "+");
-                        String suggestion = new SearchSuggestionTask(
+                        String textSuggestion = new SearchSuggestionTask(
                                 "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q=" + newText)
                                 .execute().get();
-                        JSONObject jsonObject = new JSONObject(suggestion);
-                        Log.e("Suggestion", jsonObject.getString(newText));
+                        JSONArray jsonArraySuggestion = new JSONArray(textSuggestion);
+                        jsonArraySuggestion = (JSONArray) jsonArraySuggestion.get(1);
+                        String[] suggestions = new String[10];
+                        for (int i = 0; i < 10; i++) {
+                            if(!jsonArraySuggestion.isNull(i)) {
+                                suggestions[i] = jsonArraySuggestion.get(i).toString();
+                            }
+                        }
+                        Log.e("Suggestions", Arrays.toString(suggestions));
+                        //Cursor Adaptor
+                        String[] columnNames = {"_id","suggestion"};
+                        MatrixCursor cursor = new MatrixCursor(columnNames);
+                        String[] temp = new String[2];
+                        int id = 0;
+                        for(String item : suggestions){
+                            if(item != null) {
+                                temp[0] = Integer.toString(id++);
+                                temp[1] = item;
+                                cursor.addRow(temp);
+                            }
+                        }
+                        CursorAdapter cursorAdapter = new CursorAdapter(getApplicationContext(), cursor, false) {
+                            @Override
+                            public View newView(Context context, Cursor cursor, ViewGroup parent) {
+                                return LayoutInflater.from(context).inflate(R.layout.search_suggestion_list_item, parent, false);
+                            }
+
+                            @Override
+                            public void bindView(View view, Context context, Cursor cursor) {
+                                final TextView suggest = (TextView) view.findViewById(R.id.suggest);
+                                ImageView putInSearchBox = (ImageView) view.findViewById(R.id.put_in_search_box);
+                                String body = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"));
+                                suggest.setText(body);
+                                suggest.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        searchView.setQuery(suggest.getText(), true);
+                                    }
+                                });
+                                putInSearchBox.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        searchView.setQuery(suggest.getText(), false);
+                                    }
+                                });
+                            }
+                        };
+                        searchView.setSuggestionsAdapter(cursorAdapter);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
