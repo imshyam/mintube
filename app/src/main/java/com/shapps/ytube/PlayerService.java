@@ -793,6 +793,7 @@ public class PlayerService extends Service implements View.OnClickListener{
                 break;
             //Handle Entire Width
             case R.id.entire_width:
+                //Enter Entire Width
                 if(WebPlayer.getPlayer().getMeasuredWidth() != scrnWidth) {
                     param_player.width = WindowManager.LayoutParams.MATCH_PARENT;
                     windowManager.updateViewLayout(playerView, param_player);
@@ -808,8 +809,10 @@ public class PlayerService extends Service implements View.OnClickListener{
                     ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
                     playerEntireWidPar.width = WindowManager.LayoutParams.MATCH_PARENT;
                     viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
+                    entireWidthImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_entire_width_exit));
                     isEntireWidth = true;
                 }
+                //Exit Entire Width
                 else{
                     param_player.width = defaultPlayerWidth;
                     windowManager.updateViewLayout(playerView, param_player);
@@ -825,6 +828,7 @@ public class PlayerService extends Service implements View.OnClickListener{
                     ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
                     playerEntireWidPar.width = defaultPlayerWidth;
                     viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
+                    entireWidthImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_entire_width));
                     isEntireWidth = false;
                 }
                 break;
