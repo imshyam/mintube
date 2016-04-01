@@ -45,6 +45,15 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             //WebView player = 0
             //Youtube player = 1
             editor.putInt(getString(R.string.player_type), 0);
+            //Playback Quality
+            //0 = auto
+            //1 = hd1080
+            //2 = hd720
+            //3 = large(480p)
+            //4 = medium(360p)
+            //5 = small(240p)
+            //6 = tiny(144p)
+            editor.putInt(getString(R.string.videoQuality), 3);
             editor.commit();
         }
 //

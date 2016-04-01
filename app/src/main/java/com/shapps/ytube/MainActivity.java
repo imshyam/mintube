@@ -1,5 +1,6 @@
 package com.shapps.ytube;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.Context;
@@ -27,6 +28,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -46,17 +48,23 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
+    Activity mainAct;
     WebView youtubeView;
     String currUrl;
     boolean doubleClickToExit = false;
     //For Result Activity
     public static int OVERLAY_PERMISSION_REQ = 1234;
     String VID, PID;
+    //Search View
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mainAct = this;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -223,87 +231,14 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         // Associate searchable configuration with the SearchView
-        SearchManager searchManager =
+        final SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final SearchView searchView =
+        searchView =
                 (SearchView) menu.findItem(R.id.search).getActionView();
         if(searchView != null){
             searchView.setSearchableInfo(
                     searchManager.getSearchableInfo(getComponentName()));
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    youtubeView.loadUrl("http://m.youtube.com/results?q="+ query);
-                    return true;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    try {
-                        newText = newText.replace(" ", "+");
-                        String textSuggestion = new SearchSuggestionTask(
-                                "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q=" + newText)
-                                .execute().get();
-                        JSONArray jsonArraySuggestion = new JSONArray(textSuggestion);
-                        jsonArraySuggestion = (JSONArray) jsonArraySuggestion.get(1);
-                        String[] suggestions = new String[10];
-                        for (int i = 0; i < 10; i++) {
-                            if(!jsonArraySuggestion.isNull(i)) {
-                                suggestions[i] = jsonArraySuggestion.get(i).toString();
-                            }
-                        }
-                        Log.e("Suggestions", Arrays.toString(suggestions));
-                        //Cursor Adaptor
-                        String[] columnNames = {"_id","suggestion"};
-                        MatrixCursor cursor = new MatrixCursor(columnNames);
-                        String[] temp = new String[2];
-                        int id = 0;
-                        for(String item : suggestions){
-                            if(item != null) {
-                                temp[0] = Integer.toString(id++);
-                                temp[1] = item;
-                                cursor.addRow(temp);
-                            }
-                        }
-                        CursorAdapter cursorAdapter = new CursorAdapter(getApplicationContext(), cursor, false) {
-                            @Override
-                            public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                                return LayoutInflater.from(context).inflate(R.layout.search_suggestion_list_item, parent, false);
-                            }
-
-                            @Override
-                            public void bindView(View view, Context context, Cursor cursor) {
-                                final TextView suggest = (TextView) view.findViewById(R.id.suggest);
-                                ImageView putInSearchBox = (ImageView) view.findViewById(R.id.put_in_search_box);
-                                String body = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"));
-                                suggest.setText(body);
-                                suggest.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        searchView.setQuery(suggest.getText(), true);
-                                    }
-                                });
-                                putInSearchBox.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        searchView.setQuery(suggest.getText(), false);
-                                    }
-                                });
-                            }
-                        };
-                        searchView.setSuggestionsAdapter(cursorAdapter);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return true;
-                }
-            });
+            searchView.setOnQueryTextListener(this);
         }
         return true;
     }
@@ -345,5 +280,81 @@ public class MainActivity extends AppCompatActivity {
         else {
             youtubeView.goBack();
         }
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        youtubeView.loadUrl("http://m.youtube.com/results?q="+ query);
+        searchView.clearFocus();
+        return true;
+    }
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        try {
+            if(newText.length() > 0) {
+                newText = newText.replace(" ", "+");
+                String textSuggestion = new SearchSuggestionTask(
+                        "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q=" + newText)
+                        .execute().get();
+                JSONArray jsonArraySuggestion = new JSONArray(textSuggestion);
+                jsonArraySuggestion = (JSONArray) jsonArraySuggestion.get(1);
+                String[] suggestions = new String[10];
+                for (int i = 0; i < 10; i++) {
+                    if (!jsonArraySuggestion.isNull(i)) {
+                        suggestions[i] = jsonArraySuggestion.get(i).toString();
+                    }
+                }
+                Log.e("Suggestions", Arrays.toString(suggestions));
+                //Cursor Adaptor
+                String[] columnNames = {"_id", "suggestion"};
+                MatrixCursor cursor = new MatrixCursor(columnNames);
+                String[] temp = new String[2];
+                int id = 0;
+                for (String item : suggestions) {
+                    if (item != null) {
+                        temp[0] = Integer.toString(id++);
+                        temp[1] = item;
+                        cursor.addRow(temp);
+                    }
+                }
+                CursorAdapter cursorAdapter = new CursorAdapter(getApplicationContext(), cursor, false) {
+                    @Override
+                    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+                        return LayoutInflater.from(context).inflate(R.layout.search_suggestion_list_item, parent, false);
+                    }
+
+                    @Override
+                    public void bindView(View view, Context context, Cursor cursor) {
+                        final TextView suggest = (TextView) view.findViewById(R.id.suggest);
+                        ImageView putInSearchBox = (ImageView) view.findViewById(R.id.put_in_search_box);
+                        String body = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"));
+                        suggest.setText(body);
+                        suggest.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                searchView.setQuery(suggest.getText(), true);
+                                searchView.clearFocus();
+                            }
+                        });
+                        putInSearchBox.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                searchView.setQuery(suggest.getText(), false);
+                            }
+                        });
+                    }
+                };
+                searchView.setSuggestionsAdapter(cursorAdapter);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 }

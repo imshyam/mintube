@@ -18,7 +18,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -96,6 +95,8 @@ public class PlayerService extends Service implements View.OnClickListener{
         }
         if(playingStatus == 1){
             isVideoPlaying = true;
+            String quality = Constants.getPlaybackQuality();
+            webPlayer.loadScript(JavaScript.setupPlaybackQuality(quality));
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             if(nextVid){
@@ -190,6 +191,7 @@ public class PlayerService extends Service implements View.OnClickListener{
             Constants.playerType = sharedPref.getInt(getString(R.string.player_type), 0);
             Constants.repeatType = sharedPref.getInt(getString(R.string.repeat_type), 0);
             Constants.noOfRepeats = sharedPref.getInt(getString(R.string.no_of_repeats), 5);
+            Constants.playbackQuality = sharedPref.getInt(getString(R.string.videoQuality), 3);
             doThis(intent);
 
         }
@@ -305,7 +307,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         notificationManager = (NotificationManager) getSystemService(this.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
 
-                .setSmallIcon(R.drawable.ic_play)
+                .setSmallIcon(R.drawable.ic_status_bar)
 
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
 

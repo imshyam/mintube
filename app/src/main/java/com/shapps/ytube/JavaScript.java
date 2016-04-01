@@ -68,4 +68,9 @@ public class JavaScript {
         return "javascript:window.HtmlViewer.playlistItems(player.getPlaylist());" +
                 "window.HtmlViewer.currVidIndex(player.getPlaylistIndex());";
     }
+
+
+    public static String setupPlaybackQuality(String quality) {
+        return "javascript:player.setPlaybackQuality(\"" + quality + "\");";
+    }
 }

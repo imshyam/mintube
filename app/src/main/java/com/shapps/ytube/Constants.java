@@ -24,8 +24,42 @@ public class Constants {
     //if repeatType = 2  --> repeatType single
     public  static  int repeatType = 0;
     public  static  int noOfRepeats = 0;
-    //if repeatType is 2 then Video id to repeatType
-    public  static  String vIdToRepeat = "";
+    //Playback Quality
+    //0 = auto
+    //1 = hd1080
+    //2 = hd720
+    //3 = large(480p)
+    //4 = medium(360p)
+    //5 = small(240p)
+    //6 = tiny(144p)
+    public  static  int playbackQuality = 3;
+
+    private static String strPlaybackQuality = "large";
+
+    public static String getPlaybackQuality() {
+        if(playbackQuality == 0){
+            strPlaybackQuality = "auto";
+        }
+        else if (playbackQuality == 1){
+            strPlaybackQuality = "hd1080";
+        }
+        else if (playbackQuality == 2){
+            strPlaybackQuality = "hd720";
+        }
+        else if (playbackQuality == 3){
+            strPlaybackQuality = "large";
+        }
+        else if (playbackQuality == 4){
+            strPlaybackQuality = "medium";
+        }
+        else if (playbackQuality == 5){
+            strPlaybackQuality = "small";
+        }
+        else{
+            strPlaybackQuality = "tiny";
+        }
+        return strPlaybackQuality;
+    }
 
 
     //Actions

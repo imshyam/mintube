@@ -10,16 +10,16 @@
         <LinearLayout
             android:gravity="center"
             android:layout_gravity="top|left"
-            android:layout_width="80dp"
+            android:layout_width="60dp"
             android:layout_height="20dp">
             <ImageView
                 android:layout_marginTop="-8dp"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:src="@drawable/arrow_drop_up"/>
         </LinearLayout>
         <RelativeLayout
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="9dp"
             android:id="@+id/view_to_hide"
             android:layout_width="240dp"
             android:layout_height="200dp">
