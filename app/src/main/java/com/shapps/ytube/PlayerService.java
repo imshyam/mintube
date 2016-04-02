@@ -98,12 +98,14 @@ public class PlayerService extends Service implements View.OnClickListener{
         if(playingStatus == 3){
             Log.e("Status", "Buffering");
             String quality = Constants.getPlaybackQuality();
+            Log.e("Quality", quality);
             webPlayer.loadScript(JavaScript.resetPlaybackQuality(quality));
         }
         if(playingStatus == 1){
             isVideoPlaying = true;
             if(isFirstTime) {
                 String quality = Constants.getPlaybackQuality();
+                Log.e("Quality", quality);
                 webPlayer.loadScript(JavaScript.setupPlaybackQuality(quality));
                 isFirstTime = false;
             }
@@ -198,10 +200,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_WEB_ACTION)) {
             Log.e("Service ", "Started!");
             sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            Constants.playerType = sharedPref.getInt(getString(R.string.player_type), 0);
             Constants.repeatType = sharedPref.getInt(getString(R.string.repeat_type), 0);
-            Constants.noOfRepeats = sharedPref.getInt(getString(R.string.no_of_repeats), 5);
-            Constants.playbackQuality = sharedPref.getInt(getString(R.string.videoQuality), 3);
             doThis(intent);
 
         }

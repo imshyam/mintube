@@ -47,8 +47,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d5185ba2-53b7-46e5-9190-a85a10b89082" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/JavaScript.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/JavaScript.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/YouTubeAndroidPlayerApi.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/animated_vector_drawable_23_2_0.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/appcompat_v7_23_2_0.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/design_23_2_0.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/recyclerview_v7_23_2_0.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/support_annotations_23_2_0.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/support_v4_23_2_0.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/support_vector_drawable_23_2_0.xml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/SettingsActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/SettingsActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/layout/content_settings.xml" afterPath="$PROJECT_DIR$/app/src/main/res/layout/content_settings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="YTube.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -91,29 +102,18 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/MainActivity.java">
+      <file leaf-file-name="content_settings.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/content_settings.xml">
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="84" column="48" selection-start-line="84" selection-start-column="48" selection-end-line="84" selection-end-column="48" />
+            <state vertical-scroll-proportion="-12.387096">
+              <caret line="176" column="12" selection-start-line="176" selection-start-column="12" selection-end-line="176" selection-end-column="12" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#2485#2900#0" expanded="true" />
-                <element signature="e#2681#2874#0" expanded="true" />
-                <element signature="e#2873#2874#0" expanded="true" />
-                <element signature="e#2899#2900#0" expanded="true" />
-                <element signature="e#6408#8353#0" expanded="true" />
-                <element signature="e#8352#8353#0" expanded="true" />
-                <element signature="e#10102#10634#0" expanded="true" />
-                <element signature="e#10633#10634#0" expanded="true" />
-                <element signature="e#10685#10927#0" expanded="true" />
-                <element signature="e#10926#10927#0" expanded="true" />
-                <element signature="e#12686#12844#0" expanded="true" />
-                <element signature="e#12843#12844#0" expanded="true" />
-                <element signature="e#15438#15753#0" expanded="true" />
-                <element signature="e#15752#15753#0" expanded="true" />
-                <element signature="e#15814#16073#0" expanded="true" />
-                <element signature="e#16072#16073#0" expanded="true" />
+                <element signature="e#445#480#0" expanded="true" />
+                <element signature="e#504#537#0" expanded="true" />
+                <element signature="e#562#602#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -122,9 +122,11 @@
       <file leaf-file-name="PlayerService.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.9390863">
-              <caret line="108" column="13" selection-start-line="108" selection-start-column="13" selection-end-line="108" selection-end-column="13" />
-              <folding />
+            <state vertical-scroll-proportion="0.42131978">
+              <caret line="194" column="0" selection-start-line="194" selection-start-column="0" selection-end-line="194" selection-end-column="0" />
+              <folding>
+                <element signature="e#7668#7699#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -133,8 +135,30 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/YTubeView.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="58" column="2" selection-start-line="58" selection-start-column="2" selection-end-line="58" selection-end-column="2" />
-              <folding />
+              <caret line="31" column="75" selection-start-line="31" selection-start-column="47" selection-end-line="31" selection-end-column="75" />
+              <folding>
+                <element signature="e#911#939#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SettingsActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/SettingsActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="40" column="99" selection-start-line="40" selection-start-column="99" selection-end-line="40" selection-end-column="99" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#1391#1419#0" expanded="true" />
+                <element signature="e#1498#1530#0" expanded="true" />
+                <element signature="e#2291#2862#0" expanded="true" />
+                <element signature="e#2584#2616#0" expanded="true" />
+                <element signature="e#2861#2862#0" expanded="true" />
+                <element signature="e#3004#3036#0" expanded="true" />
+                <element signature="e#3176#3401#0" expanded="true" />
+                <element signature="e#3400#3401#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -143,19 +167,7 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/Constants.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="JavaScript.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/JavaScript.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="79" column="27" selection-start-line="79" selection-start-column="27" selection-end-line="79" selection-end-column="27" />
+              <caret line="25" column="40" selection-start-line="25" selection-start-column="40" selection-end-line="25" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -1390,7 +1402,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="4370781160602" />
+        <entry key="$PROJECT_DIR$" value="4371089928833" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -1756,7 +1768,6 @@
       <list>
         <option value="$PROJECT_DIR$/app/src/main/res/layout/notification_small.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/YouTubeStandAloneActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/content_settings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_youtube_fullscreen.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/YouTubeFullScreenActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_fullscreen_web_player.xml" />
@@ -1771,7 +1782,6 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/EntireWidthWebPlayer.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/fill_entire_width.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/content_entire_width.xml" />
-        <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/player_entirewidth_webview.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/FullscreenWebPlayer.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/drawable/ic_close_dark.xml" />
@@ -1793,10 +1803,14 @@
         <option value="$PROJECT_DIR$/app/src/main/res/layout/player_webview.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/notification_large.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/content_main.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/MainActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/JavaScript.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" />
+        <option value="$PROJECT_DIR$/app/build.gradle" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/SettingsActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/content_settings.xml" />
       </list>
     </option>
   </component>
@@ -1922,10 +1936,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="app" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="manifests" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidManifestsGroupNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -2147,7 +2157,7 @@
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.55394524" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32850242" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -2184,13 +2194,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/GetHtmlInterface.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="18" column="5" selection-start-line="18" selection-start-column="5" selection-end-line="18" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/JavaScript.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -2221,26 +2224,6 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="82" column="0" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
         </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/content_settings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.58214283">
-          <caret line="231" column="35" selection-start-line="231" selection-start-column="35" selection-end-line="231" selection-end-column="35" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/content_youtube_player.xml">
@@ -2374,13 +2357,6 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.66497463">
-          <caret line="25" column="53" selection-start-line="25" selection-start-column="53" selection-end-line="25" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/ic_entire_width_exit.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -2490,16 +2466,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/Constants.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.62068963">
@@ -2551,10 +2517,31 @@
         <state />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.2580647">
+          <caret line="109" column="36" selection-start-line="109" selection-start-column="36" selection-end-line="109" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.548387">
+          <caret line="7" column="39" selection-start-line="7" selection-start-column="39" selection-end-line="7" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/content_main.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.225806">
-          <caret line="9" column="4" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
+        <state vertical-scroll-proportion="0.19285715">
+          <caret line="6" column="33" selection-start-line="6" selection-start-column="33" selection-end-line="6" selection-end-column="33" />
           <folding />
         </state>
       </provider>
@@ -2564,8 +2551,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.25714287">
-          <caret line="8" column="28" selection-start-line="8" selection-start-column="28" selection-end-line="8" selection-end-column="28" />
+        <state vertical-scroll-proportion="0.55">
+          <caret line="32" column="49" selection-start-line="32" selection-start-column="49" selection-end-line="32" selection-end-column="49" />
           <folding />
         </state>
       </provider>
@@ -2573,53 +2560,80 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/MainActivity.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/JavaScript.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="84" column="48" selection-start-line="84" selection-start-column="48" selection-end-line="84" selection-end-column="48" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2485#2900#0" expanded="true" />
-            <element signature="e#2681#2874#0" expanded="true" />
-            <element signature="e#2873#2874#0" expanded="true" />
-            <element signature="e#2899#2900#0" expanded="true" />
-            <element signature="e#6408#8353#0" expanded="true" />
-            <element signature="e#8352#8353#0" expanded="true" />
-            <element signature="e#10102#10634#0" expanded="true" />
-            <element signature="e#10633#10634#0" expanded="true" />
-            <element signature="e#10685#10927#0" expanded="true" />
-            <element signature="e#10926#10927#0" expanded="true" />
-            <element signature="e#12686#12844#0" expanded="true" />
-            <element signature="e#12843#12844#0" expanded="true" />
-            <element signature="e#15438#15753#0" expanded="true" />
-            <element signature="e#15752#15753#0" expanded="true" />
-            <element signature="e#15814#16073#0" expanded="true" />
-            <element signature="e#16072#16073#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.6954315">
+          <caret line="78" column="25" selection-start-line="78" selection-start-column="25" selection-end-line="78" selection-end-column="25" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/YTubeView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="58" column="2" selection-start-line="58" selection-start-column="2" selection-end-line="58" selection-end-column="2" />
+          <caret line="31" column="75" selection-start-line="31" selection-start-column="47" selection-end-line="31" selection-end-column="75" />
+          <folding>
+            <element signature="e#911#939#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="25" column="40" selection-start-line="25" selection-start-column="40" selection-end-line="25" selection-end-column="40" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/JavaScript.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/SettingsActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="79" column="27" selection-start-line="79" selection-start-column="27" selection-end-line="79" selection-end-column="27" />
+          <caret line="40" column="99" selection-start-line="40" selection-start-column="99" selection-end-line="40" selection-end-column="99" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1391#1419#0" expanded="true" />
+            <element signature="e#1498#1530#0" expanded="true" />
+            <element signature="e#2291#2862#0" expanded="true" />
+            <element signature="e#2584#2616#0" expanded="true" />
+            <element signature="e#2861#2862#0" expanded="true" />
+            <element signature="e#3004#3036#0" expanded="true" />
+            <element signature="e#3176#3401#0" expanded="true" />
+            <element signature="e#3400#3401#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/content_settings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.387096">
+          <caret line="176" column="12" selection-start-line="176" selection-start-column="12" selection-end-line="176" selection-end-column="12" />
+          <folding>
+            <element signature="e#445#480#0" expanded="true" />
+            <element signature="e#504#537#0" expanded="true" />
+            <element signature="e#562#602#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6954315">
+          <caret line="26" column="53" selection-start-line="26" selection-start-column="53" selection-end-line="26" selection-end-column="53" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/shapps/ytube/PlayerService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.9390863">
-          <caret line="108" column="13" selection-start-line="108" selection-start-column="13" selection-end-line="108" selection-end-column="13" />
-          <folding />
+        <state vertical-scroll-proportion="0.42131978">
+          <caret line="194" column="0" selection-start-line="194" selection-start-column="0" selection-end-line="194" selection-end-column="0" />
+          <folding>
+            <element signature="e#7668#7699#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
