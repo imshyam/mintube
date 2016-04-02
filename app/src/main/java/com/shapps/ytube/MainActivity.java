@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -105,9 +104,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 swipeRefreshLayout.setRefreshing(false);
                 Log.d("Main Page Finished", str);
             }
+
             @Override
-            public boolean shouldOverrideUrlLoading (WebView view, String url){
-                if(url.contains("?app=desktop") && !url.contains("signin?app=desktop")) {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.contains("?app=desktop") && !url.contains("signin?app=desktop")) {
                     Log.e("Url stopped to load : ", url);
                     CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
                     final Snackbar snackbar = Snackbar
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (String.valueOf(request.getUrl()).contains("http://m.youtube.com/watch?")||
+                    if (String.valueOf(request.getUrl()).contains("http://m.youtube.com/watch?") ||
                             String.valueOf(request.getUrl()).contains("https://m.youtube.com/watch?")) {
                         String url = String.valueOf(request.getUrl());
                         Log.e("Yay Catches!!!! ", url);
@@ -143,11 +143,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         if (matcher.matches()) {
                             PID = matcher.group(1);
                         }
-                        if(listID.contains("m.youtube.com")){
+                        if (listID.contains("m.youtube.com")) {
                             Log.e("Not a ", "Playlist.");
                             PID = null;
-                        }
-                        else {
+                        } else {
                             Constants.linkType = 1;
                             Log.e("PlaylistID ", PID);
                         }
@@ -158,17 +157,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             public void run() {
                                 youtubeView.stopLoading();
                                 youtubeView.goBack();
-                                if(isServiceRunning(PlayerService.class)){
+                                if (isServiceRunning(PlayerService.class)) {
                                     Log.e("Service : ", "Already Running!");
                                     PlayerService.startVid(VID, finalPID);
-                                }
-                                else {
+                                } else {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
                                         Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                                 Uri.parse("package:" + getPackageName()));
                                         startActivityForResult(i, OVERLAY_PERMISSION_REQ);
-                                    }
-                                    else {
+                                    } else {
                                         Intent i = new Intent(MainActivity.this, PlayerService.class);
                                         i.putExtra("VID_ID", VID);
                                         i.putExtra("PLAYLIST_ID", finalPID);
@@ -191,7 +188,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         });
         youtubeView.canGoBack();
-        youtubeView.loadUrl("http://m.youtube.com");
+        currUrl = "https://m.youtube.com/";
+        youtubeView.loadUrl(currUrl);
 
     }
     private boolean isServiceRunning(Class<PlayerService> playerServiceClass) {
@@ -279,6 +277,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
     @Override
     public void onBackPressed() {
+        Log.e("Curr Url", currUrl);
         if(currUrl.equals("https://m.youtube.com/")) {
             if (doubleClickToExit) {
                 super.onBackPressed();

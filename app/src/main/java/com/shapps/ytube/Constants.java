@@ -33,9 +33,11 @@ public class Constants {
     //5 = small(240p)
     //6 = tiny(144p)
     public  static  int playbackQuality = 3;
+    //Finish service on end video
+    public static boolean finishOnEnd = false;
+
 
     private static String strPlaybackQuality = "large";
-
     public static String getPlaybackQuality() {
         if(playbackQuality == 0){
             strPlaybackQuality = "auto";

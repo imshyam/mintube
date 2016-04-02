@@ -29,7 +29,7 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        sharedPref = this.getSharedPreferences(getString(R.string.FileName), Context.MODE_PRIVATE);
+        sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.FileName), Context.MODE_PRIVATE);
         if (!sharedPref.contains(getString(R.string.init))) {
             Log.e("Initializing ", "Shared Preferences");
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -54,7 +54,13 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             //5 = small(240p)
             //6 = tiny(144p)
             editor.putInt(getString(R.string.videoQuality), 3);
+            //Finish sevice if video ended
+            editor.putBoolean(getString(R.string.finishOnEnd), false);
             editor.commit();
+        }
+        else {
+            Constants.playbackQuality = sharedPref.getInt(getString(R.string.videoQuality), 3);
+            Constants.finishOnEnd = sharedPref.getBoolean(getString(R.string.finishOnEnd),false);
         }
 //
 //        youTubeView = new YouTubePlayerView(this);

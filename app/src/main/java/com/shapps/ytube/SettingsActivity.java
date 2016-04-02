@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -38,9 +39,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         initViews();
 
-        sharedPref = this.getSharedPreferences(getString(R.string.FileName), Context.MODE_PRIVATE);
+        sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.FileName) ,Context.MODE_PRIVATE);
+
         Constants.playbackQuality = sharedPref.getInt(getString(R.string.videoQuality), 3);
 
+        stopNotPlaying.setChecked(sharedPref.getBoolean(getString(R.string.finishOnEnd), false));
         quality.setText(Constants.getPlaybackQuality());
 
         videoQuality.setOnClickListener(this);
@@ -49,7 +52,18 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         increaseCount.setOnClickListener(this);
         decreaseCount.setOnClickListener(this);
         fullscreenOnRotate.setOnClickListener(this);
-        stopNotPlaying.setOnClickListener(this);
+
+        stopNotPlaying.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked == true || isChecked == false) {
+                    Constants.finishOnEnd = isChecked;
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putBoolean(getString(R.string.finishOnEnd), isChecked);
+                    editor.commit();
+                }
+            }
+        });
 
     }
 
@@ -85,9 +99,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             case R.id.about:
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/imshyam/MinTube-Wiki/wiki"));
                 startActivity(browserIntent);
-                break;
-            case R.id.stop_not_playing:
-
                 break;
             default:
                 Snackbar snackbar = Snackbar

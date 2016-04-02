@@ -111,6 +111,7 @@ public class PlayerService extends Service implements View.OnClickListener{
             }
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
+            notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
             if(nextVid){
                 nextVid = false;
                 webPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
@@ -123,6 +124,7 @@ public class PlayerService extends Service implements View.OnClickListener{
             isVideoPlaying = false;
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_play);
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_play);
+            notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
         }
         else if(playingStatus == 0) {
             if(Constants.linkType == 1) {
@@ -140,16 +142,25 @@ public class PlayerService extends Service implements View.OnClickListener{
                     webPlayer.loadScript(JavaScript.playVideoScript());
                 }
                 else {
-                    replayVid = true;
-                    viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
-                    viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+                    if(Constants.finishOnEnd == true){
+                        playerService.destroyServiceOnFinish();
+                    }
+                    else {
+                        replayVid = true;
+                        viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+                        viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
+                        notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
+                    }
                 }
             }
         }
-        notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
-//        if (drawable0 instanceof Animatable) {
-//            ((Animatable) drawable0).start();
-//        }
+    }
+
+    private void destroyServiceOnFinish() {
+        Log.i("Trying To Destroy ", "...");
+        stopForeground(true);
+        stopSelf();
+        stopService(new Intent(mContext, PlayerService.class));
     }
 
     public static void isPlaylistEnded() {
@@ -199,7 +210,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         this.playerService = this;
         if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_WEB_ACTION)) {
             Log.e("Service ", "Started!");
-            sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             Constants.repeatType = sharedPref.getInt(getString(R.string.repeat_type), 0);
             doThis(intent);
 
@@ -267,10 +278,10 @@ public class PlayerService extends Service implements View.OnClickListener{
             if(EntireWidthWebPlayer.active){
                 EntireWidthWebPlayer.entWidthAct.onBackPressed();
             }
-            webPlayer.destroy();
             windowManager.removeView(playerView);
             windowManager.removeView(serviceHead);
             windowManager.removeView(serviceClose);
+            webPlayer.destroy();
         }
     }
 
