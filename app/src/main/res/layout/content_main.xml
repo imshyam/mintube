@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.shapps.ytube.MainActivity"
-    android:layout_marginTop="5dp"
+    android:layout_marginTop="-50dp"
     tools:showIn="@layout/activity_main">
 
     <WebView

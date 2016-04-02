@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -59,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     String VID, PID;
     //Search View
     SearchView searchView;
+    //Swipe Refresh
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,20 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(true);
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        youtubeView.loadUrl(youtubeView.getUrl());
+                    }
+                });
+            }
+        });
+
         youtubeView = (WebView) findViewById(R.id.youtube_view);
         youtubeView.getSettings().setJavaScriptEnabled(true);
         youtubeView.setWebViewClient(new WebViewClient() {
@@ -78,12 +95,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             public void onPageStarted(WebView view, String str, Bitmap bitmap) {
                 super.onPageStarted(view, str, bitmap);
                 Log.d("Main Page Loading ", str);
+                swipeRefreshLayout.setRefreshing(true);
                 currUrl = str;
             }
 
             @Override
             public void onPageFinished(WebView view, String str) {
                 super.onPageFinished(view, str);
+                swipeRefreshLayout.setRefreshing(false);
                 Log.d("Main Page Finished", str);
             }
             @Override
@@ -108,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if (String.valueOf(request.getUrl()).contains("http://m.youtube.com/watch?")||
                             String.valueOf(request.getUrl()).contains("https://m.youtube.com/watch?")) {
-                        Log.e("Yay ", "Catches!!!!");
                         String url = String.valueOf(request.getUrl());
+                        Log.e("Yay Catches!!!! ", url);
                         //Video Id
                         VID = url.substring(url.indexOf("&v=") + 3, url.length());
                         Log.e("VID ", VID);
