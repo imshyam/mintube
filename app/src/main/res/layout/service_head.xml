@@ -9,7 +9,7 @@
         android:id="@+id/song_icon"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:src="@mipmap/ic_launcher_2"
+        android:src="@mipmap/ic_launcher"
         app:civ_border_width="1dp"
         app:civ_border_color="#db2532"/>
 </LinearLayout>

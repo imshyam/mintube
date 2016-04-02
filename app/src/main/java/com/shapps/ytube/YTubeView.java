@@ -11,6 +11,8 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +30,7 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
         sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.FileName), Context.MODE_PRIVATE);
         if (!sharedPref.contains(getString(R.string.init))) {
