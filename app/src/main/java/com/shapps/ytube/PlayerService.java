@@ -84,6 +84,8 @@ public class PlayerService extends Service implements View.OnClickListener{
     //Replay Video if it's ended
     static boolean replayVid = false;
     static boolean replayPlaylist = false;
+    //Set Video Quality first Time
+    static boolean isFirstTime = true;
 
     ImageView repeatTypeImg, entireWidthImg, fullScreenImg;
     SharedPreferences sharedPref;
@@ -93,10 +95,18 @@ public class PlayerService extends Service implements View.OnClickListener{
         if(playingStatus == -1){
             nextVid = true;
         }
+        if(playingStatus == 3){
+            Log.e("Status", "Buffering");
+            String quality = Constants.getPlaybackQuality();
+            webPlayer.loadScript(JavaScript.resetPlaybackQuality(quality));
+        }
         if(playingStatus == 1){
             isVideoPlaying = true;
-            String quality = Constants.getPlaybackQuality();
-            webPlayer.loadScript(JavaScript.setupPlaybackQuality(quality));
+            if(isFirstTime) {
+                String quality = Constants.getPlaybackQuality();
+                webPlayer.loadScript(JavaScript.setupPlaybackQuality(quality));
+                isFirstTime = false;
+            }
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             if(nextVid){

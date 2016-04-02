@@ -71,6 +71,12 @@ public class JavaScript {
 
 
     public static String setupPlaybackQuality(String quality) {
+        return "javascript:player.stopVideo();" +
+                "player.setPlaybackQuality(\"" + quality + "\");" +
+                "player.playVideo();";
+    }
+
+    public static String resetPlaybackQuality(String quality) {
         return "javascript:player.setPlaybackQuality(\"" + quality + "\");";
     }
 }
