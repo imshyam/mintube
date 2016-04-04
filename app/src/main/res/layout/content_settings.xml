@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:orientation="vertical"
-    tools:context="com.shapps.ytube.SettingsActivity"
+    tools:context="com.shapps.mintube.SettingsActivity"
     tools:showIn="@layout/activity_settings">
 
     <TextView

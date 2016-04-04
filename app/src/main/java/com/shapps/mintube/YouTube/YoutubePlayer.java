@@ -1,4 +1,4 @@
-package com.shapps.ytube.YouTube;
+package com.shapps.mintube.YouTube;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -8,7 +8,7 @@ import android.widget.Button;
 
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.shapps.ytube.R;
+import com.shapps.mintube.R;
 
 public class YoutubePlayer extends YouTubeFailureRecoveryActivity implements View.OnClickListener{
 

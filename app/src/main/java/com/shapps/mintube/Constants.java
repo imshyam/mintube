@@ -1,7 +1,4 @@
-package com.shapps.ytube;
-
-import android.content.Context;
-import android.content.SharedPreferences;
+package com.shapps.mintube;
 
 /**
  * Created by shyam on 16/2/16.

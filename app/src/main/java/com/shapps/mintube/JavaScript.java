@@ -1,6 +1,4 @@
-package com.shapps.ytube;
-
-import android.util.Log;
+package com.shapps.mintube;
 
 /**
  * Created by shyam on 19/2/16.

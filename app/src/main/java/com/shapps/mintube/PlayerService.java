@@ -1,4 +1,4 @@
-package com.shapps.ytube;
+package com.shapps.mintube;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
@@ -33,9 +33,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
 
-import com.shapps.ytube.AsyncTask.ImageLoadTask;
-import com.shapps.ytube.AsyncTask.LoadDetailsTask;
-import com.shapps.ytube.CustomViews.CircularImageView;
+import com.shapps.mintube.AsyncTask.ImageLoadTask;
+import com.shapps.mintube.AsyncTask.LoadDetailsTask;
+import com.shapps.mintube.CustomViews.CircularImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -268,6 +268,7 @@ public class PlayerService extends Service implements View.OnClickListener{
     public void onDestroy() {
         super.onDestroy();
         isVideoPlaying = true;
+        isFirstTime = true;
         Constants.linkType = 0;
         Session.finishWeb();
         Log.i("Status", "Destroyed!");

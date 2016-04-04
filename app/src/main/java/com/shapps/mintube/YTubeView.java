@@ -1,4 +1,4 @@
-package com.shapps.ytube;
+package com.shapps.mintube;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 

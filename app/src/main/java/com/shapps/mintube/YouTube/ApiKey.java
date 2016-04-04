@@ -1,4 +1,4 @@
-package com.shapps.ytube.YouTube;
+package com.shapps.mintube.YouTube;
 
 /**
  * Created by shyam on 7/1/16.

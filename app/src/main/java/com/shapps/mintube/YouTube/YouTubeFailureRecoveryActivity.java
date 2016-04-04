@@ -1,4 +1,4 @@
-package com.shapps.ytube.YouTube;
+package com.shapps.mintube.YouTube;
 
 import android.content.Intent;
 import android.widget.Toast;
@@ -6,7 +6,7 @@ import android.widget.Toast;
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
-import com.shapps.ytube.R;
+import com.shapps.mintube.R;
 
 /**
  * Created by shyam on 9/1/16.

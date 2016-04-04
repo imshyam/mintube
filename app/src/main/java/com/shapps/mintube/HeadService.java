@@ -1,4 +1,4 @@
-package com.shapps.ytube;
+package com.shapps.mintube;
 
 import android.app.Service;
 import android.content.Context;
@@ -13,17 +13,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.shapps.ytube.YouTube.ApiKey;
-import com.shapps.ytube.YouTube.YouTubeFailureRecoveryActivity;
-import com.shapps.ytube.YouTube.YoutubePlayer;
+import com.shapps.mintube.YouTube.ApiKey;
 
 
 /**

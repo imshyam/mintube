@@ -1,4 +1,4 @@
-package com.shapps.ytube;
+package com.shapps.mintube;
 
 import android.app.Activity;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package com.shapps.ytube;
+package com.shapps.mintube;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,7 +7,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 /**

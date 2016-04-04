@@ -1,9 +1,8 @@
-package com.shapps.ytube.AsyncTask;
+package com.shapps.mintube.AsyncTask;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.widget.ImageView;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.shapps.ytube.MainActivity"
+    tools:context="com.shapps.mintube.MainActivity"
     android:layout_marginTop="-50dp"
     tools:showIn="@layout/activity_main">
 

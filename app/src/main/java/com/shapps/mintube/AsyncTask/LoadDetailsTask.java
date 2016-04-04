@@ -1,8 +1,6 @@
-package com.shapps.ytube.AsyncTask;
+package com.shapps.mintube.AsyncTask;
 
 import android.os.AsyncTask;
-
-import org.json.JSONArray;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     android:id="@+id/coordinator_layout"
     android:background="#fff"
-    tools:context="com.shapps.ytube.MainActivity">
+    tools:context="com.shapps.mintube.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

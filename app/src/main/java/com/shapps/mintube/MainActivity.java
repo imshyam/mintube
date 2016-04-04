@@ -1,4 +1,4 @@
-package com.shapps.ytube;
+package com.shapps.mintube;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -37,7 +37,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shapps.ytube.AsyncTask.SearchSuggestionTask;
+import com.shapps.mintube.AsyncTask.SearchSuggestionTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
