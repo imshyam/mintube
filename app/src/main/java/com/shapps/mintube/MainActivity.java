@@ -323,9 +323,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         try {
             if(newText.length() > 0) {
                 newText = newText.replace(" ", "+");
-                String textSuggestion = new SearchSuggestionTask(
-                        "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q=" + newText)
-                        .execute().get();
+                SearchSuggestionTask searchSuggestionTask = new SearchSuggestionTask(
+                        "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q="
+                                + newText);
+                String textSuggestion = searchSuggestionTask.execute().get();
                 JSONArray jsonArraySuggestion = new JSONArray(textSuggestion);
                 jsonArraySuggestion = (JSONArray) jsonArraySuggestion.get(1);
                 String[] suggestions = new String[10];

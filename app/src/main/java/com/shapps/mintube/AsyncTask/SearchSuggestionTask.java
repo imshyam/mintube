@@ -52,6 +52,5 @@ public class SearchSuggestionTask extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-
     }
 }

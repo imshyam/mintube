@@ -5,8 +5,8 @@
     <string name="error_player">Unable to load.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="title_activity_ytube_view">YTubeView</string>
-    <string name="add_ytube">Add to YTube</string>
+    <string name="title_activity_ytube_view">MinTubeView</string>
+    <string name="add_ytube">MinTube</string>
 
     <string name="svg_play">M8,5v14l11,-7z</string>
     <string name="svg_pause">M6,19h4V5H6v14zm8,-14v14h4V5h-4z</string>
