@@ -23,18 +23,15 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <com.shapps.mintube.CustomViews.CustomSwipeRefresh
         android:id="@+id/swipe_refresh"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <android.support.v4.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
-            <include layout="@layout/content_main"/>
+        <include layout="@layout/content_main"/>
 
-        </android.support.v4.widget.NestedScrollView>
-    </android.support.v4.widget.SwipeRefreshLayout>
+
+    </com.shapps.mintube.CustomViews.CustomSwipeRefresh>
 
 </android.support.design.widget.CoordinatorLayout>

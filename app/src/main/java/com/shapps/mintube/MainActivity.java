@@ -34,10 +34,12 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shapps.mintube.AsyncTask.SearchSuggestionTask;
+import com.shapps.mintube.CustomViews.CustomSwipeRefresh;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     //Search View
     SearchView searchView;
     //Swipe Refresh
-    SwipeRefreshLayout swipeRefreshLayout;
+    CustomSwipeRefresh swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout = (CustomSwipeRefresh) findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -87,6 +89,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         });
 
+
+        // after initialization
+        swipeRefreshLayout.setCanChildScrollUpCallback(new CustomSwipeRefresh.CanChildScrollUpCallback() {
+            @Override
+            public boolean canSwipeRefreshChildScrollUp() {
+                return youtubeView.getScrollY() > 0;
+            }
+        });
+
         youtubeView = (WebView) findViewById(R.id.youtube_view);
         youtubeView.getSettings().setJavaScriptEnabled(true);
         youtubeView.setWebViewClient(new WebViewClient() {
@@ -95,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 super.onPageStarted(view, str, bitmap);
                 Log.d("Main Page Loading ", str);
                 swipeRefreshLayout.setRefreshing(true);
+
                 currUrl = str;
             }
 
