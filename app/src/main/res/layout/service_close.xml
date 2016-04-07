@@ -13,7 +13,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:gravity="center">
-        <com.shapps.mintube.CustomViews.CircularImageView
+        <com.shapps.mintubeapp.CustomViews.CircularImageView
             android:id="@+id/close_image"
             android:layout_width="40dp"
             android:layout_height="40dp"

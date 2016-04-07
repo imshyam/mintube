@@ -1,4 +1,4 @@
-package com.shapps.mintube;
+package com.shapps.mintubeapp;
 
 import android.content.Context;
 import android.os.Handler;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.shapps.mintube">
+    package="com.shapps.mintubeapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.shapps.mintube.MainActivity"
+            android:name="com.shapps.mintubeapp.MainActivity"
             android:label="@string/app_name"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
@@ -30,11 +30,11 @@
             android:label="@string/add_ytube"
             android:theme="@style/AppTheme.NoActionBar" /-->
         <activity
-            android:name="com.shapps.mintube.GetPermission"
-            android:parentActivityName="com.shapps.mintube.YTubeView"
+            android:name="com.shapps.mintubeapp.GetPermission"
+            android:parentActivityName="com.shapps.mintubeapp.YTubeView"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.shapps.mintube.YTubeView"
+            android:name="com.shapps.mintubeapp.YTubeView"
             android:label="@string/add_ytube"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
@@ -70,28 +70,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.shapps.mintube.SettingsActivity"
+            android:name="com.shapps.mintubeapp.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="com.shapps.mintube.MainActivity"
+            android:parentActivityName="com.shapps.mintubeapp.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.shapps.mintube.MainActivity" />
+                android:value="com.shapps.mintubeapp.MainActivity" />
         </activity>
         <activity
-            android:name="com.shapps.mintube.FullscreenWebPlayer"
+            android:name="com.shapps.mintubeapp.FullscreenWebPlayer"
             android:screenOrientation="landscape"
             android:excludeFromRecents="true"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
         <activity
-            android:name="com.shapps.mintube.EntireWidthWebPlayer"
+            android:name="com.shapps.mintubeapp.EntireWidthWebPlayer"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
 
 
         <service
-            android:name="com.shapps.mintube.PlayerService"
+            android:name="com.shapps.mintubeapp.PlayerService"
             android:exported="true" />
 
         <meta-data

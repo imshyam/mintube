@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:orientation="vertical"
-    tools:context="com.shapps.mintube.SettingsActivity"
+    tools:context="com.shapps.mintubeapp.SettingsActivity"
     tools:showIn="@layout/activity_settings">
 
     <TextView
@@ -32,14 +32,16 @@
                 android:layout_marginBottom="2dp"
                 android:gravity="center_vertical"
                 android:weightSum="4"
+                android:layout_gravity="center"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="30dp">
                 <TextView
+                    android:gravity="center|left"
                     android:layout_weight="2"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:textSize="20dp"
+                    android:textSize="15dp"
                     android:text="No. Of Repeats"/>
                 <LinearLayout
                     android:layout_weight="2"
@@ -64,7 +66,7 @@
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:textSize="20dp"
+                        android:textSize="15dp"
                         android:text="0"/>
                     <Button
                         android:id="@+id/increase_repeat_count"
@@ -81,14 +83,6 @@
             </LinearLayout>
         </LinearLayout>
 
-
-        <LinearLayout
-            android:background="#eee"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"></LinearLayout>
-
         <LinearLayout
             android:id="@+id/video_quality"
             android:layout_marginTop="5dp"
@@ -97,13 +91,13 @@
             android:weightSum="5"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="30dp">
             <TextView
                 android:layout_weight="3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textColor="#353535"
-                android:textSize="20dp"
+                android:textSize="15dp"
                 android:text="Video Quality"/>
 
             <TextView
@@ -111,6 +105,7 @@
                 android:gravity="center"
                 android:layout_weight="2"
                 android:layout_width="0dp"
+                android:textSize="15dp"
                 android:layout_height="match_parent"
                 android:text="1080p"/>
         </LinearLayout>
@@ -131,29 +126,22 @@
         android:weightSum="5"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="30dp">
         <TextView
             android:layout_weight="3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:text="Player Type"/>
 
         <TextView
             android:gravity="center"
             android:layout_weight="2"
             android:layout_width="0dp"
+            android:textSize="15dp"
             android:layout_height="match_parent"
             android:text="Web Player"/>
     </LinearLayout>
-
-
-    <LinearLayout
-        android:background="#eee"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"></LinearLayout>
 
     <LinearLayout
         android:layout_marginTop="5dp"
@@ -162,12 +150,13 @@
         android:weightSum="5"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="30dp">
         <TextView
+            android:gravity="center|left"
             android:layout_weight="4"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:text="FullScreen on Rotate"/>
         <LinearLayout
             android:layout_weight="1"
@@ -181,12 +170,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-        android:background="#eee"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"></LinearLayout>
+
     <LinearLayout
         android:layout_marginTop="5dp"
         android:layout_marginBottom="2dp"
@@ -194,13 +178,14 @@
         android:weightSum="5"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="30dp">
         <TextView
+            android:layout_gravity="center|left"
             android:layout_weight="4"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:textColor="#353535"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:text="Stop if Nothing is playing"/>
         <LinearLayout
             android:layout_weight="1"
@@ -229,13 +214,14 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="30dp">
         <TextView
             android:layout_weight="3"
+            android:gravity="center|left"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:textColor="#353535"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:text="About"/>
     </LinearLayout>
 

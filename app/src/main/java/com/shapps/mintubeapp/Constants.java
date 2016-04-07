@@ -1,4 +1,4 @@
-package com.shapps.mintube;
+package com.shapps.mintubeapp;
 
 /**
  * Created by shyam on 16/2/16.

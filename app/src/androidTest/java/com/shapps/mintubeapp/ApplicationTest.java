@@ -1,4 +1,4 @@
-package com.shapps.mintube;
+package com.shapps.mintubeapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

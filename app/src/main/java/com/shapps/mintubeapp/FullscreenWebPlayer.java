@@ -1,35 +1,28 @@
-package com.shapps.mintube;
+package com.shapps.mintubeapp;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
-/**
- * Created by shyam on 19/3/16.
- */
-public class EntireWidthWebPlayer extends AppCompatActivity {
+public class FullscreenWebPlayer extends Activity {
 
     static boolean active = false;
-    static Activity entWidthAct;
+    static Activity fullScreenAct;
 
-    WebView player;
     ViewGroup parent;
+    WebView player;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.active = true;
-        entWidthAct = this;
+        fullScreenAct = this;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fill_entire_width);
+        setContentView(R.layout.activity_fullscreen_web_player);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        RelativeLayout rl = (RelativeLayout) findViewById(R.id.fill_entire_webview);
+        LinearLayout ll = (LinearLayout) findViewById(R.id.layout_fullscreen);
         player = WebPlayer.getPlayer();
 
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
@@ -40,18 +33,27 @@ public class EntireWidthWebPlayer extends AppCompatActivity {
         parent = (ViewGroup) player.getParent();
         parent.removeView(player);
 
-        rl.addView(player, params);
+        ll.addView(player, params);
 
         WebPlayer.loadScript(JavaScript.playVideoScript());
-    }
 
+    }
     @Override
     public void onBackPressed() {
+        if(active){
+            ((ViewGroup) player.getParent()).removeView(player);
+            parent.addView(player);
+            PlayerService.startAgain();
+        }
         active = false;
-        ((ViewGroup) player.getParent()).removeView(player);
-        parent.addView(player);
-        PlayerService.startAgain();
         super.onBackPressed();
     }
-
+    @Override
+    protected void onPause() {
+        if(active) {
+            fullScreenAct.onBackPressed();
+        }
+        active = false;
+        super.onPause();
+    }
 }

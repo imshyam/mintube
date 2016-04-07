@@ -1,4 +1,4 @@
-package com.shapps.mintube;
+package com.shapps.mintubeapp;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
@@ -32,10 +32,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
-import com.shapps.mintube.AsyncTask.ImageLoadTask;
-import com.shapps.mintube.AsyncTask.LoadDetailsTask;
-import com.shapps.mintube.CustomViews.CircularImageView;
+import com.shapps.mintubeapp.AsyncTask.ImageLoadTask;
+import com.shapps.mintubeapp.AsyncTask.LoadDetailsTask;
+import com.shapps.mintubeapp.CustomViews.CircularImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +49,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by shyam on 12/2/16.
  */
-public class PlayerService extends Service implements View.OnClickListener{
+public class PlayerService extends Service implements View.OnClickListener {
 
     static Context mContext;
     static Bitmap bitmap;
@@ -90,6 +91,9 @@ public class PlayerService extends Service implements View.OnClickListener{
     ImageView repeatTypeImg, entireWidthImg, fullScreenImg;
     SharedPreferences sharedPref;
     private static int noItemsInPlaylist, currVideoIndex;
+
+    //if just a click no need to show the close button
+    boolean[] needToShow = {true};
 
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == -1){
@@ -513,10 +517,6 @@ public class PlayerService extends Service implements View.OnClickListener{
         scrnHeight = size.y;
 
         //-----------------Handle Touch-----------------------------
-
-        //if just a click no need to show the close button
-        final boolean[] needToShow = {true};
-
         playerHeadImage.setOnTouchListener(new View.OnTouchListener() {
             private int initialX, initialY;
             private float initialTouchX, initialTouchY, finalTouchX, finalTouchY;
@@ -762,20 +762,39 @@ public class PlayerService extends Service implements View.OnClickListener{
                     Log.e("Head Size", String.valueOf(playerHeadImage.getHeight()));
                     xAtHiding = params.x;
                     yAtHiding = params.y;
-                    params.x = xOnAppear;
-                    params.y = yOnAppear;
-                    //To hide the Player View
-                    final WindowManager.LayoutParams tmpPlayerParams = new WindowManager.LayoutParams(
-                            100,
-                            100,
-                            WindowManager.LayoutParams.TYPE_PHONE,
-                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                            PixelFormat.TRANSLUCENT);
-                    tmpPlayerParams.x = scrnWidth;
-                    tmpPlayerParams.y = scrnHeight;
-                    windowManager.updateViewLayout(playerView, tmpPlayerParams);
-                    viewToHide.setVisibility(View.GONE);
-                    windowManager.updateViewLayout(serviceHead, params);
+                    //Update Player
+                    param_player.height = playerHeadSize;
+                    param_player.width = playerHeadSize*4/3;
+                    param_player.x = xOnAppear;
+                    param_player.y = yOnAppear;
+                    windowManager.updateViewLayout(playerView, param_player);
+                    ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
+                    fillWidthParamLL.height = playerHeadSize;
+                    fillWidthParamLL.width = playerHeadSize*4/3;
+                    webPlayerLL.setLayoutParams(fillWidthParamLL);
+                    ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
+                    fillWidthParamFrame.height = playerHeadSize;
+                    fillWidthParamFrame.width = playerHeadSize*4/3;
+                    webPlayerFrame.setLayoutParams(fillWidthParamFrame);
+                    ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
+                    fillWidthParam.height = playerHeadSize;
+                    fillWidthParam.width = playerHeadSize*4/3;
+                    viewToHide.setLayoutParams(fillWidthParam);
+                    ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
+                    playerEntireWidPar.height = playerHeadSize;
+                    playerEntireWidPar.width = playerHeadSize*4/3;
+                    viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
+                    //remove Head, controls and drop_icon
+                    windowManager.removeView(serviceHead);
+                    servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
+                    LinearLayout controls = (LinearLayout) playerView.findViewById(R.id.player_controls);
+                    LinearLayout dropIcon = (LinearLayout) playerView.findViewById(R.id.drop_icon);
+                    controls.setVisibility(View.GONE);
+                    dropIcon.setVisibility(View.GONE);
+                    //Set Player TouchListener
+                    webPlayer.setOnTouchListener(playerView, windowManager, serviceClose, serviceCloseBackground, viewToHide,
+                            playerHeadSize, scrnWidth, scrnHeight);
+
                     visible = false;
                 } else {
                     viewToHide.setVisibility(View.VISIBLE);
@@ -928,4 +947,5 @@ public class PlayerService extends Service implements View.OnClickListener{
                 PixelFormat.TRANSLUCENT);
 
     }
+
 }

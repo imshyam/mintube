@@ -1,4 +1,4 @@
-package com.shapps.mintube;
+package com.shapps.mintubeapp;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -34,12 +34,11 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shapps.mintube.AsyncTask.SearchSuggestionTask;
-import com.shapps.mintube.CustomViews.CustomSwipeRefresh;
+import com.shapps.mintubeapp.AsyncTask.SearchSuggestionTask;
+import com.shapps.mintubeapp.CustomViews.CustomSwipeRefresh;
 
 import org.json.JSONArray;
 import org.json.JSONException;

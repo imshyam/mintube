@@ -1,4 +1,4 @@
-package com.shapps.mintube.AsyncTask;
+package com.shapps.mintubeapp.AsyncTask;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

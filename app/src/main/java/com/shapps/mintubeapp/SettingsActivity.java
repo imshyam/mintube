@@ -1,4 +1,4 @@
-package com.shapps.mintube;
+package com.shapps.mintubeapp;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -97,7 +97,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 dialog.show();
                 break;
             case R.id.about:
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/imshyam/MinTube-Wiki/wiki"));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://imshyam.github.io/mintube"));
                 startActivity(browserIntent);
                 break;
             default:

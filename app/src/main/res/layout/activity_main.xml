@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     android:id="@+id/coordinator_layout"
     android:background="#fff"
-    tools:context="com.shapps.mintube.MainActivity">
+    tools:context="com.shapps.mintubeapp.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <com.shapps.mintube.CustomViews.CustomSwipeRefresh
+    <com.shapps.mintubeapp.CustomViews.CustomSwipeRefresh
         android:id="@+id/swipe_refresh"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
@@ -32,6 +32,6 @@
         <include layout="@layout/content_main"/>
 
 
-    </com.shapps.mintube.CustomViews.CustomSwipeRefresh>
+    </com.shapps.mintubeapp.CustomViews.CustomSwipeRefresh>
 
 </android.support.design.widget.CoordinatorLayout>

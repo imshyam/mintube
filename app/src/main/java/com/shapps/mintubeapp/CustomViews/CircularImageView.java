@@ -1,4 +1,4 @@
-package com.shapps.mintube.CustomViews;
+package com.shapps.mintubeapp.CustomViews;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -21,7 +21,7 @@ import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.shapps.mintube.R;
+import com.shapps.mintubeapp.R;
 
 /**
  * Created by shyam on 2/3/16.

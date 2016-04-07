@@ -1,4 +1,4 @@
-package com.shapps.mintube;
+package com.shapps.mintubeapp;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -11,6 +11,8 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
+
 import io.fabric.sdk.android.Fabric;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +31,11 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder()
+                        .disabled(BuildConfig.DEBUG)
+                        .build())
+                .build());
 
         sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.FileName), Context.MODE_PRIVATE);
         if (!sharedPref.contains(getString(R.string.init))) {
