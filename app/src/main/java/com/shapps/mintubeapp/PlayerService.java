@@ -66,6 +66,7 @@ public class PlayerService extends Service implements View.OnClickListener {
     WindowManager.LayoutParams parWebView;
     static RelativeLayout viewToHide;
     RelativeLayout closeImageLayout;
+    CircularImageView closeImage;
     static WebPlayer webPlayer;
     static String VID_ID = "";
     static String PLIST_ID = "";
@@ -76,14 +77,19 @@ public class PlayerService extends Service implements View.OnClickListener {
     static NotificationManager notificationManager;
     static Notification notification;
     static ImageView playerHeadImage;
-    int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
+    static int playerHeadCenterX;
+    static int playerHeadCenterY;
+    static int closeMinX;
+    static int closeMinY;
+    static int closeMaxX;
+    int closeImgSize;
     static int scrnWidth;
     int scrnHeight;
     int defaultPlayerWidth;
     static int playerWidth;
     static int playerHeight;
     static int playerHeadSize;
-    int closeImageLayoutSize;
+    static int closeImageLayoutSize;
     static int xAtHiding;
     static int yAtHiding;
     static int xOnAppear;
@@ -92,7 +98,7 @@ public class PlayerService extends Service implements View.OnClickListener {
     static Intent fullScreenIntent;
 
     //is inside the close button so to stop video
-    boolean isInsideClose = false;
+    static boolean isInsideClose = false;
     //is width entire to show video properly
     boolean isEntireWidth = false;
     //Next Video to check whether next video is played or not
@@ -518,7 +524,7 @@ public class PlayerService extends Service implements View.OnClickListener {
             }
         });
 
-        final CircularImageView closeImage = (CircularImageView) serviceClose.findViewById(R.id.close_image);
+        closeImage = (CircularImageView) serviceClose.findViewById(R.id.close_image);
 
         //-----------------Handle Click-----------------------------
         playerHeadImage.setOnClickListener(this);
@@ -584,14 +590,6 @@ public class PlayerService extends Service implements View.OnClickListener {
                                 stopSelf();
                                 stopService(new Intent(PlayerService.this, PlayerService.class));
                             }
-                            else if (!visible) {
-                                if (params.x > scrnWidth / 2) {
-                                    params.x = scrnWidth - playerHeadSize + playerHeadSize / 4;
-                                } else {
-                                    params.x = -playerHeadSize / 4;
-                                }
-                                windowManager.updateViewLayout(serviceHead, params);
-                            }
                         }
                         return true;
                     case MotionEvent.ACTION_MOVE:
@@ -621,39 +619,6 @@ public class PlayerService extends Service implements View.OnClickListener {
                             }
                             windowManager.updateViewLayout(serviceHead, params);
                             windowManager.updateViewLayout(playerView, param_player);
-                        }
-                        else {
-                            if(newY + playerHeadSize > scrnHeight){
-                                params.y = scrnHeight - playerHeadSize;
-                            }
-                            else{
-                                params.y = newY;
-                            }
-                            params.x = newX;
-                            int [] t = new int[2];
-                            closeImageLayout.getLocationOnScreen(t);
-                            updateIsInsideClose(params.x, params.y, t);
-                            if(isInsideClose){
-                                params.x = t[0];
-                                params.y = t[1] - getStatusBarHeight();
-                                params.width = closeImageLayoutSize;
-                                params.height = closeImageLayoutSize;
-                                if(closeImage.getLayoutParams().width == closeImgSize){
-                                    closeImage.getLayoutParams().width = closeImgSize * 2;
-                                    closeImage.getLayoutParams().height = closeImgSize * 2;
-                                    closeImage.requestLayout();
-                                }
-                            }
-                            else{
-                                params.width = playerHeadSize;
-                                params.height = playerHeadSize;
-                                if(closeImage.getLayoutParams().width > closeImgSize){
-                                    closeImage.getLayoutParams().width = closeImgSize;
-                                    closeImage.getLayoutParams().height = closeImgSize;
-                                    closeImage.requestLayout();
-                                }
-                            }
-                            windowManager.updateViewLayout(serviceHead, params);
                         }
                         return true;
                 }
@@ -728,7 +693,7 @@ public class PlayerService extends Service implements View.OnClickListener {
         Log.e("Initializing ", Session.getPlayerId());
         webPlayer.loadScript(JavaScript.initializePlayerScript(Session.getPlayerId()));
     }
-    private void updateIsInsideClose(int x, int y, int[] t) {
+    public static void updateIsInsideClose(int x, int y, int[] t) {
         playerHeadCenterX = x + playerHeadSize / 2 ;
         playerHeadCenterY = y + playerHeadSize / 2;
         closeMinX = t[0] - 10;
@@ -741,7 +706,7 @@ public class PlayerService extends Service implements View.OnClickListener {
             isInsideClose = false;
         }
     }
-    public boolean isInsideClose() {
+    public static boolean isInsideClose() {
         if(playerHeadCenterX >= closeMinX && playerHeadCenterX <= closeMaxX){
             if(playerHeadCenterY >= closeMinY){
                 return true;
@@ -749,8 +714,8 @@ public class PlayerService extends Service implements View.OnClickListener {
         }
         return false;
     }
-    private int getStatusBarHeight() {
-        int statusBarHeight = (int) Math.ceil(25 * getApplicationContext().getResources().getDisplayMetrics().density);
+    public static int getStatusBarHeight() {
+        int statusBarHeight = (int) Math.ceil(25 * mContext.getResources().getDisplayMetrics().density);
         return statusBarHeight;
     }
 
@@ -772,9 +737,17 @@ public class PlayerService extends Service implements View.OnClickListener {
             case R.id.song_icon:
                 Log.e("Clicked", "Click!");
                 if (visible) {
+
                     Log.e("Head x , y ", params.x + " " + params.y);
                     Log.e("Player x , y ", param_player.x + " " + param_player.y);
                     Log.e("Head Size", String.valueOf(playerHeadImage.getHeight()));
+
+                    //remove Head, controls and drop_icon
+                    windowManager.removeView(serviceHead);
+                    servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
+                    LinearLayout controls = (LinearLayout) playerView.findViewById(R.id.player_controls);
+                    controls.setVisibility(View.GONE);
+                    //Save so we can use them to show again
                     xAtHiding = params.x;
                     yAtHiding = params.y;
                     //Update Player
@@ -799,15 +772,8 @@ public class PlayerService extends Service implements View.OnClickListener {
                     playerEntireWidPar.height = playerHeadSize;
                     playerEntireWidPar.width = playerHeadSize*4/3;
                     viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
-                    //remove Head, controls and drop_icon
-                    windowManager.removeView(serviceHead);
-                    servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
-                    LinearLayout controls = (LinearLayout) playerView.findViewById(R.id.player_controls);
-                    LinearLayout dropIcon = (LinearLayout) playerView.findViewById(R.id.drop_icon);
-                    controls.setVisibility(View.GONE);
-                    dropIcon.setVisibility(View.GONE);
                     //Set Player TouchListener
-                    webPlayer.setOnTouchListener(serviceHead, playerView, windowManager, serviceClose, serviceCloseBackground, viewToHide,
+                    webPlayer.setOnTouchListener(closeImage, closeImageLayout, closeImgSize, closeImageLayoutSize, playerView, windowManager, serviceClose, serviceCloseBackground, viewToHide,
                             playerHeadSize, scrnWidth, scrnHeight);
 
                     visible = false;
@@ -975,9 +941,7 @@ public class PlayerService extends Service implements View.OnClickListener {
         //show Head, controls and drop_icon
         windowManager.addView(serviceHead, servHeadParams);
         LinearLayout controls = (LinearLayout) playerView.findViewById(R.id.player_controls);
-        LinearLayout dropIcon = (LinearLayout) playerView.findViewById(R.id.drop_icon);
         controls.setVisibility(View.VISIBLE);
-        dropIcon.setVisibility(View.VISIBLE);
         //remove touchListener from player
         webPlayer.removeTouchListener();
         visible = true;

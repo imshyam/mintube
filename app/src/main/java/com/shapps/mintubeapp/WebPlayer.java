@@ -1,6 +1,7 @@
 package com.shapps.mintubeapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import com.shapps.mintubeapp.CustomViews.CircularImageView;
 
 import java.util.Map;
 
@@ -79,7 +82,7 @@ public class WebPlayer {
         player.destroy();
     }
 
-    public void setOnTouchListener(final LinearLayout serviceHead, final LinearLayout playerView, final WindowManager windowManager, final LinearLayout serviceClose, final LinearLayout serviceCloseBackground, final RelativeLayout viewToHide, final int playerHeadSize, final int scrnWidth, final int scrnHeight) {
+    public void setOnTouchListener(final CircularImageView closeImage, final RelativeLayout closeImageLayout, final int closeImgSize, final int closeImageLayoutSize, final LinearLayout playerView, final WindowManager windowManager, final LinearLayout serviceClose, final LinearLayout serviceCloseBackground, final RelativeLayout viewToHide, final int playerHeadSize, final int scrnWidth, final int scrnHeight) {
         final boolean needToShow[] = {true};
         player.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -115,7 +118,9 @@ public class WebPlayer {
                             PlayerService.makePlayerVisibleAgain();
                         } else {
                             //stop if inside the close Button
-                            Log.e("Stop if", "inside Close");
+                            if(PlayerService.isInsideClose){
+                                Log.i("Inside Close ", "...");
+                            }
                         }
                         return true;
                     case MotionEvent.ACTION_MOVE:
@@ -137,10 +142,35 @@ public class WebPlayer {
                             param_player.y = newY;
                         }
                         windowManager.updateViewLayout(playerView, param_player);
+
+                        int [] t = new int[2];
+                        closeImageLayout.getLocationOnScreen(t);
+                        PlayerService.updateIsInsideClose(param_player.x, param_player.y, t);
+                        if(PlayerService.isInsideClose){
+                            param_player.x = t[0];
+                            param_player.y = t[1] - PlayerService.getStatusBarHeight();
+                            param_player.width = closeImageLayoutSize;
+                            param_player.height = closeImageLayoutSize;
+                            if(closeImage.getLayoutParams().width == closeImgSize){
+                                closeImage.getLayoutParams().width = closeImgSize * 2;
+                                closeImage.getLayoutParams().height = closeImgSize * 2;
+                                closeImage.requestLayout();
+                            }
+                        }
+                        else{
+                            param_player.width = playerHeadSize;
+                            param_player.height = playerHeadSize;
+                            if(closeImage.getLayoutParams().width > closeImgSize){
+                                closeImage.getLayoutParams().width = closeImgSize;
+                                closeImage.getLayoutParams().height = closeImgSize;
+                                closeImage.requestLayout();
+                            }
+                        }
+                        windowManager.updateViewLayout(playerView, param_player);
                         return true;
-                }
-                return false;
             }
+            return false;
+        }
 
             private boolean isClicked(float startX, float endX, float startY, float endY) {
                 float differenceX = Math.abs(startX - endX);
