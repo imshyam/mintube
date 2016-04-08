@@ -92,7 +92,7 @@ public class PlayerService extends Service implements View.OnClickListener {
     static int closeImageLayoutSize;
     static int xAtHiding;
     static int yAtHiding;
-    static int xOnAppear;
+    static int xOnAppear = 0;
     static int yOnAppear = 0;
 
     static Intent fullScreenIntent;
@@ -293,6 +293,7 @@ public class PlayerService extends Service implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         isVideoPlaying = true;
+        isInsideClose = false;
         isFirstTime = true;
         Constants.linkType = 0;
         Session.finishWeb();
@@ -305,10 +306,13 @@ public class PlayerService extends Service implements View.OnClickListener {
                 EntireWidthWebPlayer.entWidthAct.onBackPressed();
             }
             windowManager.removeView(playerView);
-            windowManager.removeView(serviceHead);
-            windowManager.removeView(serviceClose);
+            if(visible) {
+                windowManager.removeView(serviceHead);
+                windowManager.removeView(serviceClose);
+            }
             webPlayer.destroy();
         }
+        visible = true;
     }
 
     public static void startVid(String vId, String pId) {
@@ -466,7 +470,6 @@ public class PlayerService extends Service implements View.OnClickListener {
 
                 Log.e("ChatHead Size", String.valueOf(playerHeadSize));
                 param_player.y = playerHeadSize;
-                xOnAppear = - playerHeadSize / 4;
                 windowManager.updateViewLayout(playerView, param_player);
             }
         });
@@ -584,56 +587,49 @@ public class PlayerService extends Service implements View.OnClickListener {
                         }
                         else {
                             //stop if inside the close Button
-                            if(isInsideClose){
-                                Log.i("Inside Close ", "...");
-                                stopForeground(true);
-                                stopSelf();
-                                stopService(new Intent(PlayerService.this, PlayerService.class));
-                            }
+                            //-----------Implement This----------
                         }
                         return true;
                     case MotionEvent.ACTION_MOVE:
                         int newX, newY;
                         newX = initialX + (int) (event.getRawX() - initialTouchX);
                         newY = initialY + (int) (event.getRawY() - initialTouchY);
-                        if (visible) {
-                            if (newX < 0) {
-                                param_player.x = 0;
-                                params.x = 0;
-                            } else if (playerWidth + newX > scrnWidth) {
-                                param_player.x = scrnWidth - playerWidth;
-                                params.x = scrnWidth - playerWidth;
-                            } else {
-                                param_player.x = newX;
-                                params.x = newX;
-                            }
-                            if (newY < 0) {
-                                param_player.y = playerHeadSize;
-                                params.y = 0;
-                            } else if (playerHeight + newY + playerHeadSize > scrnHeight) {
-                                param_player.y = scrnHeight - playerHeight;
-                                params.y = scrnHeight - playerHeight - playerHeadSize;
-                            } else {
-                                param_player.y = newY + playerHeadSize;
-                                params.y = newY;
-                            }
-                            windowManager.updateViewLayout(serviceHead, params);
-                            windowManager.updateViewLayout(playerView, param_player);
+                        if (newX < 0) {
+                            param_player.x = 0;
+                            params.x = 0;
+                        } else if (playerWidth + newX > scrnWidth) {
+                            param_player.x = scrnWidth - playerWidth;
+                            params.x = scrnWidth - playerWidth;
+                        } else {
+                            param_player.x = newX;
+                            params.x = newX;
                         }
-                        return true;
-                }
-                return false;
-            }
-
-            private boolean isClicked(float startX, float endX, float startY, float endY) {
-                float differenceX = Math.abs(startX - endX);
-                float differenceY = Math.abs(startY - endY);
-                if (differenceX >= 5 || differenceY >= 5) {
-                    return false;
-                }
+                        if (newY < 0) {
+                            param_player.y = playerHeadSize;
+                            params.y = 0;
+                        } else if (playerHeight + newY + playerHeadSize > scrnHeight) {
+                            param_player.y = scrnHeight - playerHeight;
+                            params.y = scrnHeight - playerHeight - playerHeadSize;
+                        } else {
+                            param_player.y = newY + playerHeadSize;
+                            params.y = newY;
+                        }
+                        windowManager.updateViewLayout(serviceHead, params);
+                        windowManager.updateViewLayout(playerView, param_player);
                 return true;
             }
-        });
+            return false;
+        }
+
+        private boolean isClicked(float startX, float endX, float startY, float endY) {
+            float differenceX = Math.abs(startX - endX);
+            float differenceY = Math.abs(startY - endY);
+            if (differenceX >= 5 || differenceY >= 5) {
+                return false;
+            }
+            return true;
+        }
+            });
     }
     //Update Image of Repeat Type Button
     private void updateRepeatTypeImage() {
@@ -945,5 +941,12 @@ public class PlayerService extends Service implements View.OnClickListener {
         //remove touchListener from player
         webPlayer.removeTouchListener();
         visible = true;
+    }
+
+    public static void stopThings() {
+        Log.i("Inside Close ", "Player...");
+        playerService.stopForeground(true);
+        playerService.stopSelf();
+        mContext.stopService(new Intent(mContext, PlayerService.class));
     }
 }

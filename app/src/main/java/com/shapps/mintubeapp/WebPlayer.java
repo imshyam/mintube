@@ -119,7 +119,7 @@ public class WebPlayer {
                         } else {
                             //stop if inside the close Button
                             if(PlayerService.isInsideClose){
-                                Log.i("Inside Close ", "...");
+                                PlayerService.stopThings();
                             }
                         }
                         return true;
@@ -147,8 +147,8 @@ public class WebPlayer {
                         closeImageLayout.getLocationOnScreen(t);
                         PlayerService.updateIsInsideClose(param_player.x, param_player.y, t);
                         if(PlayerService.isInsideClose){
-                            param_player.x = t[0];
-                            param_player.y = t[1] - PlayerService.getStatusBarHeight();
+                            param_player.x = t[0] + closeImageLayoutSize / 10;
+                            param_player.y = t[1] - PlayerService.getStatusBarHeight() + closeImageLayoutSize / 5;
                             param_player.width = closeImageLayoutSize;
                             param_player.height = closeImageLayoutSize;
                             if(closeImage.getLayoutParams().width == closeImgSize){
@@ -158,7 +158,7 @@ public class WebPlayer {
                             }
                         }
                         else{
-                            param_player.width = playerHeadSize;
+                            param_player.width = playerHeadSize * 4 / 3;
                             param_player.height = playerHeadSize;
                             if(closeImage.getLayoutParams().width > closeImgSize){
                                 closeImage.getLayoutParams().width = closeImgSize;
