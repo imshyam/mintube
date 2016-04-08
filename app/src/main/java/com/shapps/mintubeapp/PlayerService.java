@@ -57,22 +57,37 @@ public class PlayerService extends Service implements View.OnClickListener {
     static PlayerService playerService;
     static WindowManager windowManager;
     static LinearLayout serviceHead, serviceClose, serviceCloseBackground, playerView, webPlayerLL;
-    FrameLayout webPlayerFrame;
+    static FrameLayout webPlayerFrame;
     static  WindowManager.LayoutParams servHeadParams, servCloseParams, servCloseBackParams, playerViewParams;
-    WindowManager.LayoutParams param_player, params, param_close, param_close_back, parWebView;
-    RelativeLayout viewToHide, closeImageLayout;
+    static WindowManager.LayoutParams param_player;
+    static WindowManager.LayoutParams params;
+    WindowManager.LayoutParams param_close;
+    WindowManager.LayoutParams param_close_back;
+    WindowManager.LayoutParams parWebView;
+    static RelativeLayout viewToHide;
+    RelativeLayout closeImageLayout;
     static WebPlayer webPlayer;
     static String VID_ID = "";
     static String PLIST_ID = "";
     static boolean isVideoPlaying = true;
-    boolean visible = true;
+    static boolean visible = true;
     static RemoteViews viewBig;
     static RemoteViews viewSmall;
     static NotificationManager notificationManager;
     static Notification notification;
     static ImageView playerHeadImage;
     int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
-    int scrnWidth, scrnHeight, defaultPlayerWidth,playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
+    static int scrnWidth;
+    int scrnHeight;
+    int defaultPlayerWidth;
+    static int playerWidth;
+    static int playerHeight;
+    static int playerHeadSize;
+    int closeImageLayoutSize;
+    static int xAtHiding;
+    static int yAtHiding;
+    static int xOnAppear;
+    static int yOnAppear = 0;
 
     static Intent fullScreenIntent;
 
@@ -792,28 +807,10 @@ public class PlayerService extends Service implements View.OnClickListener {
                     controls.setVisibility(View.GONE);
                     dropIcon.setVisibility(View.GONE);
                     //Set Player TouchListener
-                    webPlayer.setOnTouchListener(playerView, windowManager, serviceClose, serviceCloseBackground, viewToHide,
+                    webPlayer.setOnTouchListener(serviceHead, playerView, windowManager, serviceClose, serviceCloseBackground, viewToHide,
                             playerHeadSize, scrnWidth, scrnHeight);
 
                     visible = false;
-                } else {
-                    viewToHide.setVisibility(View.VISIBLE);
-                    //Store current to again hidden icon will come here
-                    if(params.x > 0) {
-                        xOnAppear = scrnWidth - playerHeadSize + playerHeadSize / 4;
-                    }
-                    else{
-                        xOnAppear = - playerHeadSize / 4;
-                    }
-                    yOnAppear = params.y;
-                    //Update the icon and player to player's hidden position
-                    params.x = xAtHiding;
-                    params.y = yAtHiding;
-                    param_player.x = xAtHiding;
-                    param_player.y = yAtHiding + playerHeadSize;
-                    windowManager.updateViewLayout(playerView, param_player);
-                    windowManager.updateViewLayout(serviceHead, params);
-                    visible = true;
                 }
                 break;
             //Handle Full Screen
@@ -948,4 +945,41 @@ public class PlayerService extends Service implements View.OnClickListener {
 
     }
 
+    public static void makePlayerVisibleAgain() {
+
+        //Store current to again hidden player will come here
+        xOnAppear = param_player.x;
+        yOnAppear = param_player.y;
+        //Update the icon and player to player's hidden position MAKE THEM VISIBLE
+        param_player.height = playerHeight;
+        param_player.width = playerWidth;
+        param_player.x = xAtHiding;
+        param_player.y = yAtHiding + playerHeadSize;
+        windowManager.updateViewLayout(playerView, param_player);
+        ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
+        fillWidthParamLL.height = playerHeight;
+        fillWidthParamLL.width = playerHeight;
+        webPlayerLL.setLayoutParams(fillWidthParamLL);
+        ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
+        fillWidthParamFrame.height = playerHeight;
+        fillWidthParamFrame.width = playerWidth;
+        webPlayerFrame.setLayoutParams(fillWidthParamFrame);
+        ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
+        fillWidthParam.height = playerWidth;
+        fillWidthParam.width = playerHeight;
+        viewToHide.setLayoutParams(fillWidthParam);
+        ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
+        playerEntireWidPar.height = playerWidth;
+        playerEntireWidPar.width = playerHeight;
+        viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
+        //show Head, controls and drop_icon
+        windowManager.addView(serviceHead, servHeadParams);
+        LinearLayout controls = (LinearLayout) playerView.findViewById(R.id.player_controls);
+        LinearLayout dropIcon = (LinearLayout) playerView.findViewById(R.id.drop_icon);
+        controls.setVisibility(View.VISIBLE);
+        dropIcon.setVisibility(View.VISIBLE);
+        //remove touchListener from player
+        webPlayer.removeTouchListener();
+        visible = true;
+    }
 }

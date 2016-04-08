@@ -79,7 +79,7 @@ public class WebPlayer {
         player.destroy();
     }
 
-    public void setOnTouchListener(final LinearLayout playerView, final WindowManager windowManager, final LinearLayout serviceClose, final LinearLayout serviceCloseBackground, final RelativeLayout viewToHide, final int playerHeadSize, final int scrnWidth, final int scrnHeight) {
+    public void setOnTouchListener(final LinearLayout serviceHead, final LinearLayout playerView, final WindowManager windowManager, final LinearLayout serviceClose, final LinearLayout serviceCloseBackground, final RelativeLayout viewToHide, final int playerHeadSize, final int scrnWidth, final int scrnHeight) {
         final boolean needToShow[] = {true};
         player.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -90,7 +90,7 @@ public class WebPlayer {
                 final Runnable setVisible = new Runnable() {
                     @Override
                     public void run() {
-                        if(needToShow[0]) {
+                        if (needToShow[0]) {
                             serviceClose.setVisibility(View.VISIBLE);
                         }
                     }
@@ -112,9 +112,8 @@ public class WebPlayer {
                         serviceCloseBackground.setVisibility(View.GONE);
                         serviceClose.setVisibility(View.GONE);
                         if (isClicked(initialTouchXP, finalTouchXP, initialTouchYP, finalTouchYP)) {
-                            Log.e("Click", "sadkas");
-                        }
-                        else {
+                            PlayerService.makePlayerVisibleAgain();
+                        } else {
                             //stop if inside the close Button
                             Log.e("Stop if", "inside Close");
                         }
@@ -125,8 +124,8 @@ public class WebPlayer {
                         newY = initialYP + (int) (event.getRawY() - initialTouchYP);
                         if (newX < 0) {
                             param_player.x = 0;
-                        } else if ((playerHeadSize*4/3) + newX > scrnWidth) {
-                            param_player.x = scrnWidth - (playerHeadSize*4/3);
+                        } else if ((playerHeadSize * 4 / 3) + newX > scrnWidth) {
+                            param_player.x = scrnWidth - (playerHeadSize * 4 / 3);
                         } else {
                             param_player.x = newX;
                         }
@@ -152,5 +151,9 @@ public class WebPlayer {
                 return true;
             }
         });
+    }
+
+    public void removeTouchListener() {
+        player.setOnTouchListener(null);
     }
 }
