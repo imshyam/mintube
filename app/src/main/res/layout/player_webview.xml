@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/web_player_ll">
+    <FrameLayout
+        android:id="@+id/web_player_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <!--LinearLayout
+            android:id="@+id/drop_icon"
+            android:gravity="center"
+            android:layout_gravity="top|left"
+            android:layout_width="60dp"
+            android:layout_height="20dp">
+            <ImageView
+                android:layout_marginTop="-8dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/arrow_drop_up"/>
+        </LinearLayout-->
+        <RelativeLayout
+            android:id="@+id/view_to_hide"
+            android:layout_width="240dp"
+            android:layout_height="200dp">
+        </RelativeLayout>
+        <include layout="@layout/controls"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            />
+    </FrameLayout>
+</LinearLayout>
