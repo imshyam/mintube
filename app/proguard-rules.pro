@@ -19,3 +19,5 @@
 -keepattributes SourceFile,LineNumberTable,*Annotation*
 -keep public class * extends java.lang.Exception
 -printmapping mapping.txt
+#For Enabling SearchView With Progaurd
+-keep class android.support.v7.widget.SearchView { *; }
