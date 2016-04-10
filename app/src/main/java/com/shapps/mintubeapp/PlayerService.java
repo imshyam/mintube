@@ -32,7 +32,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.shapps.mintubeapp.AsyncTask.ImageLoadTask;
 import com.shapps.mintubeapp.AsyncTask.LoadDetailsTask;
@@ -49,7 +48,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by shyam on 12/2/16.
  */
-public class PlayerService extends Service implements View.OnClickListener {
+public class PlayerService extends Service implements View.OnClickListener{
 
     static Context mContext;
     static Bitmap bitmap;
@@ -57,48 +56,27 @@ public class PlayerService extends Service implements View.OnClickListener {
     static PlayerService playerService;
     static WindowManager windowManager;
     static LinearLayout serviceHead, serviceClose, serviceCloseBackground, playerView, webPlayerLL;
-    static FrameLayout webPlayerFrame;
+    FrameLayout webPlayerFrame;
     static  WindowManager.LayoutParams servHeadParams, servCloseParams, servCloseBackParams, playerViewParams;
-    static WindowManager.LayoutParams param_player;
-    static WindowManager.LayoutParams params;
-    WindowManager.LayoutParams param_close;
-    WindowManager.LayoutParams param_close_back;
-    WindowManager.LayoutParams parWebView;
-    static RelativeLayout viewToHide;
-    RelativeLayout closeImageLayout;
-    CircularImageView closeImage;
+    WindowManager.LayoutParams param_player, params, param_close, param_close_back, parWebView;
+    RelativeLayout viewToHide, closeImageLayout;
     static WebPlayer webPlayer;
     static String VID_ID = "";
     static String PLIST_ID = "";
     static boolean isVideoPlaying = true;
-    static boolean visible = true;
+    boolean visible = true;
     static RemoteViews viewBig;
     static RemoteViews viewSmall;
     static NotificationManager notificationManager;
     static Notification notification;
     static ImageView playerHeadImage;
-    static int playerHeadCenterX;
-    static int playerHeadCenterY;
-    static int closeMinX;
-    static int closeMinY;
-    static int closeMaxX;
-    int closeImgSize;
-    static int scrnWidth;
-    int scrnHeight;
-    int defaultPlayerWidth;
-    static int playerWidth;
-    static int playerHeight;
-    static int playerHeadSize;
-    static int closeImageLayoutSize;
-    static int xAtHiding;
-    static int yAtHiding;
-    static int xOnAppear = 0;
-    static int yOnAppear = 0;
+    int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
+    int scrnWidth, scrnHeight, defaultPlayerWidth,playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
 
     static Intent fullScreenIntent;
 
     //is inside the close button so to stop video
-    static boolean isInsideClose = false;
+    boolean isInsideClose = false;
     //is width entire to show video properly
     boolean isEntireWidth = false;
     //Next Video to check whether next video is played or not
@@ -112,9 +90,6 @@ public class PlayerService extends Service implements View.OnClickListener {
     ImageView repeatTypeImg, entireWidthImg, fullScreenImg;
     SharedPreferences sharedPref;
     private static int noItemsInPlaylist, currVideoIndex;
-
-    //if just a click no need to show the close button
-    boolean[] needToShow = {true};
 
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == -1){
@@ -246,25 +221,25 @@ public class PlayerService extends Service implements View.OnClickListener {
             stopSelf();
             stopService(new Intent(this, PlayerService.class));
         } else if(intent.getAction().equals(Constants.ACTION.PAUSE_PLAY_ACTION)){
-                if (isVideoPlaying) {
-                    if (replayVid || replayPlaylist) {
-                        if (Constants.linkType == 1) {
-                            Log.i("Trying to ", "Replay Playlist");
-                            webPlayer.loadScript(JavaScript.replayPlaylistScript());
-                            replayPlaylist = false;
-                        } else {
-                            Log.i("Trying to ", "Replay Video");
-                            webPlayer.loadScript(JavaScript.playVideoScript());
-                            replayVid = false;
-                        }
+            if (isVideoPlaying) {
+                if (replayVid || replayPlaylist) {
+                    if (Constants.linkType == 1) {
+                        Log.i("Trying to ", "Replay Playlist");
+                        webPlayer.loadScript(JavaScript.replayPlaylistScript());
+                        replayPlaylist = false;
                     } else {
-                        Log.i("Trying to ", "Pause Video");
-                        webPlayer.loadScript(JavaScript.pauseVideoScript());
+                        Log.i("Trying to ", "Replay Video");
+                        webPlayer.loadScript(JavaScript.playVideoScript());
+                        replayVid = false;
                     }
                 } else {
-                    Log.i("Trying to ", "Play Video");
-                    webPlayer.loadScript(JavaScript.playVideoScript());
+                    Log.i("Trying to ", "Pause Video");
+                    webPlayer.loadScript(JavaScript.pauseVideoScript());
                 }
+            } else {
+                Log.i("Trying to ", "Play Video");
+                webPlayer.loadScript(JavaScript.playVideoScript());
+            }
         }
         else if(intent.getAction().equals(Constants.ACTION.NEXT_ACTION)){
             Log.e("Trying to ", "Play Next");
@@ -293,7 +268,6 @@ public class PlayerService extends Service implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         isVideoPlaying = true;
-        isInsideClose = false;
         isFirstTime = true;
         Constants.linkType = 0;
         Session.finishWeb();
@@ -306,13 +280,10 @@ public class PlayerService extends Service implements View.OnClickListener {
                 EntireWidthWebPlayer.entWidthAct.onBackPressed();
             }
             windowManager.removeView(playerView);
-            if(visible) {
-                windowManager.removeView(serviceHead);
-                windowManager.removeView(serviceClose);
-            }
+            windowManager.removeView(serviceHead);
+            windowManager.removeView(serviceClose);
             webPlayer.destroy();
         }
-        visible = true;
     }
 
     public static void startVid(String vId, String pId) {
@@ -445,13 +416,13 @@ public class PlayerService extends Service implements View.OnClickListener {
         if(Constants.linkType == 1) {
             Log.e("Starting ", "Playlist!!!");
             webPlayer.loadUrl("https://www.youtube.com/embed/"
-                    + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&list=" + PLIST_ID
+                            + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&list=" + PLIST_ID
                     , hashMap);
         }
         else {
             Log.e("Starting ", "Single Video!!!");
             webPlayer.loadUrl("https://www.youtube.com/embed/" + VID_ID
-                    + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1"
+                            + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1"
                     , hashMap);
         }
 
@@ -470,6 +441,7 @@ public class PlayerService extends Service implements View.OnClickListener {
 
                 Log.e("ChatHead Size", String.valueOf(playerHeadSize));
                 param_player.y = playerHeadSize;
+                xOnAppear = - playerHeadSize / 4;
                 windowManager.updateViewLayout(playerView, param_player);
             }
         });
@@ -527,7 +499,7 @@ public class PlayerService extends Service implements View.OnClickListener {
             }
         });
 
-        closeImage = (CircularImageView) serviceClose.findViewById(R.id.close_image);
+        final CircularImageView closeImage = (CircularImageView) serviceClose.findViewById(R.id.close_image);
 
         //-----------------Handle Click-----------------------------
         playerHeadImage.setOnClickListener(this);
@@ -541,6 +513,10 @@ public class PlayerService extends Service implements View.OnClickListener {
         scrnHeight = size.y;
 
         //-----------------Handle Touch-----------------------------
+
+        //if just a click no need to show the close button
+        final boolean[] needToShow = {true};
+
         playerHeadImage.setOnTouchListener(new View.OnTouchListener() {
             private int initialX, initialY;
             private float initialTouchX, initialTouchY, finalTouchX, finalTouchY;
@@ -587,49 +563,97 @@ public class PlayerService extends Service implements View.OnClickListener {
                         }
                         else {
                             //stop if inside the close Button
-                            //-----------Implement This----------
+                            if(isInsideClose){
+                                Log.i("Inside Close ", "...");
+                                stopForeground(true);
+                                stopSelf();
+                                stopService(new Intent(PlayerService.this, PlayerService.class));
+                            }
+                            else if (!visible) {
+                                if (params.x > scrnWidth / 2) {
+                                    params.x = scrnWidth - playerHeadSize + playerHeadSize / 4;
+                                } else {
+                                    params.x = -playerHeadSize / 4;
+                                }
+                                windowManager.updateViewLayout(serviceHead, params);
+                            }
                         }
                         return true;
                     case MotionEvent.ACTION_MOVE:
                         int newX, newY;
                         newX = initialX + (int) (event.getRawX() - initialTouchX);
                         newY = initialY + (int) (event.getRawY() - initialTouchY);
-                        if (newX < 0) {
-                            param_player.x = 0;
-                            params.x = 0;
-                        } else if (playerWidth + newX > scrnWidth) {
-                            param_player.x = scrnWidth - playerWidth;
-                            params.x = scrnWidth - playerWidth;
-                        } else {
-                            param_player.x = newX;
+                        if (visible) {
+                            if (newX < 0) {
+                                param_player.x = 0;
+                                params.x = 0;
+                            } else if (playerWidth + newX > scrnWidth) {
+                                param_player.x = scrnWidth - playerWidth;
+                                params.x = scrnWidth - playerWidth;
+                            } else {
+                                param_player.x = newX;
+                                params.x = newX;
+                            }
+                            if (newY < 0) {
+                                param_player.y = playerHeadSize;
+                                params.y = 0;
+                            } else if (playerHeight + newY + playerHeadSize > scrnHeight) {
+                                param_player.y = scrnHeight - playerHeight;
+                                params.y = scrnHeight - playerHeight - playerHeadSize;
+                            } else {
+                                param_player.y = newY + playerHeadSize;
+                                params.y = newY;
+                            }
+                            windowManager.updateViewLayout(serviceHead, params);
+                            windowManager.updateViewLayout(playerView, param_player);
+                        }
+                        else {
+                            if(newY + playerHeadSize > scrnHeight){
+                                params.y = scrnHeight - playerHeadSize;
+                            }
+                            else{
+                                params.y = newY;
+                            }
                             params.x = newX;
+                            int [] t = new int[2];
+                            closeImageLayout.getLocationOnScreen(t);
+                            updateIsInsideClose(params.x, params.y, t);
+                            if(isInsideClose){
+                                params.x = t[0];
+                                params.y = t[1] - getStatusBarHeight();
+                                params.width = closeImageLayoutSize;
+                                params.height = closeImageLayoutSize;
+                                if(closeImage.getLayoutParams().width == closeImgSize){
+                                    closeImage.getLayoutParams().width = closeImgSize * 2;
+                                    closeImage.getLayoutParams().height = closeImgSize * 2;
+                                    closeImage.requestLayout();
+                                }
+                            }
+                            else{
+                                params.width = playerHeadSize;
+                                params.height = playerHeadSize;
+                                if(closeImage.getLayoutParams().width > closeImgSize){
+                                    closeImage.getLayoutParams().width = closeImgSize;
+                                    closeImage.getLayoutParams().height = closeImgSize;
+                                    closeImage.requestLayout();
+                                }
+                            }
+                            windowManager.updateViewLayout(serviceHead, params);
                         }
-                        if (newY < 0) {
-                            param_player.y = playerHeadSize;
-                            params.y = 0;
-                        } else if (playerHeight + newY + playerHeadSize > scrnHeight) {
-                            param_player.y = scrnHeight - playerHeight;
-                            params.y = scrnHeight - playerHeight - playerHeadSize;
-                        } else {
-                            param_player.y = newY + playerHeadSize;
-                            params.y = newY;
-                        }
-                        windowManager.updateViewLayout(serviceHead, params);
-                        windowManager.updateViewLayout(playerView, param_player);
-                return true;
-            }
-            return false;
-        }
-
-        private boolean isClicked(float startX, float endX, float startY, float endY) {
-            float differenceX = Math.abs(startX - endX);
-            float differenceY = Math.abs(startY - endY);
-            if (differenceX >= 5 || differenceY >= 5) {
+                        return true;
+                }
                 return false;
             }
-            return true;
-        }
-            });
+
+            private boolean isClicked(float startX, float endX, float startY, float endY) {
+                float differenceX = Math.abs(startX - endX);
+                float differenceY = Math.abs(startY - endY);
+                if (differenceX >= 5 || differenceY >= 5) {
+                    return false;
+                }
+                return true;
+            }
+        });
     }
     //Update Image of Repeat Type Button
     private void updateRepeatTypeImage() {
@@ -689,7 +713,7 @@ public class PlayerService extends Service implements View.OnClickListener {
         Log.e("Initializing ", Session.getPlayerId());
         webPlayer.loadScript(JavaScript.initializePlayerScript(Session.getPlayerId()));
     }
-    public static void updateIsInsideClose(int x, int y, int[] t) {
+    private void updateIsInsideClose(int x, int y, int[] t) {
         playerHeadCenterX = x + playerHeadSize / 2 ;
         playerHeadCenterY = y + playerHeadSize / 2;
         closeMinX = t[0] - 10;
@@ -702,7 +726,7 @@ public class PlayerService extends Service implements View.OnClickListener {
             isInsideClose = false;
         }
     }
-    public static boolean isInsideClose() {
+    public boolean isInsideClose() {
         if(playerHeadCenterX >= closeMinX && playerHeadCenterX <= closeMaxX){
             if(playerHeadCenterY >= closeMinY){
                 return true;
@@ -710,8 +734,8 @@ public class PlayerService extends Service implements View.OnClickListener {
         }
         return false;
     }
-    public static int getStatusBarHeight() {
-        int statusBarHeight = (int) Math.ceil(25 * mContext.getResources().getDisplayMetrics().density);
+    private int getStatusBarHeight() {
+        int statusBarHeight = (int) Math.ceil(25 * getApplicationContext().getResources().getDisplayMetrics().density);
         return statusBarHeight;
     }
 
@@ -733,46 +757,44 @@ public class PlayerService extends Service implements View.OnClickListener {
             case R.id.song_icon:
                 Log.e("Clicked", "Click!");
                 if (visible) {
-
                     Log.e("Head x , y ", params.x + " " + params.y);
                     Log.e("Player x , y ", param_player.x + " " + param_player.y);
                     Log.e("Head Size", String.valueOf(playerHeadImage.getHeight()));
-
-                    //remove Head, controls and drop_icon
-                    windowManager.removeView(serviceHead);
-                    servHeadParams = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
-                    LinearLayout controls = (LinearLayout) playerView.findViewById(R.id.player_controls);
-                    controls.setVisibility(View.GONE);
-                    //Save so we can use them to show again
                     xAtHiding = params.x;
                     yAtHiding = params.y;
-                    //Update Player
-                    param_player.height = playerHeadSize;
-                    param_player.width = playerHeadSize*4/3;
-                    param_player.x = xOnAppear;
-                    param_player.y = yOnAppear;
-                    windowManager.updateViewLayout(playerView, param_player);
-                    ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
-                    fillWidthParamLL.height = playerHeadSize;
-                    fillWidthParamLL.width = playerHeadSize*4/3;
-                    webPlayerLL.setLayoutParams(fillWidthParamLL);
-                    ViewGroup.LayoutParams fillWidthParamFrame = webPlayerFrame.getLayoutParams();
-                    fillWidthParamFrame.height = playerHeadSize;
-                    fillWidthParamFrame.width = playerHeadSize*4/3;
-                    webPlayerFrame.setLayoutParams(fillWidthParamFrame);
-                    ViewGroup.LayoutParams fillWidthParam = viewToHide.getLayoutParams();
-                    fillWidthParam.height = playerHeadSize;
-                    fillWidthParam.width = playerHeadSize*4/3;
-                    viewToHide.setLayoutParams(fillWidthParam);
-                    ViewGroup.LayoutParams playerEntireWidPar = WebPlayer.getPlayer().getLayoutParams();
-                    playerEntireWidPar.height = playerHeadSize;
-                    playerEntireWidPar.width = playerHeadSize*4/3;
-                    viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerEntireWidPar);
-                    //Set Player TouchListener
-                    webPlayer.setOnTouchListener(closeImage, closeImageLayout, closeImgSize, closeImageLayoutSize, playerView, windowManager, serviceClose, serviceCloseBackground, viewToHide,
-                            playerHeadSize, scrnWidth, scrnHeight);
-
+                    params.x = xOnAppear;
+                    params.y = yOnAppear;
+                    //To hide the Player View
+                    final WindowManager.LayoutParams tmpPlayerParams = new WindowManager.LayoutParams(
+                            100,
+                            100,
+                            WindowManager.LayoutParams.TYPE_PHONE,
+                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                            PixelFormat.TRANSLUCENT);
+                    tmpPlayerParams.x = scrnWidth;
+                    tmpPlayerParams.y = scrnHeight;
+                    windowManager.updateViewLayout(playerView, tmpPlayerParams);
+                    viewToHide.setVisibility(View.GONE);
+                    windowManager.updateViewLayout(serviceHead, params);
                     visible = false;
+                } else {
+                    viewToHide.setVisibility(View.VISIBLE);
+                    //Store current to again hidden icon will come here
+                    if(params.x > 0) {
+                        xOnAppear = scrnWidth - playerHeadSize + playerHeadSize / 4;
+                    }
+                    else{
+                        xOnAppear = - playerHeadSize / 4;
+                    }
+                    yOnAppear = params.y;
+                    //Update the icon and player to player's hidden position
+                    params.x = xAtHiding;
+                    params.y = yAtHiding;
+                    param_player.x = xAtHiding;
+                    param_player.y = yAtHiding + playerHeadSize;
+                    windowManager.updateViewLayout(playerView, param_player);
+                    windowManager.updateViewLayout(serviceHead, params);
+                    visible = true;
                 }
                 break;
             //Handle Full Screen
@@ -905,48 +927,5 @@ public class PlayerService extends Service implements View.OnClickListener {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
-    }
-
-    public static void makePlayerVisibleAgain() {
-
-        //Store current to again hidden player will come here
-        xOnAppear = param_player.x;
-        yOnAppear = param_player.y;
-        //Update the icon and player to player's hidden position MAKE THEM VISIBLE
-        param_player.height = playerHeight;
-        param_player.width = playerWidth;
-        param_player.x = xAtHiding;
-        param_player.y = yAtHiding + playerHeadSize;
-        windowManager.updateViewLayout(playerView, param_player);
-        ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
-        fillWidthParamLL.height = playerHeight;
-        fillWidthParamLL.width = playerWidth;
-        webPlayerLL.setLayoutParams(fillWidthParamLL);
-        ViewGroup.LayoutParams ParamFrame = webPlayerFrame.getLayoutParams();
-        ParamFrame.height = playerHeight;
-        ParamFrame.width = playerWidth;
-        webPlayerFrame.setLayoutParams(ParamFrame);
-        ViewGroup.LayoutParams fillParam = viewToHide.getLayoutParams();
-        fillParam.height = playerHeight;
-        fillParam.width = playerWidth;
-        viewToHide.setLayoutParams(fillParam);
-        ViewGroup.LayoutParams playerPar = WebPlayer.getPlayer().getLayoutParams();
-        playerPar.height = playerHeight;
-        playerPar.width = playerWidth;
-        viewToHide.updateViewLayout(WebPlayer.getPlayer(), playerPar);
-        //show Head, controls and drop_icon
-        windowManager.addView(serviceHead, servHeadParams);
-        LinearLayout controls = (LinearLayout) playerView.findViewById(R.id.player_controls);
-        controls.setVisibility(View.VISIBLE);
-        //remove touchListener from player
-        webPlayer.removeTouchListener();
-        visible = true;
-    }
-
-    public static void stopThings() {
-        Log.i("Inside Close ", "Player...");
-        playerService.stopForeground(true);
-        playerService.stopSelf();
-        mContext.stopService(new Intent(mContext, PlayerService.class));
     }
 }
