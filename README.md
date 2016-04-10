@@ -4,6 +4,8 @@ Minimized/Floating Youtube
 ### Download
 Get It [Here][1].
 
+Or open `bit.ly/mintube` in your mobile.
+
 ### Source
 There are two versions of the app : v0.90 and v0.91.
 
@@ -17,5 +19,5 @@ The above download link was for v0.90.
 
 You can get v0.91 [here][2].
 
-[1]: <https://drive.google.com/open?id=0Bx43MGCMuCJcOGdTY0Fvb0VmaTg>
+[1]: <http://bit.ly/mintube>
 [2]: <https://drive.google.com/open?id=0Bx43MGCMuCJcb0c5cVR0UzZTSm8>
