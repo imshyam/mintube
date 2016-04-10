@@ -5,11 +5,13 @@ Minimized/Floating Youtube
 Get It [Here][1].
 
 ### Source
-There are two versions of the app.
+There are two versions of the app : v0.90 and v0.91.
 
-master branch contains source code for v0.91. The difference between v0.90 and v0.91 is that v0.90 shows icon on hiding and v0.91 shows a resized player on hiding the whole video player.
+The only difference between v0.90 and v0.91 is that v0.90 shows icon on hiding and v0.91 shows a resized player on hiding the whole video player. All the other functionalities are same.
 
-Source Code for v0.90 can be found in branch v0.90-master.
+![Difference](https://raw.githubusercontent.com/imshyam/mintube/master/screens/diff.png)
+
+master branch contains source code for v0.91. Source Code for v0.90 can be found in branch v0.90-master.
 
 The above download link was for v0.90.
 
