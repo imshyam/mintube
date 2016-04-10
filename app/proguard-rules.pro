@@ -12,12 +12,15 @@
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
 # class:
--keepclassmembers class fqcn.of.javascript.interface.for.webview {
-   public class com.shapps.mintubeapp.GetHtmlInterface;
+#JS Interface
+-keep public class com.shapps.mintubeapp.GetHtmlInterface
+-keep public class * implements com.shapps.mintubeapp.GetHtmlInterface
+-keepclassmembers class com.shapps.mintubeapp.GetHtmlInterface {
+    <methods>;
 }
 #For crashlytics in fabric
 -keepattributes SourceFile,LineNumberTable,*Annotation*
 -keep public class * extends java.lang.Exception
 -printmapping mapping.txt
-#For Enabling SearchView With Progaurd
+#For SearchView
 -keep class android.support.v7.widget.SearchView { *; }
