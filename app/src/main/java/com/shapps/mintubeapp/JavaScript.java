@@ -17,17 +17,12 @@ public class JavaScript {
         return "javascript:player.pauseVideo();";
     }
 
-    public static String initializePlayerScript(String playerId) {
-        return "javascript:var player = document.getElementById(\"" + playerId + "\");" +
+    public static String onPlayerStateChangeListener() {
+        return "javascript:" +
                 "player.addEventListener(\"onStateChange\", \"onPlayerStateChange\");"+
                 "function onPlayerStateChange(event) {\n" +
-                "      window.HtmlViewer.showPlayerState(player.getPlayerState());\n" +
+                "      window.Interface.showPlayerState(player.getPlayerState());\n" +
                 "  }";
-    }
-
-    public static String getHtmlScript() {
-        return "javascript:window.HtmlViewer.showHTML" +
-                "('&lt;body&gt;'+document.getElementsByTagName('body')[0].innerHTML+'&lt;/body&gt;', player);";
     }
 
     public static String loadPlaylistScript(String pId) {
@@ -43,7 +38,7 @@ public class JavaScript {
     }
 
     public static String getVidUpdateNotiContent() {
-        return "javascript:window.HtmlViewer.showVID(player.getVideoData()['video_id']);";
+        return "javascript:window.Interface.showVID(player.getVideoData()['video_id']);";
     }
 
     public static String seekToZero() {
@@ -63,15 +58,8 @@ public class JavaScript {
     }
 
     public static String isPlaylistEnded() {
-        return "javascript:window.HtmlViewer.playlistItems(player.getPlaylist());" +
-                "window.HtmlViewer.currVidIndex(player.getPlaylistIndex());";
-    }
-
-
-    public static String setupPlaybackQuality(String quality) {
-        return "javascript:player.stopVideo();" +
-                "player.setPlaybackQuality(\"" + quality + "\");" +
-                "player.playVideo();";
+        return "javascript:window.Interface.playlistItems(player.getPlaylist());" +
+                "window.Interface.currVidIndex(player.getPlaylistIndex());";
     }
 
     public static String resetPlaybackQuality(String quality) {

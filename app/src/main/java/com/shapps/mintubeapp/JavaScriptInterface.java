@@ -12,42 +12,13 @@ import java.util.regex.Pattern;
 /**
  * Created by shyam on 18/2/16.
  */
-class GetHtmlInterface {
+class JavaScriptInterface {
     Context context;
-    static String PlayerId = "";
-    static boolean foundPlayerId;
     static Handler handlerForJavascriptInterface = new Handler();
-    public GetHtmlInterface(PlayerService playerService) {
+    public JavaScriptInterface(PlayerService playerService) {
         this.context = playerService;
     }
 
-    @JavascriptInterface
-    public void showHTML(final String html, WebView player) {
-        Pattern pattern = Pattern.compile(
-                ".*\\n.*(player_uid_\\d+_1).*\\n.*",Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(html);
-        if (matcher.matches()) {
-            PlayerId = matcher.group(1);
-            Log.e("Player Id ", PlayerId);
-            foundPlayerId = true;
-            Session.setPlayerId(PlayerId);
-            handlerForJavascriptInterface.post(new Runnable() {
-                @Override
-                public void run() {
-                    PlayerService.InitializePlayer();
-                }
-            });
-        }
-        else {
-            handlerForJavascriptInterface.post(new Runnable() {
-                @Override
-                public void run() {
-                    PlayerService.tryAgainForPlayerID();
-                }
-            });
-        }
-
-    }
     @JavascriptInterface
     public void showPlayerState (final int status) {
         Log.e("Player Status ", String.valueOf(status));

@@ -2,6 +2,8 @@ package com.shapps.mintubeapp;
 
 import android.content.Context;
 import android.os.Build;
+import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -25,9 +27,9 @@ public class WebPlayer {
         player.getSettings().setJavaScriptEnabled(true);
 
 //         For debugging using chrome on PC
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//                player.setWebContentsDebuggingEnabled(true);
-//            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                player.setWebContentsDebuggingEnabled(true);
+            }
 
         player.setWebChromeClient(new WebChromeClient());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -37,7 +39,7 @@ public class WebPlayer {
 
         //----------------------------To get Player Id-------------------------------------------
 
-        player.addJavascriptInterface(new GetHtmlInterface((PlayerService) context), "HtmlViewer");
+        player.addJavascriptInterface(new JavaScriptInterface((PlayerService) context), "Interface");
         player.setWebViewClient(new WebViewClient() {
                                     @Override
                                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -46,14 +48,10 @@ public class WebPlayer {
 
                                     @Override
                                     public void onPageFinished(WebView view, String url) {
-                                        player.loadUrl(JavaScript.getHtmlScript());
+                                        PlayerService.addStateChangeListener();
                                     }
                                 }
         );
-    }
-
-    public void loadUrl(String s, Map hashMap) {
-        player.loadUrl(s, hashMap);
     }
 
     public static void loadScript(String s) {
@@ -66,5 +64,9 @@ public class WebPlayer {
 
     public void destroy() {
         player.destroy();
+    }
+
+    public void loadDataWithUrl(String baseUrl, String videoHTML, String mimeType, String encoding, String historyUrl) {
+        player.loadDataWithBaseURL(baseUrl, videoHTML, mimeType, encoding, historyUrl);
     }
 }

@@ -8,8 +8,6 @@ import android.util.Log;
 public class Session{
 
 //    private static YouTubePlayerView youTubePlayerView;
-    private static String playerId;
-    private static boolean foundPlayerId = false;
 
 //
 //    public Session() {
@@ -29,22 +27,4 @@ public class Session{
 //        youTubePlayerView = View;
 //    }
 
-    public static void setPlayerId(String playerId) {
-        Session.playerId = playerId;
-        Session.foundPlayerId = true;
-        Log.e("Setting ", " Player Id!!");
-    }
-
-    public static String getPlayerId() {
-        return playerId;
-    }
-
-    public static boolean foundPlayerId() {
-        return foundPlayerId;
-    }
-
-    public static void finishWeb() {
-        Session.foundPlayerId = false;
-        Session.playerId = null;
-    }
 }

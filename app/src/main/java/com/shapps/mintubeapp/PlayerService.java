@@ -84,12 +84,11 @@ public class PlayerService extends Service implements View.OnClickListener{
     //Replay Video if it's ended
     static boolean replayVid = false;
     static boolean replayPlaylist = false;
-    //Set Video Quality first Time
-    static boolean isFirstTime = true;
 
     ImageView repeatTypeImg, entireWidthImg, fullScreenImg;
     SharedPreferences sharedPref;
     private static int noItemsInPlaylist, currVideoIndex;
+
 
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == -1){
@@ -103,12 +102,6 @@ public class PlayerService extends Service implements View.OnClickListener{
         }
         if(playingStatus == 1){
             isVideoPlaying = true;
-            if(isFirstTime) {
-                String quality = Constants.getPlaybackQuality();
-                Log.e("Quality", quality);
-                webPlayer.loadScript(JavaScript.setupPlaybackQuality(quality));
-                isFirstTime = false;
-            }
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
@@ -268,9 +261,7 @@ public class PlayerService extends Service implements View.OnClickListener{
     public void onDestroy() {
         super.onDestroy();
         isVideoPlaying = true;
-        isFirstTime = true;
         Constants.linkType = 0;
-        Session.finishWeb();
         Log.i("Status", "Destroyed!");
         if (playerView != null) {
             if(FullscreenWebPlayer.active){
@@ -415,15 +406,15 @@ public class PlayerService extends Service implements View.OnClickListener{
         hashMap.put("Referer", "http://www.youtube.com");
         if(Constants.linkType == 1) {
             Log.e("Starting ", "Playlist!!!");
-            webPlayer.loadUrl("https://www.youtube.com/embed/"
-                            + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1&list=" + PLIST_ID
-                    , hashMap);
+            ConstantStrings.setPList(PLIST_ID);
+            webPlayer.loadDataWithUrl("https://www.youtube.com/player_api",ConstantStrings.getPlayListHTML(),
+                    "text/html", null, null);
         }
         else {
+            ConstantStrings.setVid(VID_ID);
             Log.e("Starting ", "Single Video!!!");
-            webPlayer.loadUrl("https://www.youtube.com/embed/" + VID_ID
-                            + "?iv_load_policy=3&rel=0&modestbranding=1&fs=0&autoplay=1"
-                    , hashMap);
+            webPlayer.loadDataWithUrl("https://www.youtube.com/player_api",ConstantStrings.getVideoHTML(),
+                    "text/html", null, null);
         }
 
         param_player.gravity = Gravity.TOP | Gravity.LEFT;
@@ -704,14 +695,8 @@ public class PlayerService extends Service implements View.OnClickListener{
         }
     }
 
-    public static void tryAgainForPlayerID() {
-        Log.e("Trying Again : ", ":(");
-        webPlayer.loadScript(JavaScript.getHtmlScript());
-    }
-
-    public static void InitializePlayer() {
-        Log.e("Initializing ", Session.getPlayerId());
-        webPlayer.loadScript(JavaScript.initializePlayerScript(Session.getPlayerId()));
+    public static void addStateChangeListener() {
+        webPlayer.loadScript(JavaScript.onPlayerStateChangeListener());
     }
     private void updateIsInsideClose(int x, int y, int[] t) {
         playerHeadCenterX = x + playerHeadSize / 2 ;
