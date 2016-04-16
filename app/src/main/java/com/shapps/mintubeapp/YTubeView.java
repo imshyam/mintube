@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
@@ -105,27 +106,32 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
                 Constants.linkType = 1;
             }
 
-            if (isServiceRunning(PlayerService.class)) {
-                Log.e("Service : ", "Already Running!");
-                PlayerService.startVid(vId, pId);
+            if(pId != null || vId.length() > 1) {
+                if (isServiceRunning(PlayerService.class)) {
+                    Log.e("Service : ", "Already Running!");
+                    PlayerService.startVid(vId, pId);
+                    finish();
+                } else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                        Intent i = new Intent(this,
+                                GetPermission.class);
+                        i.putExtra("VID", vId);
+                        i.putExtra("PID", pId);
+                        startActivityForResult(i, OVERLAY_PERMISSION_REQ);
+                        finish();
+                    } else {
+                        Intent i = new Intent(this, PlayerService.class);
+                        i.putExtra("VID_ID", vId);
+                        i.putExtra("PLAYLIST_ID", pId);
+                        i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+                        startService(i);
+                        finish();
+                    }
+                }
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "Not A YouTube Link", Toast.LENGTH_SHORT).show();
                 finish();
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-                    Intent i = new Intent(this,
-                            GetPermission.class);
-                    i.putExtra("VID", vId);
-                    i.putExtra("PID", pId);
-                    startActivityForResult(i, OVERLAY_PERMISSION_REQ);
-                    finish();
-                }
-                else {
-                    Intent i = new Intent(this, PlayerService.class);
-                    i.putExtra("VID_ID", vId);
-                    i.putExtra("PLAYLIST_ID", pId);
-                    i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
-                    startService(i);
-                    finish();
-                }
             }
         }
         else {

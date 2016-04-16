@@ -28,8 +28,13 @@ android {
         versionName "0.91"
     }
     buildTypes {
+        debug{
+            minifyEnabled true
+            useProguard false
+        }
         release {
             minifyEnabled true
+            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
