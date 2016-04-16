@@ -89,6 +89,9 @@ public class PlayerService extends Service implements View.OnClickListener{
     SharedPreferences sharedPref;
     private static int noItemsInPlaylist, currVideoIndex;
 
+    //Loop for Playlist
+    static boolean isLoopSetPlayList = false;
+
 
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == -1){
@@ -110,7 +113,19 @@ public class PlayerService extends Service implements View.OnClickListener{
                 webPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
             }
             if(VID_ID.length() < 1){
+                Log.e("If lenght", "Less that 1");
                 webPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
+            }
+
+            //Also Update if playlist is set for loop
+            if(Constants.linkType == 1){
+                if(Constants.repeatType == 1){
+                    if(!isLoopSetPlayList) {
+                        Log.e("Setting ", "Playlist on Loop");
+                        webPlayer.loadScript(JavaScript.setLoopPlaylist());
+                        isLoopSetPlayList = true;
+                    }
+                }
             }
         }
         else if(playingStatus == 2) {
