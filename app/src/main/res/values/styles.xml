@@ -17,4 +17,27 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="text_suggestion_view">
+        <item name="android:layout_weight">4</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center|left</item>
+        <item name="android:textSize">15dp</item>
+        <item name="android:color">#bbb</item>
+        <item name="android:text">Suggestion</item>
+    </style>
+
+    <style name="add_suggestion">
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/ic_put_arrow</item>
+    </style>
+
+    <style name="ll_suggestion">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
 </resources>

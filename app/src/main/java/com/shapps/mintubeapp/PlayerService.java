@@ -91,6 +91,8 @@ public class PlayerService extends Service implements View.OnClickListener{
 
     //Loop for Playlist
     static boolean isLoopSetPlayList = false;
+    //Bring the icon back
+    static boolean bringBack = false;
 
 
     public static void setPlayingStatus(int playingStatus) {

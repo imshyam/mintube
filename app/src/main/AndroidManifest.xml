@@ -11,30 +11,35 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name=".CustomVolley.AppController">
         <activity
-            android:name="com.shapps.mintubeapp.MainActivity"
-            android:label="@string/app_name"
+            android:name=".MainActivity"
             android:hardwareAccelerated="true"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable"
+
+            <meta-data
+                android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
 
-        <!--activity
+        <!--
+            activity
             android:name="com.shapps.mintube.YouTube.YoutubePlayer"
             android:label="@string/add_ytube"
-            android:theme="@style/AppTheme.NoActionBar" /-->
+            android:theme="@style/AppTheme.NoActionBar" /
+        -->
         <activity
-            android:name="com.shapps.mintubeapp.GetPermission"
-            android:parentActivityName="com.shapps.mintubeapp.YTubeView"
+            android:name=".GetPermission"
+            android:parentActivityName=".YTubeView"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.shapps.mintubeapp.YTubeView"
+            android:name=".YTubeView"
             android:label="@string/add_ytube"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
@@ -70,33 +75,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.shapps.mintubeapp.SettingsActivity"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="com.shapps.mintubeapp.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.shapps.mintubeapp.MainActivity" />
         </activity>
         <activity
-            android:name="com.shapps.mintubeapp.FullscreenWebPlayer"
-            android:screenOrientation="landscape"
+            android:name=".FullscreenWebPlayer"
             android:excludeFromRecents="true"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
-            android:name="com.shapps.mintubeapp.EntireWidthWebPlayer"
+            android:name=".EntireWidthWebPlayer"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
-
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name="com.shapps.mintubeapp.PlayerService"
+            android:name=".PlayerService"
             android:exported="true" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="d3c43e7beb374e9c795b8c1dc883f6d05cbb8c41" />
+
     </application>
 
 </manifest>

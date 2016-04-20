@@ -37,15 +37,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shapps.mintubeapp.AsyncTask.SearchSuggestionTask;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.shapps.mintubeapp.CustomViews.CustomSwipeRefresh;
+import com.shapps.mintubeapp.CustomVolley.AppController;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.net.MalformedURLException;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     //For Result Activity
     public static int OVERLAY_PERMISSION_REQ = 1234;
     String VID, PID;
-    //Search View
+    //SearchView
     SearchView searchView;
     //Swipe Refresh
     CustomSwipeRefresh swipeRefreshLayout;
@@ -280,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Log.e("Settings", "Act");
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
@@ -319,71 +322,80 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
     @Override
     public boolean onQueryTextChange(String newText) {
-        try {
-            if(newText.length() > 0) {
-                newText = newText.replace(" ", "+");
-                SearchSuggestionTask searchSuggestionTask = new SearchSuggestionTask(
-                        "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q="
-                                + newText);
-                String textSuggestion = searchSuggestionTask.execute().get();
-                JSONArray jsonArraySuggestion = new JSONArray(textSuggestion);
-                jsonArraySuggestion = (JSONArray) jsonArraySuggestion.get(1);
-                String[] suggestions = new String[10];
-                for (int i = 0; i < 10; i++) {
-                    if (!jsonArraySuggestion.isNull(i)) {
-                        suggestions[i] = jsonArraySuggestion.get(i).toString();
-                    }
-                }
-                Log.e("Suggestions", Arrays.toString(suggestions));
-                //Cursor Adaptor
-                String[] columnNames = {"_id", "suggestion"};
-                MatrixCursor cursor = new MatrixCursor(columnNames);
-                String[] temp = new String[2];
-                int id = 0;
-                for (String item : suggestions) {
-                    if (item != null) {
-                        temp[0] = Integer.toString(id++);
-                        temp[1] = item;
-                        cursor.addRow(temp);
-                    }
-                }
-                CursorAdapter cursorAdapter = new CursorAdapter(getApplicationContext(), cursor, false) {
-                    @Override
-                    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                        return LayoutInflater.from(context).inflate(R.layout.search_suggestion_list_item, parent, false);
-                    }
+        if(newText.length() > 0) {
+            newText = newText.replace(" ", "+");
+            String url = "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q="
+                            + newText;
+            JsonArrayRequest req = new JsonArrayRequest(url,
+                    new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            try {
+                                JSONArray jsonArraySuggestion = (JSONArray) response.get(1);
+                                String[] suggestions = new String[10];
+                                for (int i = 0; i < 10; i++) {
+                                    if (!jsonArraySuggestion.isNull(i)) {
+                                        suggestions[i] = jsonArraySuggestion.get(i).toString();
+                                    }
+                                }
+                                Log.e("Suggestions", Arrays.toString(suggestions));
+                                //Cursor Adaptor
+                                String[] columnNames = {"_id", "suggestion"};
+                                MatrixCursor cursor = new MatrixCursor(columnNames);
+                                String[] temp = new String[2];
+                                int id = 0;
+                                for (String item : suggestions) {
+                                    if (item != null) {
+                                        temp[0] = Integer.toString(id++);
+                                        temp[1] = item;
+                                        cursor.addRow(temp);
+                                    }
+                                }
+                                CursorAdapter cursorAdapter = new CursorAdapter(getApplicationContext(), cursor, false) {
+                                    @Override
+                                    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+                                        return LayoutInflater.from(context).inflate(R.layout.search_suggestion_list_item, parent, false);
+                                    }
 
-                    @Override
-                    public void bindView(View view, Context context, Cursor cursor) {
-                        final TextView suggest = (TextView) view.findViewById(R.id.suggest);
-                        ImageView putInSearchBox = (ImageView) view.findViewById(R.id.put_in_search_box);
-                        String body = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"));
-                        suggest.setText(body);
-                        suggest.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                searchView.setQuery(suggest.getText(), true);
-                                searchView.clearFocus();
+                                    @Override
+                                    public void bindView(View view, Context context, Cursor cursor) {
+                                        final TextView suggest = (TextView) view.findViewById(R.id.suggest);
+                                        ImageView putInSearchBox = (ImageView) view.findViewById(R.id.put_in_search_box);
+                                        String body = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"));
+                                        suggest.setText(body);
+                                        suggest.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                searchView.setQuery(suggest.getText(), true);
+                                                searchView.clearFocus();
+                                            }
+                                        });
+                                        putInSearchBox.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                searchView.setQuery(suggest.getText(), false);
+                                            }
+                                        });
+                                    }
+                                };
+                                searchView.setSuggestionsAdapter(cursorAdapter);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        });
-                        putInSearchBox.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                searchView.setQuery(suggest.getText(), false);
-                            }
-                        });
-                    }
-                };
-                searchView.setSuggestionsAdapter(cursorAdapter);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d("Tag", "Error: " + error.getMessage());
+                    Toast.makeText(getApplicationContext(),
+                            error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            // Adding request to request queue
+            AppController.getInstance().addToRequestQueue(req);
+
         }
         return true;
     }
