@@ -91,9 +91,8 @@ public class PlayerService extends Service implements View.OnClickListener{
 
     //Loop for Playlist
     static boolean isLoopSetPlayList = false;
-    //Bring the icon back
-    static boolean bringBack = false;
-
+    //Don't Update head's Position and Hide icons and dropDown Image
+    boolean updateHead = true;
 
     public static void setPlayingStatus(int playingStatus) {
         if(playingStatus == -1){
@@ -598,7 +597,8 @@ public class PlayerService extends Service implements View.OnClickListener{
                             } else if (playerWidth + newX > scrnWidth) {
                                 param_player.x = scrnWidth - playerWidth;
                                 params.x = scrnWidth - playerWidth;
-                            } else {
+                            }
+                            else {
                                 param_player.x = newX;
                                 params.x = newX;
                             }
@@ -606,14 +606,20 @@ public class PlayerService extends Service implements View.OnClickListener{
                                 param_player.y = playerHeadSize;
                                 params.y = 0;
                             } else if (playerHeight + newY + playerHeadSize > scrnHeight) {
-                                param_player.y = scrnHeight - playerHeight;
-                                params.y = scrnHeight - playerHeight - playerHeadSize;
+                                if(visible){
+                                    //Continue with the drag and don't update head params
+                                    updateHead = false;
+                                    hidePlayer();
+                                }
+                                params.y = newY;
                             } else {
                                 param_player.y = newY + playerHeadSize;
                                 params.y = newY;
                             }
                             windowManager.updateViewLayout(serviceHead, params);
-                            windowManager.updateViewLayout(playerView, param_player);
+                            //update player params if visible
+                            if(visible)
+                                windowManager.updateViewLayout(playerView, param_player);
                         }
                         else {
                             if(newY + playerHeadSize > scrnHeight){
@@ -759,44 +765,11 @@ public class PlayerService extends Service implements View.OnClickListener{
             case R.id.song_icon:
                 Log.e("Clicked", "Click!");
                 if (visible) {
-                    Log.e("Head x , y ", params.x + " " + params.y);
-                    Log.e("Player x , y ", param_player.x + " " + param_player.y);
-                    Log.e("Head Size", String.valueOf(playerHeadImage.getHeight()));
-                    xAtHiding = params.x;
-                    yAtHiding = params.y;
-                    params.x = xOnAppear;
-                    params.y = yOnAppear;
-                    //To hide the Player View
-                    final WindowManager.LayoutParams tmpPlayerParams = new WindowManager.LayoutParams(
-                            100,
-                            100,
-                            WindowManager.LayoutParams.TYPE_PHONE,
-                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                            PixelFormat.TRANSLUCENT);
-                    tmpPlayerParams.x = scrnWidth;
-                    tmpPlayerParams.y = scrnHeight;
-                    windowManager.updateViewLayout(playerView, tmpPlayerParams);
-                    viewToHide.setVisibility(View.GONE);
-                    windowManager.updateViewLayout(serviceHead, params);
-                    visible = false;
+                    //Make head sticky with the edge so update head params
+                    updateHead = true;
+                    hidePlayer();
                 } else {
-                    viewToHide.setVisibility(View.VISIBLE);
-                    //Store current to again hidden icon will come here
-                    if(params.x > 0) {
-                        xOnAppear = scrnWidth - playerHeadSize + playerHeadSize / 4;
-                    }
-                    else{
-                        xOnAppear = - playerHeadSize / 4;
-                    }
-                    yOnAppear = params.y;
-                    //Update the icon and player to player's hidden position
-                    params.x = xAtHiding;
-                    params.y = yAtHiding;
-                    param_player.x = xAtHiding;
-                    param_player.y = yAtHiding + playerHeadSize;
-                    windowManager.updateViewLayout(playerView, param_player);
-                    windowManager.updateViewLayout(serviceHead, params);
-                    visible = true;
+                   showPlayer();
                 }
                 break;
             //Handle Full Screen
@@ -889,6 +862,51 @@ public class PlayerService extends Service implements View.OnClickListener{
             default:
                 break;
         }
+    }
+
+    private void showPlayer() {
+        viewToHide.setVisibility(View.VISIBLE);
+        //Store current to again hidden icon will come here
+        if(params.x > 0) {
+            xOnAppear = scrnWidth - playerHeadSize + playerHeadSize / 4;
+        }
+        else{
+            xOnAppear = - playerHeadSize / 4;
+        }
+        yOnAppear = params.y;
+        //Update the icon and player to player's hidden position
+        params.x = xAtHiding;
+        params.y = yAtHiding;
+        param_player.x = xAtHiding;
+        param_player.y = yAtHiding + playerHeadSize;
+        windowManager.updateViewLayout(playerView, param_player);
+        windowManager.updateViewLayout(serviceHead, params);
+        visible = true;
+    }
+
+    private void hidePlayer() {
+//        Log.e("Head x , y ", params.x + " " + params.y);
+//        Log.e("Player x , y ", param_player.x + " " + param_player.y);
+//        Log.e("Head Size", String.valueOf(playerHeadImage.getHeight()));
+        xAtHiding = params.x;
+        yAtHiding = params.y;
+        //To hide the Player View
+        final WindowManager.LayoutParams tmpPlayerParams = new WindowManager.LayoutParams(
+                100,
+                100,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT);
+        tmpPlayerParams.x = scrnWidth;
+        tmpPlayerParams.y = scrnHeight;
+        windowManager.updateViewLayout(playerView, tmpPlayerParams);
+        viewToHide.setVisibility(View.GONE);
+        if(updateHead) {
+            params.x = xOnAppear;
+            params.y = yOnAppear;
+            windowManager.updateViewLayout(serviceHead, params);
+        }
+        visible = false;
     }
 
     //Layout Params Initialized
