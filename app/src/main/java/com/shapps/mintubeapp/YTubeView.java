@@ -36,7 +36,7 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
 
         sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.FileName), Context.MODE_PRIVATE);
         if (!sharedPref.contains(getString(R.string.init))) {
-            Log.e("Initializing ", "Shared Preferences");
+            Log.d("Initializing ", "Shared Preferences");
             SharedPreferences.Editor editor = sharedPref.edit();
             //init to check if shared preference is initialized
             editor.putBoolean(getString(R.string.init), true);
@@ -81,7 +81,7 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             } else {
                 link = intent.getStringExtra("android.intent.extra.TEXT");
             }
-            Log.e("Link : ", link.toString());
+            Log.d("Link : ", link.toString());
             vId = "";
             Pattern pattern = Pattern.compile(
                     "^https?://.*(?:youtu.be/|v/|u/\\\\w/|embed/|watch[?]v=)([^#&?]*).*$",
@@ -90,10 +90,10 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             if (matcher.matches()) {
                 vId = matcher.group(1);
             }
-            Log.e("Video Id : ", vId);
+            Log.d("Video Id : ", vId);
             //Getting Playlist id
             final String listID = link.substring(link.indexOf("http") + 4, link.length());
-            Log.e("List ID Is : ", listID);
+            Log.d("List ID Is : ", listID);
             pId = null;
             String regex = ".*list=([A-Za-z0-9_-]+).*?";
             pattern = Pattern.compile(regex,
@@ -101,13 +101,13 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             matcher = pattern.matcher(link.toString());
             if (matcher.matches()) {
                 pId = matcher.group(1);
-                Log.e("PID Is : ", pId);
+                Log.d("PID Is : ", pId);
                 Constants.linkType = 1;
             }
 
             if(pId != null || vId.length() > 1) {
                 if (isServiceRunning(PlayerService.class)) {
-                    Log.e("Service : ", "Already Running!");
+                    Log.d("Service : ", "Already Running!");
                     PlayerService.startVid(vId, pId);
                     finish();
                 } else {

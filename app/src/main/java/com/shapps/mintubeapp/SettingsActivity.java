@@ -90,12 +90,12 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                         editor.putInt(getString(R.string.videoQuality), checked[0]);
                         editor.commit();
                         quality.setText(Constants.getPlaybackQuality());
-                        Log.e("New Quality", Constants.getPlaybackQuality());
+                        Log.d("New Quality", Constants.getPlaybackQuality());
                     }
                 });
                 String[] items = {"Auto", "1080p", "720p", "480p", "360p", "240p", "144p"};
                 checked[0] = sharedPref.getInt(getString(R.string.videoQuality), 3);
-                Log.e("Old Quality", Constants.getPlaybackQuality());
+                Log.d("Old Quality", Constants.getPlaybackQuality());
                 builder.setSingleChoiceItems(items, checked[0], new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int ith) {

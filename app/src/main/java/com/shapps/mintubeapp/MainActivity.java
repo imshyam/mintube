@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.contains("?app=desktop") && !url.contains("signin?app=desktop")) {
-                    Log.e("Url stopped to load : ", url);
+                    Log.d("Url stopped to load : ", url);
                     CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
                     final Snackbar snackbar = Snackbar
                             .make(coordinatorLayout, "Desktop View Unavailable", Snackbar.LENGTH_LONG);
@@ -142,27 +142,27 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     if (String.valueOf(request.getUrl()).contains("http://m.youtube.com/watch?") ||
                             String.valueOf(request.getUrl()).contains("https://m.youtube.com/watch?")) {
                         String url = String.valueOf(request.getUrl());
-                        Log.e("Yay Catches!!!! ", url);
+                        Log.d("Yay Catches!!!! ", url);
                         //Video Id
                         VID = url.substring(url.indexOf("&v=") + 3, url.length());
-                        Log.e("VID ", VID);
+                        Log.d("VID ", VID);
                         //Playlist Id
                         final String listID = url.substring(url.indexOf("&list=") + 6, url.length());
                         Pattern pattern = Pattern.compile(
                                 "([A-Za-z0-9_-]+)&[\\w]+=.*",
                                 Pattern.CASE_INSENSITIVE);
                         Matcher matcher = pattern.matcher(listID.toString());
-                        Log.e("ListID", listID);
+                        Log.d("ListID", listID);
                         PID = "";
                         if (matcher.matches()) {
                             PID = matcher.group(1);
                         }
                         if (listID.contains("m.youtube.com")) {
-                            Log.e("Not a ", "Playlist.");
+                            Log.d("Not a ", "Playlist.");
                             PID = null;
                         } else {
                             Constants.linkType = 1;
-                            Log.e("PlaylistID ", PID);
+                            Log.d("PlaylistID ", PID);
                         }
                         Handler handler = new Handler(getMainLooper());
                         final String finalPID = PID;
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                 youtubeView.stopLoading();
                                 youtubeView.goBack();
                                 if (isServiceRunning(PlayerService.class)) {
-                                    Log.e("Service : ", "Already Running!");
+                                    Log.d("Service : ", "Already Running!");
                                     PlayerService.startVid(VID, finalPID);
                                 } else {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Log.e("Settings", "Act");
+            Log.d("Settings", "Act");
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
@@ -292,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
     @Override
     public void onBackPressed() {
-        Log.e("Curr Url", currUrl);
+        Log.d("Curr Url", currUrl);
         if(currUrl.equals("https://m.youtube.com/")) {
             if (doubleClickToExit) {
                 super.onBackPressed();
@@ -339,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                         suggestions[i] = jsonArraySuggestion.get(i).toString();
                                     }
                                 }
-                                Log.e("Suggestions", Arrays.toString(suggestions));
+                                Log.d("Suggestions", Arrays.toString(suggestions));
                                 //Cursor Adaptor
                                 String[] columnNames = {"_id", "suggestion"};
                                 MatrixCursor cursor = new MatrixCursor(columnNames);

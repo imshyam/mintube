@@ -99,9 +99,9 @@ public class PlayerService extends Service implements View.OnClickListener{
             nextVid = true;
         }
         if(playingStatus == 3){
-            Log.e("Status", "Buffering");
+            Log.d("Status", "Buffering");
             String quality = Constants.getPlaybackQuality();
-            Log.e("Quality", quality);
+            Log.d("Quality", quality);
             webPlayer.loadScript(JavaScript.resetPlaybackQuality(quality));
         }
         if(playingStatus == 1){
@@ -114,7 +114,7 @@ public class PlayerService extends Service implements View.OnClickListener{
                 webPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
             }
             if(VID_ID.length() < 1){
-                Log.e("If lenght", "Less that 1");
+                Log.d("If lenght", "Less that 1");
                 webPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
             }
 
@@ -122,7 +122,7 @@ public class PlayerService extends Service implements View.OnClickListener{
             if(Constants.linkType == 1){
                 if(Constants.repeatType == 1){
                     if(!isLoopSetPlayList) {
-                        Log.e("Setting ", "Playlist on Loop");
+                        Log.d("Setting ", "Playlist on Loop");
                         webPlayer.loadScript(JavaScript.setLoopPlaylist());
                         isLoopSetPlayList = true;
                     }
@@ -137,7 +137,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         }
         else if(playingStatus == 0) {
             if(Constants.linkType == 1) {
-                Log.e("Repeat Type ", Constants.repeatType + "");
+                Log.d("Repeat Type ", Constants.repeatType + "");
                 if(Constants.repeatType == 2){
                     webPlayer.loadScript(JavaScript.prevVideo());
                 }
@@ -189,9 +189,9 @@ public class PlayerService extends Service implements View.OnClickListener{
     }
 
     public static void compare() {
-        Log.e("Compairing", PlayerService.currVideoIndex + " " + PlayerService.noItemsInPlaylist);
+        Log.d("Compairing", PlayerService.currVideoIndex + " " + PlayerService.noItemsInPlaylist);
         if(PlayerService.currVideoIndex == PlayerService.noItemsInPlaylist -1){
-            Log.e("Playlist ", "Ended");
+            Log.d("Playlist ", "Ended");
             replayPlaylist = true;
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
@@ -218,7 +218,7 @@ public class PlayerService extends Service implements View.OnClickListener{
 
         this.playerService = this;
         if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_WEB_ACTION)) {
-            Log.e("Service ", "Started!");
+            Log.d("Service ", "Started!");
             sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             Constants.repeatType = sharedPref.getInt(getString(R.string.repeat_type), 0);
             doThis(intent);
@@ -251,7 +251,7 @@ public class PlayerService extends Service implements View.OnClickListener{
             }
         }
         else if(intent.getAction().equals(Constants.ACTION.NEXT_ACTION)){
-            Log.e("Trying to ", "Play Next");
+            Log.d("Trying to ", "Play Next");
             if(Constants.linkType == 0){
                 webPlayer.loadScript(JavaScript.seekToZero());
             }
@@ -261,7 +261,7 @@ public class PlayerService extends Service implements View.OnClickListener{
             }
         }
         else if(intent.getAction().equals(Constants.ACTION.PREV_ACTION)){
-            Log.e("Trying to ", "Play Previous");
+            Log.d("Trying to ", "Play Previous");
             if(Constants.linkType == 0){
                 webPlayer.loadScript(JavaScript.seekToZero());
             }
@@ -283,9 +283,6 @@ public class PlayerService extends Service implements View.OnClickListener{
             if(FullscreenWebPlayer.active){
                 FullscreenWebPlayer.fullScreenAct.onBackPressed();
             }
-            if(EntireWidthWebPlayer.active){
-                EntireWidthWebPlayer.entWidthAct.onBackPressed();
-            }
             windowManager.removeView(playerView);
             windowManager.removeView(serviceHead);
             windowManager.removeView(serviceClose);
@@ -302,7 +299,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         }
         else{
             webPlayer.loadScript(JavaScript.loadPlaylistScript(pId));
-            Log.e("Starting ", "Playlist.");
+            Log.d("Starting ", "Playlist.");
             setImageTitleAuthor(vId);
         }
     }
@@ -421,14 +418,14 @@ public class PlayerService extends Service implements View.OnClickListener{
         Map hashMap = new HashMap();
         hashMap.put("Referer", "http://www.youtube.com");
         if(Constants.linkType == 1) {
-            Log.e("Starting ", "Playlist!!!");
+            Log.d("Starting ", "Playlist!!!");
             ConstantStrings.setPList(PLIST_ID);
             webPlayer.loadDataWithUrl("https://www.youtube.com/player_api",ConstantStrings.getPlayListHTML(),
                     "text/html", null, null);
         }
         else {
             ConstantStrings.setVid(VID_ID);
-            Log.e("Starting ", "Single Video!!!");
+            Log.d("Starting ", "Single Video!!!");
             webPlayer.loadDataWithUrl("https://www.youtube.com/player_api",ConstantStrings.getVideoHTML(),
                     "text/html", null, null);
         }
@@ -446,7 +443,7 @@ public class PlayerService extends Service implements View.OnClickListener{
                 serviceHead.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 playerHeadSize = serviceHead.getMeasuredHeight();
 
-                Log.e("ChatHead Size", String.valueOf(playerHeadSize));
+                Log.d("ChatHead Size", String.valueOf(playerHeadSize));
                 param_player.y = playerHeadSize;
                 xOnAppear = - playerHeadSize / 4;
                 windowManager.updateViewLayout(playerView, param_player);
@@ -462,7 +459,7 @@ public class PlayerService extends Service implements View.OnClickListener{
                 playerWidth = playerView.getMeasuredWidth();
                 defaultPlayerWidth = playerWidth;
                 playerHeight = playerView.getMeasuredHeight();
-                Log.e("Player W and H ", playerWidth + " " + playerHeight);
+                Log.d("Player W and H ", playerWidth + " " + playerHeight);
             }
         });
 
@@ -502,7 +499,7 @@ public class PlayerService extends Service implements View.OnClickListener{
             public void onGlobalLayout() {
                 closeImageLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 closeImageLayoutSize = closeImageLayout.getMeasuredHeight();
-                Log.e("Close Image Size ", String.valueOf(closeImageLayoutSize));
+                Log.d("Close Image Size ", String.valueOf(closeImageLayoutSize));
             }
         });
 
@@ -685,7 +682,7 @@ public class PlayerService extends Service implements View.OnClickListener{
     //Set Image and Headings in Notification
     public static void setImageTitleAuthor(String videoId) {
 
-        Log.e("Setting ", "Image, Title, Author");
+        Log.d("Setting ", "Image, Title, Author");
 
         try {
             bitmap = new ImageLoadTask("https://i.ytimg.com/vi/" + videoId + "/mqdefault.jpg").execute().get();
@@ -763,7 +760,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         switch (v.getId()){
             //Handle Hiding of player
             case R.id.song_icon:
-                Log.e("Clicked", "Click!");
+                Log.d("Clicked", "Click!");
                 if (visible) {
                     //Make head sticky with the edge so update head params
                     updateHead = true;
@@ -885,9 +882,9 @@ public class PlayerService extends Service implements View.OnClickListener{
     }
 
     private void hidePlayer() {
-//        Log.e("Head x , y ", params.x + " " + params.y);
-//        Log.e("Player x , y ", param_player.x + " " + param_player.y);
-//        Log.e("Head Size", String.valueOf(playerHeadImage.getHeight()));
+//        Log.d("Head x , y ", params.x + " " + params.y);
+//        Log.d("Player x , y ", param_player.x + " " + param_player.y);
+//        Log.d("Head Size", String.valueOf(playerHeadImage.getHeight()));
         xAtHiding = params.x;
         yAtHiding = params.y;
         //To hide the Player View
