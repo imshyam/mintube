@@ -4,16 +4,16 @@ Minimized/Floating Youtube
 ### Download
 Get It [Here][1].
 
-Or open `bit.ly/mintube` in your mobile.
+Or Go to `bit.ly/mintube` in your mobile.
 
 ### Source
-There are two versions of the app : [v0.90][2] and [v0.91][3].
+There are two versions of the app : [v0.95][2] and [v0.91][3].
 
-The only difference between v0.90 and v0.91 is that v0.90 shows icon on hiding and v0.91 shows a resized player on hiding the whole video player. All the other functionalities are same.
+The only difference between v0.95 and v0.91 is that v0.95 shows icon on hiding and v0.91 shows a resized player on hiding the whole video player. All the other functionalities are same.
 
 ![Difference](https://raw.githubusercontent.com/imshyam/mintube/master/screens/diff.png)
 
-The above download link was for v0.90.
+The above download link was for v0.95.
 
 You can get v0.91 of the app [here][4].
 
