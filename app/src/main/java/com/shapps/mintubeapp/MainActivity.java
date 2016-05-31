@@ -218,17 +218,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == OVERLAY_PERMISSION_REQ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(this)) {
-                    needPermissionDialog(requestCode);
-                } else {
-                    Intent i = new Intent(this, PlayerService.class);
-                    i.putExtra("VID_ID", VID);
-                    i.putExtra("PLAYLIST_ID", PID);
-                    i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
-                    startService(i);
-                }
+        if (requestCode == OVERLAY_PERMISSION_REQ && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                needPermissionDialog(requestCode);
+            } else {
+                Intent i = new Intent(this, PlayerService.class);
+                i.putExtra("VID_ID", VID);
+                i.putExtra("PLAYLIST_ID", PID);
+                i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+                startService(i);
             }
         }
     }

@@ -119,14 +119,10 @@ public class PlayerService extends Service implements View.OnClickListener{
             }
 
             //Also Update if playlist is set for loop
-            if(Constants.linkType == 1){
-                if(Constants.repeatType == 1){
-                    if(!isLoopSetPlayList) {
-                        Log.d("Setting ", "Playlist on Loop");
-                        webPlayer.loadScript(JavaScript.setLoopPlaylist());
-                        isLoopSetPlayList = true;
-                    }
-                }
+            if(Constants.linkType == 1 && Constants.repeatType == 1 && !isLoopSetPlayList){
+                Log.d("Setting ", "Playlist on Loop");
+                webPlayer.loadScript(JavaScript.setLoopPlaylist());
+                isLoopSetPlayList = true;
             }
         }
         else if(playingStatus == 2) {

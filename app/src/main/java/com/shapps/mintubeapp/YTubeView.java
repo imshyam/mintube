@@ -167,17 +167,16 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == OVERLAY_PERMISSION_REQ_BACKTO_ACT){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if(requestCode == OVERLAY_PERMISSION_REQ_BACKTO_ACT
+            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (!Settings.canDrawOverlays(this)) {
                     finish();
                 }else{
                     startActivity(new Intent(this, MainActivity.class));
                 }
-            }
         }
-        if (requestCode == OVERLAY_PERMISSION_REQ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (requestCode == OVERLAY_PERMISSION_REQ
+            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (!Settings.canDrawOverlays(this)) {
                     finish();
                 }else{
@@ -188,7 +187,6 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
                     startService(i);
                     finish();
                 }
-            }
         }
     }
 
