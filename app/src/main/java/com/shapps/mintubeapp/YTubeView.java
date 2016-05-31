@@ -81,12 +81,12 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             } else {
                 link = intent.getStringExtra("android.intent.extra.TEXT");
             }
-            Log.d("Link : ", link.toString());
+            Log.d("Link : ", link);
             vId = "";
             Pattern pattern = Pattern.compile(
                     "^https?://.*(?:youtu.be/|v/|u/\\\\w/|embed/|watch[?]v=)([^#&?]*).*$",
                     Pattern.CASE_INSENSITIVE);
-            Matcher matcher = pattern.matcher(link.toString());
+            Matcher matcher = pattern.matcher(link);
             if (matcher.matches()) {
                 vId = matcher.group(1);
             }
@@ -98,7 +98,7 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             String regex = ".*list=([A-Za-z0-9_-]+).*?";
             pattern = Pattern.compile(regex,
                     Pattern.CASE_INSENSITIVE);
-            matcher = pattern.matcher(link.toString());
+            matcher = pattern.matcher(link);
             if (matcher.matches()) {
                 pId = matcher.group(1);
                 Log.d("PID Is : ", pId);

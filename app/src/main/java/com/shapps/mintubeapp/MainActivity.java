@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         Pattern pattern = Pattern.compile(
                                 "([A-Za-z0-9_-]+)&[\\w]+=.*",
                                 Pattern.CASE_INSENSITIVE);
-                        Matcher matcher = pattern.matcher(listID.toString());
+                        Matcher matcher = pattern.matcher(listID);
                         Log.d("ListID", listID);
                         PID = "";
                         if (matcher.matches()) {
