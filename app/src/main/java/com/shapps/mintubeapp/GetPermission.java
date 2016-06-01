@@ -44,12 +44,11 @@ public class GetPermission extends AppCompatActivity {
         getPermission.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (!Settings.canDrawOverlays(GetPermission.this)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && !Settings.canDrawOverlays(GetPermission.this)) {
                         Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                 Uri.parse("package:" + getPackageName()));
                         startActivityForResult(i, permissionCode);
-                    }
                 }
             }
         });
