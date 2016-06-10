@@ -10,6 +10,8 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +35,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,6 +67,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     SearchView searchView;
     //Swipe Refresh
     CustomSwipeRefresh swipeRefreshLayout;
+    boolean exit = false;
+
+    Button retry, changeSettings, exitApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,139 +77,169 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mainAct = this;
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        //Swipe Refresh WebView
-        swipeRefreshLayout = (CustomSwipeRefresh) findViewById(R.id.swipe_refresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(true);
-                new Handler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        youtubeView.loadUrl(youtubeView.getUrl());
-                    }
-                });
-            }
-        });
 
 
-        // after initialization
-        swipeRefreshLayout.setCanChildScrollUpCallback(new CustomSwipeRefresh.CanChildScrollUpCallback() {
-            @Override
-            public boolean canSwipeRefreshChildScrollUp() {
-                return youtubeView.getScrollY() > 0;
-            }
-        });
+        if(isInternetAvailable(mainAct)) {
+            setContentView(R.layout.activity_main);
+            exit = false;
 
-        youtubeView = (WebView) findViewById(R.id.youtube_view);
-        youtubeView.getSettings().setJavaScriptEnabled(true);
-        youtubeView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String str, Bitmap bitmap) {
-                super.onPageStarted(view, str, bitmap);
-                Log.d("Main Page Loading ", str);
-                swipeRefreshLayout.setRefreshing(true);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
 
-                currUrl = str;
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String str) {
-                super.onPageFinished(view, str);
-                swipeRefreshLayout.setRefreshing(false);
-                Log.d("Main Page Finished", str);
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.contains("?app=desktop") && !url.contains("signin?app=desktop")) {
-                    Log.d("Url stopped to load : ", url);
-                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-                    final Snackbar snackbar = Snackbar
-                            .make(coordinatorLayout, "Desktop View Unavailable", Snackbar.LENGTH_LONG);
-                    //Changing Text Color
-                    View snkBar = snackbar.getView();
-                    TextView tv = (TextView) snkBar.findViewById(android.support.design.R.id.snackbar_text);
-                    tv.setTextColor(Color.parseColor("#e52d27"));
-                    snackbar.show();
-                    return true;
+            //Swipe Refresh WebView
+            swipeRefreshLayout = (CustomSwipeRefresh) findViewById(R.id.swipe_refresh);
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    swipeRefreshLayout.setRefreshing(true);
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            youtubeView.loadUrl(youtubeView.getUrl());
+                        }
+                    });
                 }
-                return false;
-            }
+            });
 
-            @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (String.valueOf(request.getUrl()).contains("http://m.youtube.com/watch?") ||
-                            String.valueOf(request.getUrl()).contains("https://m.youtube.com/watch?")) {
-                        String url = String.valueOf(request.getUrl());
-                        Log.d("Yay Catches!!!! ", url);
-                        //Video Id
-                        VID = url.substring(url.indexOf("&v=") + 3, url.length());
-                        Log.d("VID ", VID);
-                        //Playlist Id
-                        final String listID = url.substring(url.indexOf("&list=") + 6, url.length());
-                        Pattern pattern = Pattern.compile(
-                                "([A-Za-z0-9_-]+)&[\\w]+=.*",
-                                Pattern.CASE_INSENSITIVE);
-                        Matcher matcher = pattern.matcher(listID);
-                        Log.d("ListID", listID);
-                        PID = "";
-                        if (matcher.matches()) {
-                            PID = matcher.group(1);
-                        }
-                        if (listID.contains("m.youtube.com")) {
-                            Log.d("Not a ", "Playlist.");
-                            PID = null;
-                        } else {
-                            Constants.linkType = 1;
-                            Log.d("PlaylistID ", PID);
-                        }
-                        Handler handler = new Handler(getMainLooper());
-                        final String finalPID = PID;
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                youtubeView.stopLoading();
-                                youtubeView.goBack();
-                                if (isServiceRunning(PlayerService.class)) {
-                                    Log.d("Service : ", "Already Running!");
-                                    PlayerService.startVid(VID, finalPID);
-                                } else {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
-                                        Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                                Uri.parse("package:" + getPackageName()));
-                                        startActivityForResult(i, OVERLAY_PERMISSION_REQ);
+
+            // after initialization
+            swipeRefreshLayout.setCanChildScrollUpCallback(new CustomSwipeRefresh.CanChildScrollUpCallback() {
+                @Override
+                public boolean canSwipeRefreshChildScrollUp() {
+                    return youtubeView.getScrollY() > 0;
+                }
+            });
+
+            youtubeView = (WebView) findViewById(R.id.youtube_view);
+            youtubeView.getSettings().setJavaScriptEnabled(true);
+            youtubeView.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageStarted(WebView view, String str, Bitmap bitmap) {
+                    super.onPageStarted(view, str, bitmap);
+                    Log.d("Main Page Loading ", str);
+                    swipeRefreshLayout.setRefreshing(true);
+
+                    currUrl = str;
+                }
+
+                @Override
+                public void onPageFinished(WebView view, String str) {
+                    super.onPageFinished(view, str);
+                    swipeRefreshLayout.setRefreshing(false);
+                    Log.d("Main Page Finished", str);
+                }
+
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    if (url.contains("?app=desktop") && !url.contains("signin?app=desktop")) {
+                        Log.d("Url stopped to load : ", url);
+                        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
+                        final Snackbar snackbar = Snackbar
+                                .make(coordinatorLayout, "Desktop View Unavailable", Snackbar.LENGTH_LONG);
+                        //Changing Text Color
+                        View snkBar = snackbar.getView();
+                        TextView tv = (TextView) snkBar.findViewById(android.support.design.R.id.snackbar_text);
+                        tv.setTextColor(Color.parseColor("#e52d27"));
+                        snackbar.show();
+                        return true;
+                    }
+                    return false;
+                }
+
+                @Override
+                public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if (String.valueOf(request.getUrl()).contains("http://m.youtube.com/watch?") ||
+                                String.valueOf(request.getUrl()).contains("https://m.youtube.com/watch?")) {
+                            String url = String.valueOf(request.getUrl());
+                            Log.d("Yay Catches!!!! ", url);
+                            //Video Id
+                            VID = url.substring(url.indexOf("&v=") + 3, url.length());
+                            Log.d("VID ", VID);
+                            //Playlist Id
+                            final String listID = url.substring(url.indexOf("&list=") + 6, url.length());
+                            Pattern pattern = Pattern.compile(
+                                    "([A-Za-z0-9_-]+)&[\\w]+=.*",
+                                    Pattern.CASE_INSENSITIVE);
+                            Matcher matcher = pattern.matcher(listID.toString());
+                            Log.d("ListID", listID);
+                            PID = "";
+                            if (matcher.matches()) {
+                                PID = matcher.group(1);
+                            }
+                            if (listID.contains("m.youtube.com")) {
+                                Log.d("Not a ", "Playlist.");
+                                PID = null;
+                            } else {
+                                Constants.linkType = 1;
+                                Log.d("PlaylistID ", PID);
+                            }
+                            Handler handler = new Handler(getMainLooper());
+                            final String finalPID = PID;
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    youtubeView.stopLoading();
+                                    youtubeView.goBack();
+                                    if (isServiceRunning(PlayerService.class)) {
+                                        Log.d("Service : ", "Already Running!");
+                                        PlayerService.startVid(VID, finalPID);
                                     } else {
-                                        Intent i = new Intent(MainActivity.this, PlayerService.class);
-                                        i.putExtra("VID_ID", VID);
-                                        i.putExtra("PLAYLIST_ID", finalPID);
-                                        i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
-                                        startService(i);
-                                    }
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
+                                            Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                    Uri.parse("package:" + getPackageName()));
+                                            startActivityForResult(i, OVERLAY_PERMISSION_REQ);
+                                        } else {
+                                            Intent i = new Intent(MainActivity.this, PlayerService.class);
+                                            i.putExtra("VID_ID", VID);
+                                            i.putExtra("PLAYLIST_ID", finalPID);
+                                            i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+                                            startService(i);
+                                        }
 
 //                                    Intent i = new Intent(MainActivity.this, PlayerService.class);
 //                                    i.putExtra("VID_ID", VID);
 //                                    i.putExtra("PLAYLIST_ID", finalPID);
 //                                    i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
 //                                    startService(i);
-                                }
+                                    }
 
-                            }
-                        });
+                                }
+                            });
+                        }
                     }
+                    return super.shouldInterceptRequest(view, request);
                 }
-                return super.shouldInterceptRequest(view, request);
-            }
-        });
-        youtubeView.canGoBack();
-        currUrl = "https://m.youtube.com/";
-        youtubeView.loadUrl(currUrl);
+            });
+            youtubeView.canGoBack();
+            currUrl = "https://m.youtube.com/";
+            youtubeView.loadUrl(currUrl);
+        }
+        else{
+            setContentView(R.layout.no_internet_view);
+            exit = true;
+            retry = (Button) findViewById(R.id.retry_internet);
+            changeSettings = (Button) findViewById(R.id.change_settings);
+            exitApp = (Button) findViewById(R.id.exit_app);
+            retry.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mainAct.recreate();
+                }
+            });
+            changeSettings.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                }
+            });
+            exitApp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        }
 
     }
     private boolean isServiceRunning(Class<PlayerService> playerServiceClass) {
@@ -218,16 +254,21 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == OVERLAY_PERMISSION_REQ && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                needPermissionDialog(requestCode);
-            } else {
-                Intent i = new Intent(this, PlayerService.class);
-                i.putExtra("VID_ID", VID);
-                i.putExtra("PLAYLIST_ID", PID);
-                i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
-                startService(i);
+        if (requestCode == OVERLAY_PERMISSION_REQ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    needPermissionDialog(requestCode);
+                } else {
+                    Intent i = new Intent(this, PlayerService.class);
+                    i.putExtra("VID_ID", VID);
+                    i.putExtra("PLAYLIST_ID", PID);
+                    i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+                    startService(i);
+                }
             }
+        }
+        else if(requestCode == 0) {
+            mainAct.recreate();
         }
     }
     private void needPermissionDialog(final int requestCode) {
@@ -290,6 +331,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
     @Override
     public void onBackPressed() {
+        if(exit){
+            super.onBackPressed();
+            return;
+        }
         Log.d("Curr Url", currUrl);
         if(currUrl.equals("https://m.youtube.com/")) {
             if (doubleClickToExit) {
@@ -313,6 +358,26 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
     }
 
+    public static boolean isInternetAvailable(Context context) {
+        NetworkInfo info = (NetworkInfo) ((ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+
+        if (info == null) {
+            Log.d("Network Test","no internet connection");
+            return false;
+        }
+        else {
+            if(info.isConnected()) {
+                Log.d("Network Test"," internet connection available...");
+                return true;
+            }
+            else {
+                Log.d("Network Test"," internet connection");
+                return true;
+            }
+        }
+    }
+
     @Override
     public boolean onQueryTextSubmit(String query) {
         youtubeView.loadUrl("http://m.youtube.com/results?q="+ query);
@@ -324,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         if(newText.length() > 0) {
             newText = newText.replace(" ", "+");
             String url = "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q="
-                            + newText;
+                    + newText;
             JsonArrayRequest req = new JsonArrayRequest(url,
                     new Response.Listener<JSONArray>() {
                         @Override
