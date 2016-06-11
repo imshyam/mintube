@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -71,16 +72,24 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     Button retry, changeSettings, exitApp;
 
+    ViewStub viewStub;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         mainAct = this;
 
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        viewStub = (ViewStub) findViewById(R.id.view_stub);
 
 
         if(isInternetAvailable(mainAct)) {
-            setContentView(R.layout.activity_main);
+
+            viewStub.setLayoutResource(R.layout.content_main);
+            viewStub.inflate();
+
             exit = false;
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -216,7 +225,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             youtubeView.loadUrl(currUrl);
         }
         else{
-            setContentView(R.layout.no_internet_view);
+
+            viewStub.setLayoutResource(R.layout.content_main_no_internet);
+            viewStub.inflate();
+
             exit = true;
             retry = (Button) findViewById(R.id.retry_internet);
             changeSettings = (Button) findViewById(R.id.change_settings);

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical" android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:gravity="center">
+
+<LinearLayout
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+    <TextView
+        android:layout_weight="3"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="#353535"
+        android:textSize="25dp"
+        android:text="No Internet Connection"/>
+</LinearLayout>
+
+<Button
+    android:id="@+id/retry_internet"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:textAllCaps="false"
+    android:backgroundTint="@color/colorAccent"
+    android:textColor="#fff"
+    android:text="Retry"/>
+
+<Button
+    android:id="@+id/change_settings"
+    android:layout_marginTop="10dp"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:textAllCaps="false"
+    android:backgroundTint="#64818e"
+    android:textColor="#fff"
+    android:text="Change Settings"/>
+
+<Button
+    android:id="@+id/exit_app"
+    android:layout_marginTop="10dp"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:textAllCaps="false"
+    android:backgroundTint="@color/colorPrimary"
+    android:textColor="#fff"
+    android:text="Exit"/>
+
+</LinearLayout>
