@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
+    <Button
+        android:id="@+id/star_on_GitHub"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="Star on GitHub"
+        android:backgroundTint="#737373"
+        android:textColor="#fff"
+        android:layout_alignTop="@+id/rate_on_playstore"
+        android:layout_toRightOf="@+id/rate_on_playstore" />
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/rate_on_playstore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:backgroundTint="#00c853"
+        android:textColor="#fff"
+        android:text="Rate on Play Store"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Like the App ?"
+        android:textSize="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:id="@+id/issue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="Create an Issue on GitHub"
+        android:backgroundTint="#737373"
+        android:textColor="#fff"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/textView1"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Facing any Problem / Want any Feature ?"
+        android:textSize="20dp"
+        android:layout_below="@+id/star_on_GitHub"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentLeft="true"/>
+
+
+    <Button
+        android:layout_marginTop="30dp"
+        android:id="@+id/later"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Later"
+        android:backgroundTint="#02425e"
+        android:textColor="#fff"
+        android:textAllCaps="false"
+        android:layout_below="@+id/issue"
+        android:layout_toLeftOf="@+id/never"
+        android:layout_toStartOf="@+id/never" />
+
+    <Button
+        android:id="@+id/never"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Never"
+        android:backgroundTint="#42a5f5"
+        android:textColor="#fff"
+        android:textAllCaps="false"
+        android:layout_alignTop="@+id/later"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>

@@ -25,5 +25,6 @@
     <string name="videoQuality">VIDEO_QUALITY</string>
     <string name="finishOnEnd">FINISH_ON_END</string>
     <string name="title_activity_search">SearchActivity</string>
+    <string name="count">COUNT</string>
 
 </resources>

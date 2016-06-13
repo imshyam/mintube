@@ -61,6 +61,8 @@ public class YTubeView extends Activity{//extends YouTubeFailureRecoveryActivity
             editor.putInt(getString(R.string.videoQuality), 3);
             //Finish sevice if video ended
             editor.putBoolean(getString(R.string.finishOnEnd), false);
+            //Show Rate and Star after 5 times closing
+            editor.putInt(getString(R.string.count), 0);
             editor.commit();
         }
         else {
