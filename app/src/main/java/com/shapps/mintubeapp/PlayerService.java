@@ -289,7 +289,7 @@ public class PlayerService extends Service implements View.OnClickListener{
             Log.d("Current Count is ", String.valueOf(val));
             if(val < 15) {
                 val += 1;
-                if (val > 1) {
+                if (val > 4) {
                     val = 0;
                 }
                 SharedPreferences.Editor editor = sharedPref.edit();
