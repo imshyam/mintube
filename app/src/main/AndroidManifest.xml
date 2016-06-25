@@ -96,7 +96,7 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="d3c43e7beb374e9c795b8c1dc883f6d05cbb8c41" />
+            android:value="API_KEY" />
 
     </application>
 
