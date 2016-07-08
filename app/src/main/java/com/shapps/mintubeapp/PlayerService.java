@@ -310,8 +310,8 @@ public class PlayerService extends Service implements View.OnClickListener{
             webPlayer.loadScript(JavaScript.loadVideoScript(vId));
         }
         else{
-            webPlayer.loadScript(JavaScript.loadPlaylistScript(pId));
             Log.d("Starting ", "Playlist.");
+            webPlayer.loadScript(JavaScript.loadPlaylistScript(pId));
             setImageTitleAuthor(vId);
         }
     }

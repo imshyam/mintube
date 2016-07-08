@@ -5,7 +5,7 @@ package com.shapps.mintubeapp;
  */
 public class JavaScript {
 
-    public static String loadVideoScript(String vId){;
+    public static String loadVideoScript(String vId){
         return "javascript:player.loadVideoById(\"" + vId + "\");";
     }
 
@@ -64,5 +64,9 @@ public class JavaScript {
 
     public static String resetPlaybackQuality(String quality) {
         return "javascript:player.setPlaybackQuality(\"" + quality + "\");";
+    }
+
+    public static String getVideosInPlaylist() {
+        return "javascript:window.Interface.videosInPlaylist(player.getPlaylist());";
     }
 }

@@ -45,6 +45,10 @@ class JavaScriptInterface {
         PlayerService.setNoItemsInPlaylist(items.length);
         PlayerService.compare();
     }
+//    @JavascriptInterface
+//    public void videosInPlaylist (final String[] items) {
+//        Log.e("Videos In Playlist", String.valueOf(items));
+//    }
     @JavascriptInterface
     public void currVidIndex (final int index) {
         Log.d("Current Video Index ", String.valueOf(index));
