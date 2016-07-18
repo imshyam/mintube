@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 public void onLoadResource(WebView view, String url){
                     if (url.contains("http://m.youtube.com/watch?") ||
                             url.contains("https://m.youtube.com/watch?")) {
-                        Log.d("Yay Catches!!!! ", " Inside Should Url  : " + url);
+                        Log.d("Yay Catches!!!! ", url);
                         //Video Id
                         VID = url.substring(url.indexOf("&v=") + 3, url.length());
                         Log.d("VID ", VID);

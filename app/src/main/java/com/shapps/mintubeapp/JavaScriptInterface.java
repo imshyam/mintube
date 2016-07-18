@@ -31,7 +31,8 @@ class JavaScriptInterface {
     }
     @JavascriptInterface
     public void showVID (final String vId) {
-        Log.d("New Video Id ", vId);
+        Log.d("New Video Id", vId);
+        PlayerService.VID_ID = vId;
         handlerForJavascriptInterface.post(new Runnable() {
             @Override
             public void run() {
