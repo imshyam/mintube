@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">MinTube</string>
+    <string name="action_settings">Innstillinger</string>
+    <string name="title_activity_youtube_player">YouTube-spiller</string>
+    <string name="error_player">Klarte ikke å laste inn.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="title_activity_ytube_view">MinTube-visning</string>
+    <string name="add_ytube">MinTube</string>
+
+    <string name="svg_play">M8,5v14l11,-7z</string>
+    <string name="svg_pause">M6,19h4V5H6v14zm8,-14v14h4V5h-4z</string>
+    <string name="dialog_get_permission">Tillat å tegne over andre programmer.</string>
+    <string name="string_get_permission">Tillat dette programmet å tegne over andre programmer. Dette tillater visning overlagt et annet program du måtte ha åpent.</string>
+    <string name="title_activity_settings">Innstillinger</string>
+    <string name="repeat_type">GJENTAGELSESTYPE</string>
+    <string name="no_of_repeats">ANTALL_GJENTAGELSER</string>
+    <string name="player_type">AVSPILLERTYPE</string>
+    <string name="init">IGANGSATT</string>
+    <string name="title_activity_fullscreen_web_player">Fullskjermsnettspiller</string>
+    <string name="svg_arrow_up">M413.1,327.3l-1.8-2.1l-136-156.5c-4.6-5.3-11.5-8.6-19.2-8.6c-7.7,0-14.6,3.4-19.2,8.6L101,324.9l-2.3,2.6 \\tC97,330,96,333,96,336.2c0,8.7,7.4,15.8,16.6,15.8v0h286.8v0c9.2,0,16.6-7.1,16.6-15.8C416,332.9,414.9,329.8,413.1,327.3z</string>
+    <string name="FileName">DELTINNSTILLING_NØKKELFIL</string>
+    <string name="action_search">søk</string>
+    <string name="search_hint">Søk på YouTube</string>
+    <string name="videoQuality">VIDEOKVALITET</string>
+    <string name="finishOnEnd">FULLFØR_VED_SLUTT</string>
+    <string name="title_activity_search">Søkeaktivitet</string>
+    <string name="count">TELLING</string>
+
+</resources>
