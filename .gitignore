@@ -35,7 +35,8 @@ captures/
 
 # Intellij
 *.iml
-.idea/workspace.xml
+.idea
+.gradle
 
 # Keystore files
 *.jks
@@ -46,5 +47,5 @@ gen-external-apklibs
 # Fabric files
 fabric.properties
 
-#Manifest file
-AndroidManifest.xml
+#OSX files
+.DS_Store
