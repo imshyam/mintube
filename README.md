@@ -2,9 +2,11 @@
 Minimized/Floating Youtube
 
 ### Download
-Get It [Here][1].
 
-Or Go to `bit.ly/mintube` in your mobile.
+<a href="https://f-droid.org/packages/com.shapps.mintubeapp" target="_blank">
+<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80"/></a>
+
+You can also get It [Here][1], or go to `bit.ly/mintube` in your mobile.
 
 ### Source
 There are two versions of the app : [v0.95][2] and [v0.91][3].
