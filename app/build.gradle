@@ -20,8 +20,8 @@ android {
         applicationId "com.shapps.mintubeapp"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 3
-        versionName "0.95"
+        versionCode 4
+        versionName "0.97"
     }
     buildTypes {
         release {
