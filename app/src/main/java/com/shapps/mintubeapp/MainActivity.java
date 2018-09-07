@@ -6,8 +6,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -19,39 +17,26 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.View;
 import android.view.ViewStub;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.shapps.mintubeapp.CustomViews.CustomSwipeRefresh;
-import com.shapps.mintubeapp.CustomVolley.AppController;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -402,75 +387,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             newText = newText.replace(" ", "+");
             String url = "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q="
                     + newText;
-            JsonArrayRequest req = new JsonArrayRequest(url,
-                    new Response.Listener<JSONArray>() {
-                        @Override
-                        public void onResponse(JSONArray response) {
-                            try {
-                                JSONArray jsonArraySuggestion = (JSONArray) response.get(1);
-                                String[] suggestions = new String[10];
-                                for (int i = 0; i < 10; i++) {
-                                    if (!jsonArraySuggestion.isNull(i)) {
-                                        suggestions[i] = jsonArraySuggestion.get(i).toString();
-                                    }
-                                }
-                                Log.d("Suggestions", Arrays.toString(suggestions));
-                                //Cursor Adaptor
-                                String[] columnNames = {"_id", "suggestion"};
-                                MatrixCursor cursor = new MatrixCursor(columnNames);
-                                String[] temp = new String[2];
-                                int id = 0;
-                                for (String item : suggestions) {
-                                    if (item != null) {
-                                        temp[0] = Integer.toString(id++);
-                                        temp[1] = item;
-                                        cursor.addRow(temp);
-                                    }
-                                }
-                                CursorAdapter cursorAdapter = new CursorAdapter(getApplicationContext(), cursor, false) {
-                                    @Override
-                                    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                                        return LayoutInflater.from(context).inflate(R.layout.search_suggestion_list_item, parent, false);
-                                    }
+            // ToDo
 
-                                    @Override
-                                    public void bindView(View view, Context context, Cursor cursor) {
-                                        final TextView suggest = (TextView) view.findViewById(R.id.suggest);
-                                        ImageView putInSearchBox = (ImageView) view.findViewById(R.id.put_in_search_box);
-                                        String body = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"));
-                                        suggest.setText(body);
-                                        suggest.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                searchView.setQuery(suggest.getText(), true);
-                                                searchView.clearFocus();
-                                            }
-                                        });
-                                        putInSearchBox.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                searchView.setQuery(suggest.getText(), false);
-                                            }
-                                        });
-                                    }
-                                };
-                                searchView.setSuggestionsAdapter(cursorAdapter);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d("Tag", "Error: " + error.getMessage());
-                    Toast.makeText(getApplicationContext(),
-                            error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            // Adding request to request queue
-            AppController.getInstance().addToRequestQueue(req);
+            Toast.makeText(getApplicationContext(), url, Toast.LENGTH_SHORT).show();
 
         }
         return true;
