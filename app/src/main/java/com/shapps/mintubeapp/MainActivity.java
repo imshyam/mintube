@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        viewStub = (ViewStub) findViewById(R.id.view_stub);
+        viewStub = findViewById(R.id.view_stub);
 
 
         if(isInternetAvailable(mainAct)) {
@@ -86,11 +86,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             exit = false;
 
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
             //Swipe Refresh WebView
-            swipeRefreshLayout = (CustomSwipeRefresh) findViewById(R.id.swipe_refresh);
+            swipeRefreshLayout = findViewById(R.id.swipe_refresh);
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
             });
 
-            youtubeView = (WebView) findViewById(R.id.youtube_view);
+            youtubeView = findViewById(R.id.youtube_view);
             youtubeView.getSettings().setJavaScriptEnabled(true);
             youtubeView.setWebViewClient(new WebViewClient() {
                 @Override
@@ -136,12 +136,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     if (url.contains("?app=desktop") && !url.contains("signin?app=desktop")) {
                         Log.d("Url stopped to load : ", url);
-                        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
+                        CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator_layout);
                         final Snackbar snackbar = Snackbar
                                 .make(coordinatorLayout, "Desktop View Unavailable", Snackbar.LENGTH_LONG);
                         //Changing Text Color
                         View snkBar = snackbar.getView();
-                        TextView tv = (TextView) snkBar.findViewById(android.support.design.R.id.snackbar_text);
+                        TextView tv = snkBar.findViewById(android.support.design.R.id.snackbar_text);
                         tv.setTextColor(Color.parseColor("#e52d27"));
                         snackbar.show();
                         return true;
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             Pattern pattern = Pattern.compile(
                                     "([A-Za-z0-9_-]+)&[\\w]+=.*",
                                     Pattern.CASE_INSENSITIVE);
-                            Matcher matcher = pattern.matcher(listID.toString());
+                            Matcher matcher = pattern.matcher(listID);
                             Log.d("ListID", listID);
                             PID = "";
                             if (matcher.matches()) {
@@ -199,12 +199,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                             i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
                                             startService(i);
                                         }
-
-//                                    Intent i = new Intent(MainActivity.this, PlayerService.class);
-//                                    i.putExtra("VID_ID", VID);
-//                                    i.putExtra("PLAYLIST_ID", finalPID);
-//                                    i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
-//                                    startService(i);
                                     }
 
                                 }
@@ -224,9 +218,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             viewStub.inflate();
 
             exit = true;
-            retry = (Button) findViewById(R.id.retry_internet);
-            changeSettings = (Button) findViewById(R.id.change_settings);
-            exitApp = (Button) findViewById(R.id.exit_app);
+            retry = findViewById(R.id.retry_internet);
+            changeSettings = findViewById(R.id.change_settings);
+            exitApp = findViewById(R.id.exit_app);
             retry.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -285,7 +279,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     new android.content.DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // TODO Auto-generated method stub
                             Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                     Uri.parse("package:" + getPackageName()));
                             startActivityForResult(i, OVERLAY_PERMISSION_REQ);
@@ -294,8 +287,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             builder.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // TODO Auto-generated method stub
-
                 }
             });
             builder.setCancelable(false);
