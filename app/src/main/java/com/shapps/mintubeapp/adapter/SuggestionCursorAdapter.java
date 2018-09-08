@@ -1,4 +1,4 @@
-package com.shapps.mintubeapp;
+package com.shapps.mintubeapp.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.shapps.mintubeapp.R;
 
 public class SuggestionCursorAdapter extends CursorAdapter {
 
@@ -25,8 +27,8 @@ public class SuggestionCursorAdapter extends CursorAdapter {
     }
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        final TextView suggest = (TextView) view.findViewById(R.id.suggest);
-        ImageView putInSearchBox = (ImageView) view.findViewById(R.id.put_in_search_box);
+        final TextView suggest = view.findViewById(R.id.suggest);
+        ImageView putInSearchBox = view.findViewById(R.id.put_in_search_box);
         String body = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"));
         suggest.setText(body);
         suggest.setOnClickListener(new View.OnClickListener() {
