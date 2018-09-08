@@ -3,6 +3,8 @@ package com.shapps.mintubeapp;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.SearchManager;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -36,6 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shapps.mintubeapp.CustomViews.CustomSwipeRefresh;
+import com.shapps.mintubeapp.viewmodel.SuggestionViewModel;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     Button retry, changeSettings, exitApp;
 
     ViewStub viewStub;
+
+    SuggestionViewModel suggestionViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -385,13 +391,23 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextChange(String newText) {
         if(newText.length() > 0) {
             newText = newText.replace(" ", "+");
-            String url = "http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q="
-                    + newText;
-            // ToDo
 
-            Toast.makeText(getApplicationContext(), url, Toast.LENGTH_SHORT).show();
+            suggestionViewModel = ViewModelProviders.of(this).get(SuggestionViewModel.class);
+
+            suggestionViewModel.setQuery(newText);
+
+            observeSuggestions(suggestionViewModel);
 
         }
         return true;
+    }
+
+    private void observeSuggestions(SuggestionViewModel suggestionViewModel) {
+        suggestionViewModel.getLiveData().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
