@@ -16,7 +16,7 @@ public class SuggestionCursorAdapter extends CursorAdapter {
 
     private SearchView searchView;
 
-    SuggestionCursorAdapter(Context context, Cursor c, boolean autoRequery, SearchView searchView) {
+    public SuggestionCursorAdapter(Context context, Cursor c, boolean autoRequery, SearchView searchView) {
         super(context, c, autoRequery);
         this.searchView = searchView;
     }
