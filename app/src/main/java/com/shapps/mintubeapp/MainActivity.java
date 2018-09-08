@@ -8,6 +8,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -20,21 +22,25 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -406,7 +412,52 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         suggestionViewModel.getLiveData().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                if (s != null) {
+                    String[] res = s.split("\",\"");
+                    if (res.length > 0) {
+                        res[0] = res[0].split(",\\[\"")[1];
+                        res[res.length - 1] = res[res.length - 1].split("\"")[0];
+                        //Cursor Adaptor
+                        String[] columnNames = {"_id", "suggestion"};
+                        MatrixCursor cursor = new MatrixCursor(columnNames);
+                        String[] temp = new String[2];
+                        int id = 0;
+                        for (String item : res) {
+                            if (item != null) {
+                                temp[0] = Integer.toString(id++);
+                                temp[1] = item;
+                                cursor.addRow(temp);
+                            }
+                        }
+                        CursorAdapter cursorAdapter = new CursorAdapter(getApplicationContext(), cursor, false) {
+                            @Override
+                            public View newView(Context context, Cursor cursor, ViewGroup parent) {
+                                return LayoutInflater.from(context).inflate(R.layout.search_suggestion_list_item, parent, false);
+                            }
+                            @Override
+                            public void bindView(View view, Context context, Cursor cursor) {
+                                final TextView suggest = (TextView) view.findViewById(R.id.suggest);
+                                ImageView putInSearchBox = (ImageView) view.findViewById(R.id.put_in_search_box);
+                                String body = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"));
+                                suggest.setText(body);
+                                suggest.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        searchView.setQuery(suggest.getText(), true);
+                                        searchView.clearFocus();
+                                    }
+                                });
+                                putInSearchBox.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        searchView.setQuery(suggest.getText(), false);
+                                    }
+                                });
+                            }
+                        };
+                        searchView.setSuggestionsAdapter(cursorAdapter);
+                    }
+                }
             }
         });
     }
