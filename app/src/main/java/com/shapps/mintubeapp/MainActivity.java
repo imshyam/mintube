@@ -395,8 +395,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
     @Override
     public boolean onQueryTextChange(String newText) {
+
+        newText = newText.trim();
+
         if(newText.length() > 0) {
-            newText = newText.replace(" ", "+");
 
             suggestionViewModel = ViewModelProviders.of(this).get(SuggestionViewModel.class);
 
@@ -429,32 +431,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                 cursor.addRow(temp);
                             }
                         }
-                        CursorAdapter cursorAdapter = new CursorAdapter(getApplicationContext(), cursor, false) {
-                            @Override
-                            public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                                return LayoutInflater.from(context).inflate(R.layout.search_suggestion_list_item, parent, false);
-                            }
-                            @Override
-                            public void bindView(View view, Context context, Cursor cursor) {
-                                final TextView suggest = (TextView) view.findViewById(R.id.suggest);
-                                ImageView putInSearchBox = (ImageView) view.findViewById(R.id.put_in_search_box);
-                                String body = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"));
-                                suggest.setText(body);
-                                suggest.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        searchView.setQuery(suggest.getText(), true);
-                                        searchView.clearFocus();
-                                    }
-                                });
-                                putInSearchBox.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        searchView.setQuery(suggest.getText(), false);
-                                    }
-                                });
-                            }
-                        };
+                        SuggestionCursorAdapter cursorAdapter = new SuggestionCursorAdapter(getApplicationContext(),
+                                cursor, false,
+                                searchView);
                         searchView.setSuggestionsAdapter(cursorAdapter);
                     }
                 }
