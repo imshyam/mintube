@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             exit = false;
 
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
+//            Toolbar toolbar = findViewById(R.id.toolbar);
+//            setSupportActionBar(toolbar);
 
             //Swipe Refresh WebView
             swipeRefreshLayout = findViewById(R.id.swipe_refresh);

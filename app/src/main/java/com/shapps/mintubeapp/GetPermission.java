@@ -18,7 +18,7 @@ import android.widget.Button;
 public class GetPermission extends AppCompatActivity {
 
     public static int OVERLAY_PERMISSION_REQ_CODE = 12345;
-    public static int OVERLAY_PERMISSION_REQ_BACKTO_ACT_CODE = 23456;
+    public static int OVERLAY_PERMISSION_REQ_BACK_TO_ACT_CODE = 23456;
     String vId, pId;
     int permissionCode;
 
@@ -35,12 +35,12 @@ public class GetPermission extends AppCompatActivity {
             permissionCode = OVERLAY_PERMISSION_REQ_CODE;
         }
         else{
-            permissionCode = OVERLAY_PERMISSION_REQ_BACKTO_ACT_CODE;
+            permissionCode = OVERLAY_PERMISSION_REQ_BACK_TO_ACT_CODE;
         }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button getPermission = (Button) findViewById(R.id.get_permission);
+        Button getPermission = findViewById(R.id.get_permission);
         getPermission.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,7 +91,6 @@ public class GetPermission extends AppCompatActivity {
                     new android.content.DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // TODO Auto-generated method stub
                             Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                     Uri.parse("package:" + getPackageName()));
                             startActivityForResult(i, OVERLAY_PERMISSION_REQ_CODE);
@@ -100,7 +99,6 @@ public class GetPermission extends AppCompatActivity {
             builder.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // TODO Auto-generated method stub
 
                 }
             });
