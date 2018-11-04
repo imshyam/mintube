@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:gravity="center"
     android:orientation="horizontal"
     android:padding="@dimen/activity_horizontal_margin"
-    android:background="@color/colorPrimary"
-    android:weightSum="10"
-    android:gravity="center"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:weightSum="10">
 
     <TextView
         android:id="@+id/suggest"
         android:layout_width="0dp"
-        android:layout_weight="10"
         android:layout_height="wrap_content"
-        android:text="Sample Text"/>
+        android:layout_weight="10"
+        android:text="Sample Text" />
 
     <ImageView
         android:id="@+id/put_in_search_box"
-        android:layout_marginTop="-5dp"
-        android:layout_marginBottom="-5dp"
         android:layout_width="20dp"
         android:layout_height="30dp"
-        android:src="@drawable/ic_put_arrow"/>
+        android:layout_marginTop="-5dp"
+        android:layout_marginBottom="-5dp"
+        app:srcCompat="@drawable/ic_put_arrow" />
 
 </LinearLayout>

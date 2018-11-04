@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="horizontal"
     android:weightSum="3">
 
     <ImageView
@@ -11,70 +12,80 @@
         android:layout_height="120dp"
         android:layout_weight="1"
         android:scaleType="centerCrop"
-        android:src="@drawable/thumbnail"/>
+        app:srcCompat="@drawable/thumbnail" />
+
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_weight="2"
-        android:orientation="vertical"
         android:layout_height="match_parent"
-        android:background="#e62920">
+        android:layout_weight="2"
+        android:background="#e62920"
+        android:orientation="vertical">
+
         <LinearLayout
-            android:weightSum="20"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="20">
+
             <TextView
                 android:id="@+id/title"
                 android:layout_width="0dp"
-                android:layout_weight="20"
                 android:layout_height="50dp"
-                android:padding="5dp"
-                android:text="Loading Title"
-                android:textSize="12dp"
-                android:maxLines="2"
+                android:layout_weight="20"
                 android:ellipsize="end"
-                android:textStyle="bold"
-                android:textColor="#fff"/>
+                android:maxLines="2"
+                android:padding="5dp"
+                android:text="Loading title..."
+                android:textColor="#fff"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
             <ImageView
                 android:id="@+id/stop_service"
-                android:src="@drawable/ic_close_dark"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:layout_gravity="top|right" />
+                android:layout_gravity="top|end"
+                app:srcCompat="@drawable/ic_close_dark" />
         </LinearLayout>
+
         <TextView
             android:id="@+id/author"
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_marginBottom="5dp"
+            android:text="Loading author..."
             android:textColor="#ddd"
-            android:textSize="12dp"
-            android:text="Loading Author"/>
+            android:textSize="12sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"
             android:weightSum="3">
+
             <ImageView
                 android:id="@+id/previous_video"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_skip_previous"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_skip_previous" />
+
             <ImageView
                 android:id="@+id/pause_play_video"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_pause"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_pause" />
+
             <ImageView
                 android:id="@+id/next_video"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_skip_next"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_skip_next" />
         </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

@@ -2,10 +2,10 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:id="@+id/coordinator_layout"
     tools:context="com.shapps.mintubeapp.SettingsActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -19,63 +19,67 @@
             android:layout_height="?attr/actionBarSize"
             android:background="#fff"
             app:popupTheme="@style/AppTheme.PopupOverlay">
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@mipmap/ic_launcher"/>
+                app:srcCompat="@mipmap/ic_launcher" />
+
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
             <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="3"
                 android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:text="No internet connection!"
                 android:textColor="#353535"
-                android:textSize="25dp"
-                android:text="No Internet Connection"/>
+                android:textSize="25sp" />
         </LinearLayout>
 
         <Button
             android:id="@+id/retry_internet"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:textAllCaps="false"
             android:backgroundTint="@color/colorAccent"
-            android:textColor="#fff"
-            android:text="Retry"/>
+            android:text="Retry"
+            android:textAllCaps="false"
+            android:textColor="#fff" />
 
         <Button
             android:id="@+id/change_settings"
-            android:layout_marginTop="10dp"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:textAllCaps="false"
+            android:layout_marginTop="10dp"
             android:backgroundTint="#64818e"
-            android:textColor="#fff"
-            android:text="Change Settings"/>
+            android:text="Change Settings"
+            android:textAllCaps="false"
+            android:textColor="#fff" />
 
         <Button
             android:id="@+id/exit_app"
-            android:layout_marginTop="10dp"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:textAllCaps="false"
+            android:layout_marginTop="10dp"
             android:backgroundTint="@color/colorPrimary"
-            android:textColor="#fff"
-            android:text="Exit"/>
+            android:text="Exit"
+            android:textAllCaps="false"
+            android:textColor="#fff" />
 
     </LinearLayout>
 

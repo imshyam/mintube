@@ -22,8 +22,8 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:gravity">center|left</item>
-        <item name="android:textSize">15dp</item>
-        <item name="android:color">#bbb</item>
+        <item name="android:textSize">15sp</item>
+        <item name="color">#bbb</item>
         <item name="android:text">Suggestion</item>
     </style>
 

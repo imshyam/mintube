@@ -7,10 +7,9 @@
     tools:showIn="@layout/activity_main">
 
     <WebView
-        android:layout_marginTop="-50dp"
         android:id="@+id/youtube_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
+        android:layout_height="match_parent"
+        android:layout_marginTop="-50dp" />
 
 </RelativeLayout>
