@@ -1,15 +1,14 @@
 package com.shapps.mintubeapp;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.Button;
 
 /**
@@ -29,32 +28,27 @@ public class GetPermission extends AppCompatActivity {
         setContentView(R.layout.activity_get_permission);
 
         Bundle extras = getIntent().getExtras();
-        if(extras != null) {
+        if (extras != null) {
             vId = extras.getString("VID");
             pId = extras.getString("PID");
             permissionCode = OVERLAY_PERMISSION_REQ_CODE;
-        }
-        else{
+        } else {
             permissionCode = OVERLAY_PERMISSION_REQ_BACK_TO_ACT_CODE;
         }
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         Button getPermission = findViewById(R.id.get_permission);
-        getPermission.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+        getPermission.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                     && !Settings.canDrawOverlays(GetPermission.this)) {
-                        Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                Uri.parse("package:" + getPackageName()));
-                        startActivityForResult(i, permissionCode);
-                }
+                Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(i, permissionCode);
             }
         });
-
-
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -83,24 +77,20 @@ public class GetPermission extends AppCompatActivity {
 
         }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void needPermissionDialog(final int requestCode) {
-        if(requestCode == OVERLAY_PERMISSION_REQ_CODE) {
+        if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("You need to grant the permission.");
             builder.setPositiveButton("OK",
-                    new android.content.DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                    Uri.parse("package:" + getPackageName()));
-                            startActivityForResult(i, OVERLAY_PERMISSION_REQ_CODE);
-                        }
+                    (dialog, which) -> {
+                        Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getPackageName()));
+                        startActivityForResult(i, OVERLAY_PERMISSION_REQ_CODE);
                     });
-            builder.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
 
-                }
             });
             builder.setCancelable(false);
             builder.show();

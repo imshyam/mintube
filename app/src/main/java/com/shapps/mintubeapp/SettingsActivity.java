@@ -1,6 +1,5 @@
 package com.shapps.mintubeapp;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,7 +34,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -114,21 +114,21 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                         .make(coordinatorLayout, "Action Coming soon", Snackbar.LENGTH_SHORT);
                 //Changing Text Color
                 View snkBar = snackbar.getView();
-                TextView tv = (TextView) snkBar.findViewById(android.support.design.R.id.snackbar_text);
+                TextView tv = snkBar.findViewById(android.support.design.R.id.snackbar_text);
                 tv.setTextColor(Color.parseColor("#e52d27"));
                 snackbar.show();
         }
     }
 
     private void initViews() {
-        quality = (TextView) findViewById(R.id.text_view_quality);
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-        videoQuality = (LinearLayout) findViewById(R.id.video_quality);
-        playerType = (LinearLayout) findViewById(R.id.player_type);
-        about = (LinearLayout) findViewById(R.id.about);
-        increaseCount = (Button) findViewById(R.id.increase_repeat_count);
-        decreaseCount = (Button) findViewById(R.id.decrease_repeat_count);
-        fullscreenOnRotate = (CheckBox) findViewById(R.id.fullscreen_on_rotate);
-        stopNotPlaying = (CheckBox) findViewById(R.id.stop_not_playing);
+        quality = findViewById(R.id.text_view_quality);
+        coordinatorLayout = findViewById(R.id.coordinator_layout);
+        videoQuality = findViewById(R.id.video_quality);
+        playerType = findViewById(R.id.player_type);
+        about = findViewById(R.id.about);
+        increaseCount = findViewById(R.id.increase_repeat_count);
+        decreaseCount = findViewById(R.id.decrease_repeat_count);
+        fullscreenOnRotate = findViewById(R.id.fullscreen_on_rotate);
+        stopNotPlaying = findViewById(R.id.stop_not_playing);
     }
 }

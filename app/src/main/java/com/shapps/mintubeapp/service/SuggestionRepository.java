@@ -40,7 +40,7 @@ public class SuggestionRepository {
                 Constants.SUGGESTIONS_DS, query).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                if(response.body() != null) {
+                if (response.body() != null) {
                     stringMutableLiveData.setValue(response.body());
                 } else {
                     Log.d(TAG, "Empty Response");

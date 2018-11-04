@@ -48,7 +48,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by shyam on 12/2/16.
  */
-public class PlayerService extends Service implements View.OnClickListener{
+public class PlayerService extends Service implements View.OnClickListener {
 
     static Context mContext;
     static Bitmap bitmap;
@@ -57,7 +57,7 @@ public class PlayerService extends Service implements View.OnClickListener{
     static WindowManager windowManager;
     static LinearLayout serviceHead, serviceClose, serviceCloseBackground, playerView, webPlayerLL;
     FrameLayout webPlayerFrame;
-    static  WindowManager.LayoutParams servHeadParams, servCloseParams, servCloseBackParams, playerViewParams;
+    static WindowManager.LayoutParams servHeadParams, servCloseParams, servCloseBackParams, playerViewParams;
     WindowManager.LayoutParams param_player, params, param_close, param_close_back, parWebView;
     RelativeLayout viewToHide, closeImageLayout;
     static WebPlayer webPlayer;
@@ -71,7 +71,8 @@ public class PlayerService extends Service implements View.OnClickListener{
     static Notification notification;
     static ImageView playerHeadImage;
     int playerHeadCenterX, playerHeadCenterY, closeMinX, closeMinY, closeMaxX, closeImgSize;
-    int scrnWidth, scrnHeight, defaultPlayerWidth,playerWidth, playerHeight, playerHeadSize, closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
+    int scrnWidth, scrnHeight, defaultPlayerWidth, playerWidth, playerHeight, playerHeadSize,
+            closeImageLayoutSize, xAtHiding, yAtHiding, xOnAppear, yOnAppear = 0;
 
     static Intent fullScreenIntent;
 
@@ -97,62 +98,57 @@ public class PlayerService extends Service implements View.OnClickListener{
     int LAYOUT_FLAG;
 
     public static void setPlayingStatus(int playingStatus) {
-        if(playingStatus == -1){
+        if (playingStatus == -1) {
             nextVid = true;
         }
-        if(playingStatus == 3){
+        if (playingStatus == 3) {
             Log.d("Status", "Buffering");
             String quality = Constants.getPlaybackQuality();
             Log.d("Quality", quality);
-            webPlayer.loadScript(JavaScript.resetPlaybackQuality(quality));
+            WebPlayer.loadScript(JavaScript.resetPlaybackQuality(quality));
         }
-        if(playingStatus == 1){
+        if (playingStatus == 1) {
             isVideoPlaying = true;
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_pause);
             notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
-            if(nextVid){
+            if (nextVid) {
                 nextVid = false;
-                webPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
+                WebPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
             }
-            if(VID_ID.length() < 1){
-                Log.d("If lenght", "Less that 1");
-                webPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
+            if (VID_ID.length() < 1) {
+                Log.d("If length", "Less that 1");
+                WebPlayer.loadScript(JavaScript.getVidUpdateNotiContent());
             }
 
             //Also Update if playlist is set for loop
-            if(Constants.linkType == 1 && Constants.repeatType == 1 && !isLoopSetPlayList){
+            if (Constants.linkType == 1 && Constants.repeatType == 1 && !isLoopSetPlayList) {
                 Log.d("Setting ", "Playlist on Loop");
-                webPlayer.loadScript(JavaScript.setLoopPlaylist());
+                WebPlayer.loadScript(JavaScript.setLoopPlaylist());
                 isLoopSetPlayList = true;
             }
-        }
-        else if(playingStatus == 2) {
+        } else if (playingStatus == 2) {
             isVideoPlaying = false;
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_play);
             viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_play);
             notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
-        }
-        else if(playingStatus == 0) {
-            if(Constants.linkType == 1) {
+        } else if (playingStatus == 0) {
+            if (Constants.linkType == 1) {
                 Log.d("Repeat Type ", Constants.repeatType + "");
-                if(Constants.repeatType == 2){
-                    webPlayer.loadScript(JavaScript.prevVideo());
+                if (Constants.repeatType == 2) {
+                    WebPlayer.loadScript(JavaScript.prevVideo());
                 }
                 //If not repeating then set notification icon to repeat when playlist ends
-                if(Constants.repeatType == 0){
+                if (Constants.repeatType == 0) {
                     isPlaylistEnded();
                 }
-            }
-            else {
-                if(Constants.repeatType > 0){
-                    webPlayer.loadScript(JavaScript.playVideoScript());
-                }
-                else {
-                    if(Constants.finishOnEnd == true){
+            } else {
+                if (Constants.repeatType > 0) {
+                    WebPlayer.loadScript(JavaScript.playVideoScript());
+                } else {
+                    if (Constants.finishOnEnd) {
                         playerService.destroyServiceOnFinish();
-                    }
-                    else {
+                    } else {
                         replayVid = true;
                         viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
                         viewSmall.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
@@ -171,7 +167,7 @@ public class PlayerService extends Service implements View.OnClickListener{
     }
 
     public static void isPlaylistEnded() {
-        webPlayer.loadScript(JavaScript.isPlaylistEnded());
+        WebPlayer.loadScript(JavaScript.isPlaylistEnded());
     }
 
     public static void setNoItemsInPlaylist(int noItemsInPlaylist) {
@@ -182,13 +178,13 @@ public class PlayerService extends Service implements View.OnClickListener{
         PlayerService.currVideoIndex = currVideoIndex;
     }
 
-    public static Context getAppContext(){
+    public static Context getAppContext() {
         return mContext;
     }
 
     public static void compare() {
-        Log.d("Compairing", PlayerService.currVideoIndex + " " + PlayerService.noItemsInPlaylist);
-        if(PlayerService.currVideoIndex == PlayerService.noItemsInPlaylist -1){
+        Log.d("Comparing", PlayerService.currVideoIndex + " " + PlayerService.noItemsInPlaylist);
+        if (PlayerService.currVideoIndex == PlayerService.noItemsInPlaylist - 1) {
             Log.d("Playlist ", "Ended");
             replayPlaylist = true;
             viewBig.setImageViewResource(R.id.pause_play_video, R.drawable.ic_replay);
@@ -202,6 +198,7 @@ public class PlayerService extends Service implements View.OnClickListener{
     public IBinder onBind(Intent intent) {
         return null;
     }
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onCreate() {
@@ -214,69 +211,70 @@ public class PlayerService extends Service implements View.OnClickListener{
         } else {
             LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_PHONE;
         }
-
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId){
+    public int onStartCommand(Intent intent, int flags, int startId) {
 
-        this.playerService = this;
-        if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_WEB_ACTION)) {
-            Log.d("Service ", "Started!");
-            sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            Constants.repeatType = sharedPref.getInt(getString(R.string.repeat_type), 0);
-            doThis(intent);
+        playerService = this;
+        switch (intent.getAction()) {
+            case Constants.ACTION.STARTFOREGROUND_WEB_ACTION:
+                Log.d("Service ", "Started!");
+                sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                Constants.repeatType = sharedPref.getInt(getString(R.string.repeat_type), 0);
+                doThis(intent);
 
-        }
-        else if(intent.getAction().equals(Constants.ACTION.STOPFOREGROUND_WEB_ACTION)){
-            Log.i("Trying To Destroy ", "...");
-            stopForeground(true);
-            stopSelf();
-            stopService(new Intent(this, PlayerService.class));
-        } else if(intent.getAction().equals(Constants.ACTION.PAUSE_PLAY_ACTION)){
-            if (isVideoPlaying) {
-                if (replayVid || replayPlaylist) {
-                    if (Constants.linkType == 1) {
-                        Log.i("Trying to ", "Replay Playlist");
-                        webPlayer.loadScript(JavaScript.replayPlaylistScript());
-                        replayPlaylist = false;
+                break;
+            case Constants.ACTION.STOPFOREGROUND_WEB_ACTION:
+                Log.i("Trying To Destroy ", "...");
+                stopForeground(true);
+                stopSelf();
+                stopService(new Intent(this, PlayerService.class));
+                break;
+            case Constants.ACTION.PAUSE_PLAY_ACTION:
+                if (isVideoPlaying) {
+                    if (replayVid || replayPlaylist) {
+                        if (Constants.linkType == 1) {
+                            Log.i("Trying to ", "Replay Playlist");
+                            WebPlayer.loadScript(JavaScript.replayPlaylistScript());
+                            replayPlaylist = false;
+                        } else {
+                            Log.i("Trying to ", "Replay Video");
+                            WebPlayer.loadScript(JavaScript.playVideoScript());
+                            replayVid = false;
+                        }
                     } else {
-                        Log.i("Trying to ", "Replay Video");
-                        webPlayer.loadScript(JavaScript.playVideoScript());
-                        replayVid = false;
+                        Log.i("Trying to ", "Pause Video");
+                        WebPlayer.loadScript(JavaScript.pauseVideoScript());
                     }
                 } else {
-                    Log.i("Trying to ", "Pause Video");
-                    webPlayer.loadScript(JavaScript.pauseVideoScript());
+                    Log.i("Trying to ", "Play Video");
+                    WebPlayer.loadScript(JavaScript.playVideoScript());
                 }
-            } else {
-                Log.i("Trying to ", "Play Video");
-                webPlayer.loadScript(JavaScript.playVideoScript());
-            }
-        }
-        else if(intent.getAction().equals(Constants.ACTION.NEXT_ACTION)){
-            Log.d("Trying to ", "Play Next");
-            if(Constants.linkType == 0){
-                webPlayer.loadScript(JavaScript.seekToZero());
-            }
-            else {
-                webPlayer.loadScript(JavaScript.nextVideo());
-                nextVid = true;
-            }
-        }
-        else if(intent.getAction().equals(Constants.ACTION.PREV_ACTION)){
-            Log.d("Trying to ", "Play Previous");
-            if(Constants.linkType == 0){
-                webPlayer.loadScript(JavaScript.seekToZero());
-            }
-            else {
-                webPlayer.loadScript(JavaScript.prevVideo());
-                nextVid = true;
-            }
+                break;
+            case Constants.ACTION.NEXT_ACTION:
+                Log.d("Trying to ", "Play Next");
+                if (Constants.linkType == 0) {
+                    WebPlayer.loadScript(JavaScript.seekToZero());
+                } else {
+                    WebPlayer.loadScript(JavaScript.nextVideo());
+                    nextVid = true;
+                }
+                break;
+            case Constants.ACTION.PREV_ACTION:
+                Log.d("Trying to ", "Play Previous");
+                if (Constants.linkType == 0) {
+                    WebPlayer.loadScript(JavaScript.seekToZero());
+                } else {
+                    WebPlayer.loadScript(JavaScript.prevVideo());
+                    nextVid = true;
+                }
+                break;
         }
 
         return START_NOT_STICKY;
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -284,7 +282,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         Constants.linkType = 0;
         Log.i("Status", "Destroyed!");
         if (playerView != null) {
-            if(FullscreenWebPlayer.active){
+            if (FullscreenWebPlayer.active) {
                 FullscreenWebPlayer.fullScreenAct.onBackPressed();
             }
             windowManager.removeView(playerView);
@@ -293,18 +291,19 @@ public class PlayerService extends Service implements View.OnClickListener{
             webPlayer.destroy();
             //Show Rate or Star
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getAppContext());
-            int val =  sharedPreferences.getInt(getString(R.string.count), 5);
+            int val = sharedPreferences.getInt(getString(R.string.count), 5);
             Log.d("Current Count is ", String.valueOf(val));
-            if(val < 15) {
+            if (val < 15) {
                 val += 1;
                 if (val > 4) {
                     val = 0;
                 }
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putInt(getString(R.string.count), val);
-                editor.commit();
+                editor.apply();
                 if (val == 0) {
-                    startActivity(new Intent(getAppContext(), RateOrStar.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    startActivity(new Intent(getAppContext(),
+                            RateOrStar.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
             }
         }
@@ -313,13 +312,12 @@ public class PlayerService extends Service implements View.OnClickListener{
     public static void startVid(String vId, String pId) {
         PlayerService.VID_ID = vId;
         PlayerService.PLIST_ID = pId;
-        if(pId == null) {
+        if (pId == null) {
             setImageTitleAuthor(vId);
-            webPlayer.loadScript(JavaScript.loadVideoScript(vId));
-        }
-        else{
+            WebPlayer.loadScript(JavaScript.loadVideoScript(vId));
+        } else {
             Log.d("Starting ", "Playlist.");
-            webPlayer.loadScript(JavaScript.loadPlaylistScript(pId));
+            WebPlayer.loadScript(JavaScript.loadPlaylistScript(pId));
             setImageTitleAuthor(vId);
         }
     }
@@ -349,7 +347,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         Intent doThings = new Intent(this, PlayerService.class);
 
         //Notification
-        notificationManager = (NotificationManager) getSystemService(this.NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
 
                 .setSmallIcon(R.drawable.ic_status_bar)
@@ -363,9 +361,7 @@ public class PlayerService extends Service implements View.OnClickListener{
 
         notification = builder.build();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            notification.bigContentView = viewBig;
-        }
+        notification.bigContentView = viewBig;
 
         //Set Image and Headings
         setImageTitleAuthor(VID_ID);
@@ -382,7 +378,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         //Pause, Play Video using doThings Intent
         viewSmall.setOnClickPendingIntent(R.id.pause_play_video,
                 PendingIntent.getService(getApplicationContext(), 0,
-                        doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION) , 0));
+                        doThings.setAction(Constants.ACTION.PAUSE_PLAY_ACTION), 0));
 
         viewBig.setOnClickPendingIntent(R.id.pause_play_video,
                 PendingIntent.getService(getApplicationContext(), 0,
@@ -391,7 +387,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         //Next Video using doThings Intent
         viewSmall.setOnClickPendingIntent(R.id.next_video,
                 PendingIntent.getService(getApplicationContext(), 0,
-                        doThings.setAction(Constants.ACTION.NEXT_ACTION) , 0));
+                        doThings.setAction(Constants.ACTION.NEXT_ACTION), 0));
 
         viewBig.setOnClickPendingIntent(R.id.next_video,
                 PendingIntent.getService(getApplicationContext(), 0,
@@ -416,41 +412,40 @@ public class PlayerService extends Service implements View.OnClickListener{
 
         //Service Head
         serviceHead = (LinearLayout) inflater.inflate(R.layout.service_head, null, false);
-        playerHeadImage = (ImageView) serviceHead.findViewById(R.id.song_icon);
+        playerHeadImage = serviceHead.findViewById(R.id.song_icon);
 
-        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.gravity = Gravity.TOP | Gravity.START;
         params.x = 0;
         params.y = 0;
         windowManager.addView(serviceHead, params);
 
         //Player View
         playerView = (LinearLayout) inflater.inflate(R.layout.player_webview, null, false);
-        viewToHide = (RelativeLayout) playerView.findViewById(R.id.view_to_hide);
-        webPlayerFrame = (FrameLayout) playerView.findViewById(R.id.web_player_frame);
-        webPlayerLL = (LinearLayout) playerView.findViewById(R.id.web_player_ll);
+        viewToHide = playerView.findViewById(R.id.view_to_hide);
+        webPlayerFrame = playerView.findViewById(R.id.web_player_frame);
+        webPlayerLL = playerView.findViewById(R.id.web_player_ll);
 
         webPlayer = new WebPlayer(this);
         webPlayer.setupPlayer();
 
-        viewToHide.addView(webPlayer.getPlayer(), parWebView);
+        viewToHide.addView(WebPlayer.getPlayer(), parWebView);
 
         //------------------------------Got Player Id--------------------------------------------------------
         Map hashMap = new HashMap();
-        hashMap.put("Referer", "http://www.youtube.com");
-        if(Constants.linkType == 1) {
+        hashMap.put("Referer", "https://www.youtube.com");
+        if (Constants.linkType == 1) {
             Log.d("Starting ", "Playlist!!!");
             ConstantStrings.setPList(PLIST_ID);
-            webPlayer.loadDataWithUrl("https://www.youtube.com/player_api",ConstantStrings.getPlayListHTML(),
+            webPlayer.loadDataWithUrl("https://www.youtube.com/player_api", ConstantStrings.getPlayListHTML(),
                     "text/html", null, null);
-        }
-        else {
+        } else {
             ConstantStrings.setVid(VID_ID);
             Log.d("Starting ", "Single Video!!!");
-            webPlayer.loadDataWithUrl("https://www.youtube.com/player_api",ConstantStrings.getVideoHTML(),
+            webPlayer.loadDataWithUrl("https://www.youtube.com/player_api", ConstantStrings.getVideoHTML(),
                     "text/html", null, null);
         }
 
-        param_player.gravity = Gravity.TOP | Gravity.LEFT;
+        param_player.gravity = Gravity.TOP | Gravity.START;
         param_player.x = 0;
         param_player.y = playerHeadSize;
         windowManager.addView(playerView, param_player);
@@ -465,7 +460,7 @@ public class PlayerService extends Service implements View.OnClickListener{
 
                 Log.d("ChatHead Size", String.valueOf(playerHeadSize));
                 param_player.y = playerHeadSize;
-                xOnAppear = - playerHeadSize / 4;
+                xOnAppear = -playerHeadSize / 4;
                 windowManager.updateViewLayout(playerView, param_player);
             }
         });
@@ -485,9 +480,9 @@ public class PlayerService extends Service implements View.OnClickListener{
 
 
         //Player Controls
-        repeatTypeImg = (ImageView) playerView.findViewById(R.id.repeat_type);
-        entireWidthImg = (ImageView) playerView.findViewById(R.id.entire_width);
-        fullScreenImg = (ImageView) playerView.findViewById(R.id.fullscreen);
+        repeatTypeImg = playerView.findViewById(R.id.repeat_type);
+        entireWidthImg = playerView.findViewById(R.id.entire_width);
+        fullScreenImg = playerView.findViewById(R.id.fullscreen);
 
         //update Repeat Type Onclick
         updateRepeatTypeImage();
@@ -501,7 +496,8 @@ public class PlayerService extends Service implements View.OnClickListener{
         fullScreenImg.setOnClickListener(this);
 
         //Chat Head Close
-        serviceCloseBackground = (LinearLayout) inflater.inflate(R.layout.service_close_background, null, false);
+        serviceCloseBackground = (LinearLayout) inflater.inflate(R.layout.service_close_background,
+                null, false);
 
         param_close_back.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         serviceCloseBackground.setVisibility(View.GONE);
@@ -512,7 +508,7 @@ public class PlayerService extends Service implements View.OnClickListener{
         param_close.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         serviceClose.setVisibility(View.GONE);
         windowManager.addView(serviceClose, param_close);
-        closeImageLayout = (RelativeLayout) serviceClose.findViewById(R.id.close_image_layout);
+        closeImageLayout = serviceClose.findViewById(R.id.close_image_layout);
         vto = closeImageLayout.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -523,7 +519,7 @@ public class PlayerService extends Service implements View.OnClickListener{
             }
         });
 
-        final CircularImageView closeImage = (CircularImageView) serviceClose.findViewById(R.id.close_image);
+        final CircularImageView closeImage = serviceClose.findViewById(R.id.close_image);
 
         //-----------------Handle Click-----------------------------
         playerHeadImage.setOnClickListener(this);
@@ -547,22 +543,18 @@ public class PlayerService extends Service implements View.OnClickListener{
 
             @Override
             public boolean onTouch(View v, final MotionEvent event) {
-                if(isEntireWidth) {
+                if (isEntireWidth) {
                     playerWidth = scrnWidth;
-                }
-                else{
+                } else {
                     playerWidth = defaultPlayerWidth;
                 }
                 final WindowManager.LayoutParams params = (WindowManager.LayoutParams) serviceHead.getLayoutParams();
                 WindowManager.LayoutParams param_player = (WindowManager.LayoutParams) playerView.getLayoutParams();
                 serviceCloseBackground.setVisibility(View.VISIBLE);
                 final Handler handleLongTouch = new Handler();
-                final Runnable setVisible = new Runnable() {
-                    @Override
-                    public void run() {
-                        if(needToShow[0]) {
-                            serviceClose.setVisibility(View.VISIBLE);
-                        }
+                final Runnable setVisible = () -> {
+                    if (needToShow[0]) {
+                        serviceClose.setVisibility(View.VISIBLE);
                     }
                 };
                 switch (event.getAction()) {
@@ -584,16 +576,14 @@ public class PlayerService extends Service implements View.OnClickListener{
                         serviceClose.setVisibility(View.GONE);
                         if (isClicked(initialTouchX, finalTouchX, initialTouchY, finalTouchY)) {
                             playerHeadImage.performClick();
-                        }
-                        else {
+                        } else {
                             //stop if inside the close Button
-                            if(isInsideClose){
+                            if (isInsideClose) {
                                 Log.i("Inside Close ", "...");
                                 stopForeground(true);
                                 stopSelf();
                                 stopService(new Intent(PlayerService.this, PlayerService.class));
-                            }
-                            else if (!visible) {
+                            } else if (!visible) {
                                 if (params.x > scrnWidth / 2) {
                                     params.x = scrnWidth - playerHeadSize + playerHeadSize / 4;
                                 } else {
@@ -614,8 +604,7 @@ public class PlayerService extends Service implements View.OnClickListener{
                             } else if (playerWidth + newX > scrnWidth) {
                                 param_player.x = scrnWidth - playerWidth;
                                 params.x = scrnWidth - playerWidth;
-                            }
-                            else {
+                            } else {
                                 param_player.x = newX;
                                 params.x = newX;
                             }
@@ -623,7 +612,7 @@ public class PlayerService extends Service implements View.OnClickListener{
                                 param_player.y = playerHeadSize;
                                 params.y = 0;
                             } else if (playerHeight + newY + playerHeadSize > scrnHeight) {
-                                if(visible){
+                                if (visible) {
                                     //Continue with the drag and don't update head params
                                     updateHead = false;
                                     hidePlayer();
@@ -635,35 +624,32 @@ public class PlayerService extends Service implements View.OnClickListener{
                             }
                             windowManager.updateViewLayout(serviceHead, params);
                             //update player params if visible
-                            if(visible)
+                            if (visible)
                                 windowManager.updateViewLayout(playerView, param_player);
-                        }
-                        else {
-                            if(newY + playerHeadSize > scrnHeight){
+                        } else {
+                            if (newY + playerHeadSize > scrnHeight) {
                                 params.y = scrnHeight - playerHeadSize;
-                            }
-                            else{
+                            } else {
                                 params.y = newY;
                             }
                             params.x = newX;
-                            int [] t = new int[2];
+                            int[] t = new int[2];
                             closeImageLayout.getLocationOnScreen(t);
                             updateIsInsideClose(params.x, params.y, t);
-                            if(isInsideClose){
+                            if (isInsideClose) {
                                 params.x = t[0];
                                 params.y = t[1] - getStatusBarHeight();
                                 params.width = closeImageLayoutSize;
                                 params.height = closeImageLayoutSize;
-                                if(closeImage.getLayoutParams().width == closeImgSize){
+                                if (closeImage.getLayoutParams().width == closeImgSize) {
                                     closeImage.getLayoutParams().width = closeImgSize * 2;
                                     closeImage.getLayoutParams().height = closeImgSize * 2;
                                     closeImage.requestLayout();
                                 }
-                            }
-                            else{
+                            } else {
                                 params.width = playerHeadSize;
                                 params.height = playerHeadSize;
-                                if(closeImage.getLayoutParams().width > closeImgSize){
+                                if (closeImage.getLayoutParams().width > closeImgSize) {
                                     closeImage.getLayoutParams().width = closeImgSize;
                                     closeImage.getLayoutParams().height = closeImgSize;
                                     closeImage.requestLayout();
@@ -679,22 +665,18 @@ public class PlayerService extends Service implements View.OnClickListener{
             private boolean isClicked(float startX, float endX, float startY, float endY) {
                 float differenceX = Math.abs(startX - endX);
                 float differenceY = Math.abs(startY - endY);
-                if (differenceX >= 5 || differenceY >= 5) {
-                    return false;
-                }
-                return true;
+                return !(differenceX >= 5) && !(differenceY >= 5);
             }
         });
     }
+
     //Update Image of Repeat Type Button
     private void updateRepeatTypeImage() {
-        if(Constants.repeatType == 0){
+        if (Constants.repeatType == 0) {
             repeatTypeImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_none));
-        }
-        else if(Constants.repeatType == 1){
+        } else if (Constants.repeatType == 1) {
             repeatTypeImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat));
-        }
-        else if(Constants.repeatType == 2){
+        } else if (Constants.repeatType == 2) {
             repeatTypeImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_one));
         }
     }
@@ -724,44 +706,33 @@ public class PlayerService extends Service implements View.OnClickListener{
 
             notificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, notification);
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (InterruptedException | ExecutionException | JSONException | MalformedURLException e) {
             e.printStackTrace();
         }
     }
 
     public static void addStateChangeListener() {
-        webPlayer.loadScript(JavaScript.onPlayerStateChangeListener());
+        WebPlayer.loadScript(JavaScript.onPlayerStateChangeListener());
     }
+
     private void updateIsInsideClose(int x, int y, int[] t) {
-        playerHeadCenterX = x + playerHeadSize / 2 ;
+        playerHeadCenterX = x + playerHeadSize / 2;
         playerHeadCenterY = y + playerHeadSize / 2;
         closeMinX = t[0] - 10;
         closeMinY = t[1] - getStatusBarHeight() - 10;
         closeMaxX = closeMinX + closeImageLayoutSize + 10;
-        if(isInsideClose()){
-            isInsideClose = true;
-        }
-        else {
-            isInsideClose = false;
-        }
+        isInsideClose = isInsideClose();
     }
+
     public boolean isInsideClose() {
-        if(playerHeadCenterX >= closeMinX && playerHeadCenterX <= closeMaxX){
-            if(playerHeadCenterY >= closeMinY){
-                return true;
-            }
+        if (playerHeadCenterX >= closeMinX && playerHeadCenterX <= closeMaxX) {
+            return playerHeadCenterY >= closeMinY;
         }
         return false;
     }
+
     private int getStatusBarHeight() {
-        int statusBarHeight = (int) Math.ceil(25 * getApplicationContext().getResources().getDisplayMetrics().density);
-        return statusBarHeight;
+        return (int) Math.ceil(25 * getApplicationContext().getResources().getDisplayMetrics().density);
     }
 
     //Play video again on exit full screen
@@ -770,14 +741,14 @@ public class PlayerService extends Service implements View.OnClickListener{
         windowManager.addView(serviceClose, servCloseParams);
         windowManager.addView(serviceCloseBackground, servCloseBackParams);
         windowManager.addView(playerView, playerViewParams);
-        webPlayer.loadScript(JavaScript.playVideoScript());
+        WebPlayer.loadScript(JavaScript.playVideoScript());
     }
 
 
     //Clicks Handled
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             //Handle Hiding of player
             case R.id.song_icon:
                 Log.d("Clicked", "Click!");
@@ -786,12 +757,12 @@ public class PlayerService extends Service implements View.OnClickListener{
                     updateHead = true;
                     hidePlayer();
                 } else {
-                   showPlayer();
+                    showPlayer();
                 }
                 break;
             //Handle Full Screen
             case R.id.fullscreen:
-                webPlayer.loadScript(JavaScript.pauseVideoScript());
+                WebPlayer.loadScript(JavaScript.pauseVideoScript());
                 fullScreenIntent = new Intent(getAppContext(), FullscreenWebPlayer.class);
                 fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 //remove Views
@@ -809,7 +780,7 @@ public class PlayerService extends Service implements View.OnClickListener{
             //Handle Entire Width
             case R.id.entire_width:
                 //Enter Entire Width
-                if(WebPlayer.getPlayer().getMeasuredWidth() != scrnWidth) {
+                if (WebPlayer.getPlayer().getMeasuredWidth() != scrnWidth) {
                     param_player.width = WindowManager.LayoutParams.MATCH_PARENT;
                     windowManager.updateViewLayout(playerView, param_player);
                     ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
@@ -828,7 +799,7 @@ public class PlayerService extends Service implements View.OnClickListener{
                     isEntireWidth = true;
                 }
                 //Exit Entire Width
-                else{
+                else {
                     param_player.width = defaultPlayerWidth;
                     windowManager.updateViewLayout(playerView, param_player);
                     ViewGroup.LayoutParams fillWidthParamLL = webPlayerLL.getLayoutParams();
@@ -852,10 +823,10 @@ public class PlayerService extends Service implements View.OnClickListener{
                 SharedPreferences.Editor editor = sharedPref.edit();
                 if (Constants.repeatType == 0) {
                     editor.putInt(getString(R.string.repeat_type), 1);
-                    editor.commit();
+                    editor.apply();
                     Constants.repeatType = 1;
                     if (Constants.linkType == 1) {
-                        webPlayer.loadScript(JavaScript.setLoopPlaylist());
+                        WebPlayer.loadScript(JavaScript.setLoopPlaylist());
                     }
                     updateRepeatTypeImage();
                 } else if (Constants.repeatType == 1) {
@@ -863,7 +834,7 @@ public class PlayerService extends Service implements View.OnClickListener{
                     editor.commit();
                     Constants.repeatType = 2;
                     if (Constants.linkType == 1) {
-                        webPlayer.loadScript(JavaScript.unsetLoopPlaylist());
+                        WebPlayer.loadScript(JavaScript.unsetLoopPlaylist());
                     }
                     updateRepeatTypeImage();
                 } else if (Constants.repeatType == 2) {
@@ -871,7 +842,7 @@ public class PlayerService extends Service implements View.OnClickListener{
                     editor.commit();
                     Constants.repeatType = 0;
                     if (Constants.linkType == 1) {
-                        webPlayer.loadScript(JavaScript.unsetLoopPlaylist());
+                        WebPlayer.loadScript(JavaScript.unsetLoopPlaylist());
                     }
                     updateRepeatTypeImage();
                 }
@@ -884,11 +855,10 @@ public class PlayerService extends Service implements View.OnClickListener{
     private void showPlayer() {
         viewToHide.setVisibility(View.VISIBLE);
         //Store current to again hidden icon will come here
-        if(params.x > 0) {
+        if (params.x > 0) {
             xOnAppear = scrnWidth - playerHeadSize + playerHeadSize / 4;
-        }
-        else{
-            xOnAppear = - playerHeadSize / 4;
+        } else {
+            xOnAppear = -playerHeadSize / 4;
         }
         yOnAppear = params.y;
         //Update the icon and player to player's hidden position
@@ -912,13 +882,15 @@ public class PlayerService extends Service implements View.OnClickListener{
                 100,
                 100,
                 LAYOUT_FLAG,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
         tmpPlayerParams.x = scrnWidth;
         tmpPlayerParams.y = scrnHeight;
         windowManager.updateViewLayout(playerView, tmpPlayerParams);
         viewToHide.setVisibility(View.GONE);
-        if(updateHead) {
+        if (updateHead) {
             params.x = xOnAppear;
             params.y = yOnAppear;
             windowManager.updateViewLayout(serviceHead, params);
@@ -933,7 +905,9 @@ public class PlayerService extends Service implements View.OnClickListener{
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 LAYOUT_FLAG,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT
         );
         //Web Player Params
@@ -947,22 +921,27 @@ public class PlayerService extends Service implements View.OnClickListener{
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 LAYOUT_FLAG,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
         //Close Backgroung Params
         param_close_back = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 LAYOUT_FLAG,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
         //Close Image Params
         param_close = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 LAYOUT_FLAG,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
-
     }
 }

@@ -38,10 +38,9 @@ public class LoadDetailsTask extends AsyncTask<String, String, String> {
                 result.append(line);
             }
 
-        }catch( Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             urlConnection.disconnect();
         }
 
@@ -52,6 +51,5 @@ public class LoadDetailsTask extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-
     }
 }

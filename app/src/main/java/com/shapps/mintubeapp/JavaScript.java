@@ -5,7 +5,7 @@ package com.shapps.mintubeapp;
  */
 public class JavaScript {
 
-    public static String loadVideoScript(String vId){
+    public static String loadVideoScript(String vId) {
         return "javascript:player.loadVideoById(\"" + vId + "\");";
     }
 
@@ -19,7 +19,7 @@ public class JavaScript {
 
     public static String onPlayerStateChangeListener() {
         return "javascript:" +
-                "player.addEventListener(\"onStateChange\", \"onPlayerStateChange\");"+
+                "player.addEventListener(\"onStateChange\", \"onPlayerStateChange\");" +
                 "function onPlayerStateChange(event) {\n" +
                 "      window.Interface.showPlayerState(player.getPlayerState());\n" +
                 "  }";

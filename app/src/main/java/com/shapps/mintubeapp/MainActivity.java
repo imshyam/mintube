@@ -1,12 +1,9 @@
 package com.shapps.mintubeapp;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.SearchManager;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.MatrixCursor;
 import android.graphics.Bitmap;
@@ -18,14 +15,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,7 +45,7 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    Activity mainAct;
+    AppCompatActivity mainAct;
     WebView youtubeView;
     String currUrl;
     boolean doubleClickToExit = false;
@@ -79,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         viewStub = findViewById(R.id.view_stub);
 
 
-        if(isInternetAvailable(mainAct)) {
+        if (isInternetAvailable(mainAct)) {
 
             viewStub.setLayoutResource(R.layout.content_main);
             viewStub.inflate();
@@ -91,27 +87,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             //Swipe Refresh WebView
             swipeRefreshLayout = findViewById(R.id.swipe_refresh);
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    swipeRefreshLayout.setRefreshing(true);
-                    new Handler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            youtubeView.loadUrl(youtubeView.getUrl());
-                        }
-                    });
-                }
+            swipeRefreshLayout.setOnRefreshListener(() -> {
+                swipeRefreshLayout.setRefreshing(true);
+                new Handler().post(() -> youtubeView.loadUrl(youtubeView.getUrl()));
             });
 
 
             // after initialization
-            swipeRefreshLayout.setCanChildScrollUpCallback(new CustomSwipeRefresh.CanChildScrollUpCallback() {
-                @Override
-                public boolean canSwipeRefreshChildScrollUp() {
-                    return youtubeView.getScrollY() > 0;
-                }
-            });
+            swipeRefreshLayout.setCanChildScrollUpCallback(() -> youtubeView.getScrollY() > 0);
 
             youtubeView = findViewById(R.id.youtube_view);
             youtubeView.getSettings().setJavaScriptEnabled(true);
@@ -179,29 +162,26 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             }
                             Handler handler = new Handler(getMainLooper());
                             final String finalPID = PID;
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    youtubeView.stopLoading();
-                                    youtubeView.goBack();
-                                    if (isServiceRunning(PlayerService.class)) {
-                                        Log.d("Service : ", "Already Running!");
-                                        PlayerService.startVid(VID, finalPID);
+                            handler.post(() -> {
+                                youtubeView.stopLoading();
+                                youtubeView.goBack();
+                                if (isServiceRunning(PlayerService.class)) {
+                                    Log.d("Service : ", "Already Running!");
+                                    PlayerService.startVid(VID, finalPID);
+                                } else {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
+                                        Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                Uri.parse("package:" + getPackageName()));
+                                        startActivityForResult(i, OVERLAY_PERMISSION_REQ);
                                     } else {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
-                                            Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                                    Uri.parse("package:" + getPackageName()));
-                                            startActivityForResult(i, OVERLAY_PERMISSION_REQ);
-                                        } else {
-                                            Intent i = new Intent(MainActivity.this, PlayerService.class);
-                                            i.putExtra("VID_ID", VID);
-                                            i.putExtra("PLAYLIST_ID", finalPID);
-                                            i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
-                                            startService(i);
-                                        }
+                                        Intent i = new Intent(MainActivity.this, PlayerService.class);
+                                        i.putExtra("VID_ID", VID);
+                                        i.putExtra("PLAYLIST_ID", finalPID);
+                                        i.setAction(Constants.ACTION.STARTFOREGROUND_WEB_ACTION);
+                                        startService(i);
                                     }
-
                                 }
+
                             });
                         }
                     }
@@ -211,8 +191,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             youtubeView.canGoBack();
             currUrl = "https://m.youtube.com/";
             youtubeView.loadUrl(currUrl);
-        }
-        else{
+        } else {
 
             viewStub.setLayoutResource(R.layout.content_main_no_internet);
             viewStub.inflate();
@@ -221,27 +200,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             retry = findViewById(R.id.retry_internet);
             changeSettings = findViewById(R.id.change_settings);
             exitApp = findViewById(R.id.exit_app);
-            retry.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mainAct.recreate();
-                }
-            });
-            changeSettings.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                }
-            });
-            exitApp.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
+            retry.setOnClickListener(v -> mainAct.recreate());
+            changeSettings.setOnClickListener(v ->
+                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0));
+            exitApp.setOnClickListener(v -> finish());
         }
 
     }
+
     private boolean isServiceRunning(Class<PlayerService> playerServiceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -251,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
         return false;
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -266,33 +233,29 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     startService(i);
                 }
             }
-        }
-        else if(requestCode == 0) {
+        } else if (requestCode == 0) {
             mainAct.recreate();
         }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void needPermissionDialog(final int requestCode) {
-        if(requestCode == OVERLAY_PERMISSION_REQ) {
+        if (requestCode == OVERLAY_PERMISSION_REQ) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("You need to grant the permission.");
             builder.setPositiveButton("OK",
-                    new android.content.DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                    Uri.parse("package:" + getPackageName()));
-                            startActivityForResult(i, OVERLAY_PERMISSION_REQ);
-                        }
+                    (dialog, which) -> {
+                        Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getPackageName()));
+                        startActivityForResult(i, OVERLAY_PERMISSION_REQ);
                     });
-            builder.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
             });
             builder.setCancelable(false);
             builder.show();
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -301,8 +264,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         final SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
-        if(searchView != null){
+                (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
+        if (searchView != null) {
             searchView.setSearchableInfo(
                     searchManager.getSearchableInfo(getComponentName()));
             searchView.setOnQueryTextListener(this);
@@ -326,14 +289,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public void onBackPressed() {
-        if(exit){
+        if (exit) {
             super.onBackPressed();
             return;
         }
         Log.d("Curr Url", currUrl);
-        if(currUrl.equals("https://m.youtube.com/")) {
+        if (currUrl.equals("https://m.youtube.com/")) {
             if (doubleClickToExit) {
                 super.onBackPressed();
                 return;
@@ -342,15 +306,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             this.doubleClickToExit = true;
             Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show();
 
-            new Handler().postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    doubleClickToExit = false;
-                }
-            }, 2000);
-        }
-        else {
+            new Handler().postDelayed(() -> doubleClickToExit = false, 2000);
+        } else {
             youtubeView.goBack();
         }
     }
@@ -360,16 +317,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 Objects.requireNonNull(context.getSystemService(Context.CONNECTIVITY_SERVICE))).getActiveNetworkInfo();
 
         if (info == null) {
-            Log.d("Network Test","no internet connection");
+            Log.d("Network Test", "no internet connection");
             return false;
-        }
-        else {
-            if(info.isConnected()) {
-                Log.d("Network Test"," internet connection available...");
+        } else {
+            if (info.isConnected()) {
+                Log.d("Network Test", " internet connection available...");
                 return true;
-            }
-            else {
-                Log.d("Network Test"," internet connection");
+            } else {
+                Log.d("Network Test", " internet connection");
                 return true;
             }
         }
@@ -377,16 +332,17 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        youtubeView.loadUrl("http://m.youtube.com/results?q="+ query);
+        youtubeView.loadUrl("http://m.youtube.com/results?q=" + query);
         searchView.clearFocus();
         return true;
     }
+
     @Override
     public boolean onQueryTextChange(String newText) {
 
         newText = newText.trim();
 
-        if(newText.length() > 0) {
+        if (newText.length() > 0) {
 
             suggestionViewModel = ViewModelProviders.of(this).get(SuggestionViewModel.class);
 
@@ -399,31 +355,28 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void observeSuggestions(SuggestionViewModel suggestionViewModel) {
-        suggestionViewModel.getLiveData().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                if (s != null) {
-                    String[] res = s.split("\",\"");
-                    if (res.length > 0) {
-                        res[0] = res[0].split(",\\[\"")[1];
-                        res[res.length - 1] = res[res.length - 1].split("\"")[0];
-                        //Cursor Adaptor
-                        String[] columnNames = {"_id", "suggestion"};
-                        MatrixCursor cursor = new MatrixCursor(columnNames);
-                        String[] temp = new String[2];
-                        int id = 0;
-                        for (String item : res) {
-                            if (item != null) {
-                                temp[0] = Integer.toString(id++);
-                                temp[1] = item;
-                                cursor.addRow(temp);
-                            }
+        suggestionViewModel.getLiveData().observe(this, s -> {
+            if (s != null) {
+                String[] res = s.split("\",\"");
+                if (res.length > 0) {
+                    res[0] = res[0].split(",\\[\"")[1];
+                    res[res.length - 1] = res[res.length - 1].split("\"")[0];
+                    //Cursor Adaptor
+                    String[] columnNames = {"_id", "suggestion"};
+                    MatrixCursor cursor = new MatrixCursor(columnNames);
+                    String[] temp = new String[2];
+                    int id = 0;
+                    for (String item : res) {
+                        if (item != null) {
+                            temp[0] = Integer.toString(id++);
+                            temp[1] = item;
+                            cursor.addRow(temp);
                         }
-                        SuggestionCursorAdapter cursorAdapter = new SuggestionCursorAdapter(getApplicationContext(),
-                                cursor, false,
-                                searchView);
-                        searchView.setSuggestionsAdapter(cursorAdapter);
                     }
+                    SuggestionCursorAdapter cursorAdapter = new SuggestionCursorAdapter(getApplicationContext(),
+                            cursor, false,
+                            searchView);
+                    searchView.setSuggestionsAdapter(cursorAdapter);
                 }
             }
         });

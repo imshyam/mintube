@@ -14,8 +14,8 @@ public class CustomSwipeRefresh extends SwipeRefreshLayout {
     public CustomSwipeRefresh(Context context) {
         super(context);
     }
-    public CustomSwipeRefresh(Context context, AttributeSet attrs)
-    {
+
+    public CustomSwipeRefresh(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

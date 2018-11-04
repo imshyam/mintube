@@ -1,17 +1,16 @@
 package com.shapps.mintubeapp;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class RateOrStar extends AppCompatActivity implements View.OnClickListener{
+public class RateOrStar extends AppCompatActivity implements View.OnClickListener {
 
     Button rateOnPlayStore, starOnGitHub, issue, later, never;
     Intent browserIntent;
@@ -20,11 +19,11 @@ public class RateOrStar extends AppCompatActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rate_or_star);
-        rateOnPlayStore = (Button) findViewById(R.id.rate_on_playstore);
-        starOnGitHub = (Button) findViewById(R.id.star_on_GitHub);
-        issue = (Button) findViewById(R.id.issue);
-        later = (Button) findViewById(R.id.later);
-        never = (Button) findViewById(R.id.never);
+        rateOnPlayStore = findViewById(R.id.rate_on_playstore);
+        starOnGitHub = findViewById(R.id.star_on_GitHub);
+        issue = findViewById(R.id.issue);
+        later = findViewById(R.id.later);
+        never = findViewById(R.id.never);
 
         rateOnPlayStore.setOnClickListener(this);
         starOnGitHub.setOnClickListener(this);
@@ -32,6 +31,7 @@ public class RateOrStar extends AppCompatActivity implements View.OnClickListene
         later.setOnClickListener(this);
         never.setOnClickListener(this);
     }
+
     @Override
     public void onClick(View v) {
 
@@ -84,12 +84,13 @@ public class RateOrStar extends AppCompatActivity implements View.OnClickListene
                 SharedPreferences.Editor editor =
                         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
                 editor.putInt(getString(R.string.count), 20);
-                editor.commit();
+                editor.apply();
                 this.finish();
                 break;
         }
 
     }
+
     void showToastMessage(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT)
                 .show();

@@ -1,14 +1,9 @@
 package com.shapps.mintubeapp;
 
 import android.content.Context;
-import android.os.Build;
-import android.view.MotionEvent;
-import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import java.util.Map;
 
 /**
  * Created by shyam on 15/3/16.
@@ -19,7 +14,7 @@ public class WebPlayer {
     Context context;
 
     public WebPlayer(Context context) {
-        this.player = new WebView(context);
+        player = new WebView(context);
         this.context = context;
     }
 
@@ -27,14 +22,10 @@ public class WebPlayer {
         player.getSettings().setJavaScriptEnabled(true);
 
 //         For debugging using chrome on PC
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                player.setWebContentsDebuggingEnabled(true);
-            }
+        WebView.setWebContentsDebuggingEnabled(true);
 
         player.setWebChromeClient(new WebChromeClient());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            player.getSettings().setMediaPlaybackRequiresUserGesture(false);
-        }
+        player.getSettings().setMediaPlaybackRequiresUserGesture(false);
         player.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:21.0.0) Gecko/20121011 Firefox/21.0.0");
 
         //----------------------------To get Player Id-------------------------------------------
