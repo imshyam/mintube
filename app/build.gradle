@@ -1,51 +1,48 @@
-buildscript {
-    repositories {
-    }
-
-    dependencies {
-    }
-}
 apply plugin: 'com.android.application'
-
-repositories {
-}
-
 
 android {
     compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
-        generatedDensities = []
         applicationId "com.shapps.mintubeapp"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 4
         versionName "0.97"
     }
+
     buildTypes {
         release {
             minifyEnabled true
-            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        encoding = 'UTF-8'
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+ext {
+    supportLib = '28.0.0'
+    retrofit = '2.4.0'
+    arch = '1.1.1'
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "com.android.support:design:${supportLib}"
+    implementation "com.android.support:support-v4:${supportLib}"
+    implementation "com.android.support:appcompat-v7:${supportLib}"
 
-    def support_ver = "28.0.0-rc01"
-    def retrofit_ver = "2.4.0"
-    def arch_ver = "1.1.1"
+    implementation "com.squareup.retrofit2:converter-scalars:${retrofit}"
+    implementation "com.squareup.retrofit2:retrofit:${retrofit}"
 
-    implementation "com.android.support:appcompat-v7:$support_ver"
-    implementation "com.android.support:design:$support_ver"
-    implementation "com.android.support:support-v4:$support_ver"
+    implementation "android.arch.lifecycle:extensions:${arch}"
+    implementation "android.arch.lifecycle:viewmodel:${arch}"
 
-    implementation "com.squareup.retrofit2:converter-scalars:$retrofit_ver"
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_ver"
-
-
-    implementation "android.arch.lifecycle:extensions:$arch_ver"
-    implementation "android.arch.lifecycle:viewmodel:$arch_ver"
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
 }
