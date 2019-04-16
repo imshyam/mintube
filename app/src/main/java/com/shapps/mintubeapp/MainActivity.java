@@ -157,25 +157,19 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             String url = String.valueOf(request.getUrl());
                             Log.d("Yay Catches!!!! ", url);
                             //Video Id
-                            VID = url.substring(url.indexOf("&v=") + 3, url.length());
+                            VID = url.substring(url.indexOf("v=") + 2).split("&")[0];
                             Log.d("VID ", VID);
                             //Playlist Id
-                            final String listID = url.substring(url.indexOf("&list=") + 6, url.length());
-                            Pattern pattern = Pattern.compile(
-                                    "([A-Za-z0-9_-]+)&[\\w]+=.*",
-                                    Pattern.CASE_INSENSITIVE);
-                            Matcher matcher = pattern.matcher(listID);
+                            final String listID = url.substring(url.indexOf("list=") + 5).split("&")[0];
                             Log.d("ListID", listID);
                             PID = "";
-                            if (matcher.matches()) {
-                                PID = matcher.group(1);
-                            }
-                            if (listID.contains("m.youtube.com")) {
-                                Log.d("Not a ", "Playlist.");
-                                PID = null;
-                            } else {
+                            if (listID.length() > 0) {
+                                PID = listID;
                                 Constants.linkType = 1;
                                 Log.d("PlaylistID ", PID);
+                            } else {
+                                Log.d("Not a ", "Playlist.");
+                                PID = null;
                             }
                             Handler handler = new Handler(getMainLooper());
                             final String finalPID = PID;
