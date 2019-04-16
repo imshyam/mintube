@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             final String listID = url.substring(url.indexOf("list=") + 5).split("&")[0];
                             Log.d("ListID", listID);
                             PID = "";
-                            if (listID.length() > 0) {
+                            if (listID.length() > 0 && !listID.contains("m.youtube.com")) {
                                 PID = listID;
                                 Constants.linkType = 1;
                                 Log.d("PlaylistID ", PID);
