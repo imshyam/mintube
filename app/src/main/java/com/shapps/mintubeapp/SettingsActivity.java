@@ -73,7 +73,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         if (menuItem.getItemId() == android.R.id.home) {
             onBackPressed();
         }
-        return super.onOptionsItemSelected(menuItem);
+        return true;
     }
 
     @Override
