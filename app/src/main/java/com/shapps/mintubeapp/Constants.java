@@ -77,4 +77,11 @@ public class Constants {
         public static int FOREGROUND_SERVICE = 101;
     }
 
+
+    public static String SUGGESTIONS_BASE_URL = "https://suggestqueries.google.com/complete/";
+    public static String SUGGESTIONS_CLIENT = "youtube";
+    public static String SUGGESTIONS_CLIENT_RETURN_TYPE = "firefox";
+    public static String SUGGESTIONS_DS = "yt";
+
+
 }

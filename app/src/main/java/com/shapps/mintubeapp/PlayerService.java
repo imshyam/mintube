@@ -2,6 +2,7 @@ package com.shapps.mintubeapp;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -50,6 +51,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class PlayerService extends Service implements View.OnClickListener{
 
+    private static final CharSequence MAIN_CHANNEL = "Player Notification";
+    private static final String CHANNEL_ID = "101";
     static Context mContext;
     static Bitmap bitmap;
     static String title, author;
@@ -349,8 +352,15 @@ public class PlayerService extends Service implements View.OnClickListener{
         Intent doThings = new Intent(this, PlayerService.class);
 
         //Notification
-        notificationManager = (NotificationManager) getSystemService(this.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, MAIN_CHANNEL, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationChannel.setDescription("Player Notifications");
+            notificationChannel.enableVibration(false);
+            notificationChannel.enableLights(false);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
 
                 .setSmallIcon(R.drawable.ic_status_bar)
 
